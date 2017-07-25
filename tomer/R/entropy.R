@@ -3,6 +3,8 @@
 #' @param probs Probabilities to calculate entropy of
 #' @param freq If set to \code{TRUE}, then \code{probs} are interpreted as frequencies. Defaults to FALSE.
 #' @param base The base with respect to which logarithms are computed. Defaults to base 2="shannon". Possible options are "shannon" for base 2, "nat" for base e, and "hartley" for base 10.
+#'
+#' @export
 entropy <- function(probs, freq=FALSE, base="shannon") {
     ## assert_numeric
     checkr::assert_type(probs, "double")
