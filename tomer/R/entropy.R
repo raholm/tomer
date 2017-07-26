@@ -6,10 +6,9 @@
 #'
 #' @export
 entropy <- function(probs, freq=FALSE, base="shannon") {
-    ## assert_numeric
     checkr::assert_type(probs, "double")
     checkr::assert_character(base)
-    checkr::assert_subset(base, c("shannon", "nat", "hartley"))
+    checkr::assert_choice(base, c("shannon", "nat", "hartley"))
 
     if (freq) {
         probs <- probs / sum(probs)
