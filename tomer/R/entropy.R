@@ -6,8 +6,9 @@
 #'
 #' @export
 entropy <- function(probs, freq=FALSE, base="shannon") {
-    checkr::assert_type(probs, "double")
-    checkr::assert_character(base)
+    checkr::assert_numeric(probs)
+    checkr::assert_logical(freq)
+    checkr::assert_string(base)
     checkr::assert_choice(base, c("shannon", "nat", "hartley"))
 
     if (freq) {
