@@ -258,9 +258,7 @@ int LeftToRightEvaluator::sample_new_topic(LocalState& state) const {
   double orig_sample = sample;
 
   // Make sure it actually gets set
-  int topic;
-  int new_topic = -1;
-  int i;
+  int topic, i, new_topic = -1;
 
   if (sample < state.topic_term_mass) {
     i = -1;
