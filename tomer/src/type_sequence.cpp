@@ -47,3 +47,11 @@ Type TypeSequence::get_next_type() const {
                                  return p1.second < p2.second;
                                })->second + 1;
 }
+
+uint TypeSequence::size() const {
+  return types_.size();
+}
+
+uint TypeSequence::length() const {
+  return size();
+}

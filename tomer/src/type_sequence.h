@@ -12,6 +12,9 @@ public:
   Type at(uint position) const;
   Token token_at(uint position) const;
 
+  uint size() const;
+  uint length() const;
+
 private:
   TypeVector types_;
   AlphabetPtr alphabet_;

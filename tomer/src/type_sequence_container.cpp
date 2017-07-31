@@ -23,3 +23,7 @@ void TypeSequenceContainer::add(const Document& tokens) {
 TypeVector TypeSequenceContainer::at(uint position) const {
   return types_.at(position);
 }
+
+uint TypeSequenceContainer::size() const {
+  return types_.size();
+}

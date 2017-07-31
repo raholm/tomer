@@ -18,6 +18,8 @@ public:
 
   TypeVector at(uint position) const;
 
+  uint size() const;
+
 private:
   TypeMatrix types_;
   AlphabetPtr alphabet_;
