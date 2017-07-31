@@ -18,7 +18,7 @@ using TypeMatrix = std::vector<TypeVector>;
 using Alphabet = std::map<Token, Type, std::less<Token>>;
 using AlphabetPtr = std::shared_ptr<Alphabet>;
 
-using uint = std::size_t;
+// using uint = std::size_t;
 
 using UIntVector = std::vector<uint>;
 using DoubleVector = std::vector<double>;

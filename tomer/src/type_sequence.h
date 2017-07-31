@@ -3,14 +3,23 @@
 
 #include "def.h"
 
+class TypeSequenceContainer;
+
 class TypeSequence {
 public:
+  TypeSequence() = default;
   TypeSequence(const Document& tokens);
 
   ~TypeSequence() = default;
 
-  Type at(uint position) const;
-  Token token_at(uint position) const;
+  TypeSequence(const TypeSequence& other) = default;
+  TypeSequence(TypeSequence&& other) = default;
+
+  TypeSequence& operator=(const TypeSequence& rhs) = default;
+  TypeSequence& operator=(TypeSequence&& rhs) = default;
+
+  Type at(std::size_t position) const;
+  Token token_at(std::size_t position) const;
 
   uint size() const;
   uint length() const;
@@ -24,12 +33,7 @@ private:
   void create_types_and_update_alphabet(const Document& tokens);
   Type get_next_type() const;
 
-  TypeSequence() = delete;
-  TypeSequence(const TypeSequence& other) = delete;
-  TypeSequence(TypeSequence&& other) = delete;
-
-  TypeSequence& operator=(const TypeSequence& rhs) = delete;
-  TypeSequence& operator=(TypeSequence&& rhs) = delete;
+  friend class TypeSequenceContainer;
 
 };
 

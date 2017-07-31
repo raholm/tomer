@@ -7,7 +7,7 @@ TypeSequenceContainer::TypeSequenceContainer()
 }
 
 TypeSequenceContainer::TypeSequenceContainer(const Corpus& tokens)
-  : type_{tokens.size()}, alphabet_{new Alphabet()}
+  : types_(tokens.size()), alphabet_{new Alphabet()}
 {
   add(tokens);
 }
@@ -20,10 +20,10 @@ void TypeSequenceContainer::add(const Document& tokens) {
   types_.push_back(TypeSequence(tokens, alphabet_));
 }
 
-TypeVector TypeSequenceContainer::at(uint position) const {
+TypeSequence TypeSequenceContainer::at(std::size_t position) const {
   return types_.at(position);
 }
 
-uint TypeSequenceContainer::size() const {
+std::size_t TypeSequenceContainer::size() const {
   return types_.size();
 }

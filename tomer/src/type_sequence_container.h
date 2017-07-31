@@ -4,9 +4,6 @@
 #include "type_sequence.h"
 
 class TypeSequenceContainer {
-private:
-  friend class TypeSequence;
-
 public:
   TypeSequenceContainer();
   TypeSequenceContainer(const Corpus& tokens);
@@ -16,12 +13,12 @@ public:
   void add(const Corpus& tokens);
   void add(const Document& tokens);
 
-  TypeVector at(uint position) const;
+  TypeSequence at(std::size_t position) const;
 
-  uint size() const;
+  std::size_t size() const;
 
 private:
-  TypeMatrix types_;
+  std::vector<TypeSequence> types_;
   AlphabetPtr alphabet_;
 
   void create_types_and_update_alphabet(const Document& tokens);

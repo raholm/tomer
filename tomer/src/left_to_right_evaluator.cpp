@@ -1,12 +1,13 @@
 #include "left_to_right_evaluator.h"
 
+#include <iostream>
 #include <random>
 #include <cmath>
 
-LeftToRightEvaluator(uint n_topics, double beta, double beta_sum,
-                     const DoubleVector& alpha, double alpha_sum,
-                     const UIntVector& tokens_per_topic,
-                     const UIntMatrix& type_topic_counts)
+LeftToRightEvaluator::LeftToRightEvaluator(uint n_topics, double beta, double beta_sum,
+                                           const DoubleVector& alpha, double alpha_sum,
+                                           const UIntVector& tokens_per_topic,
+                                           const UIntMatrix& type_topic_counts)
   : n_topics_{n_topics}, beta_{beta}, beta_sum_{beta_sum}, alpha_{alpha},
     tokens_per_topic_{tokens_per_topic}, type_topic_counts_{type_topic_counts}
 {
@@ -15,20 +16,20 @@ LeftToRightEvaluator(uint n_topics, double beta, double beta_sum,
 
 double LeftToRightEvaluator::evaluate(const CorpusTypeSequence& types,
                                       uint n_particles,
-                                      bool resampling) const {
-  DoubleMatrix particle_probabilities{n_particles};
+                                      bool resampling) {
+  DoubleMatrix particle_probabilities(n_particles);
 
   double total_log_likelihood = 0;
   double log_n_particles = log(n_particles);
   double doc_log_likelihood, log_prob, sum;
-  uint max_len = 0;
+  std::size_t max_len = 0;
 
   for (unsigned i = 0; i < types.size(); ++i) {
     doc_log_likelihood = 0;
 
     for (unsigned particle = 0; particle < n_particles; ++particle) {
       particle_probabilities.at(particle) = get_word_probabilities(types.at(i), resampling);
-      max_len = std::max(max_len,  particle_probabilities.at(particle));
+      max_len = std::max(max_len,  particle_probabilities.at(particle).size());
     }
 
     for (unsigned position = 0; position < max_len; ++position) {
@@ -53,12 +54,12 @@ double LeftToRightEvaluator::evaluate(const CorpusTypeSequence& types,
 }
 
 DoubleVector LeftToRightEvaluator::get_word_probabilities(const DocumentTypeSequence& types,
-                                                          bool resampling) const {
+                                                          bool resampling) {
 
   uint doc_length = types.length();
   int type, old_topic, new_topic, topic;
 
-  DoubleVector word_probabilities{doc_length}
+  DoubleVector word_probabilities(doc_length);
 
   // Keep track of the number of tokens we've examined, not
   //  including out-of-vocabulary words
@@ -67,8 +68,8 @@ DoubleVector LeftToRightEvaluator::get_word_probabilities(const DocumentTypeSequ
   LocalState state;
 
   state.doc_topics = UIntVector{doc_length};
-  state.topic_counts = UIntVector{n_topics_}
-  state.topic_index = UIntVector{n_topics_}
+  state.topic_counts = UIntVector(n_topics_);
+  state.topic_index = UIntVector(n_topics_);
 
   // Build an array that densely lists the topics that
   //  have non-zero counts.
@@ -81,7 +82,7 @@ DoubleVector LeftToRightEvaluator::get_word_probabilities(const DocumentTypeSequ
   state.topic_beta_mass = 0.0;
   state.topic_term_mass = 0.0;
 
-  state.topic_term_scores = DoubleVector{n_topics_};
+  state.topic_term_scores = DoubleVector(n_topics_);
 
   // All counts are now zero, we are starting completely fresh.
   //	Iterate over the positions (words) in the document
@@ -113,17 +114,18 @@ DoubleVector LeftToRightEvaluator::get_word_probabilities(const DocumentTypeSequ
 
     // We've just resampled all tokens UP TO the current limit,
     //  now sample the token AT the current limit.
-    type = types.at(limit)
+    type = types.at(limit);
 
       // Check for out-of-vocabulary words
-      if (type >= type_topic_counts_.size()) continue;
+    if (type >= type_topic_counts_.size()) continue;
 
     state.type_topic_counts = type_topic_counts_.at(type);
 
     update_topic_scores(state);
 
-    word_probabilities.at(limit) += (smoothing_only_mass_ + state.topic_beta_mass + state.topic_term_mass) /
-      (alpha_sum_ + tokens_so_far);
+    word_probabilities.at(limit) += (smoothing_only_mass_ +
+                                     state.topic_beta_mass +
+                                     state.topic_term_mass) / (alpha_sum_ + tokens_so_far);
 
     new_topic = sample_new_topic(state);
 
@@ -135,27 +137,30 @@ DoubleVector LeftToRightEvaluator::get_word_probabilities(const DocumentTypeSequ
   //	Clean up our mess: reset the coefficients to values with only
   //	smoothing. The next doc will update its own non-zero topics...
   for (unsigned i = 0; i < state.non_zero_topics; ++i) {
-    topic = state.topic_indices.at(i);
+    topic = state.topic_index.at(i);
     cached_coefficients_.at(topic) = alpha_.at(topic) / (tokens_per_topic_.at(topic) + beta_sum_);
   }
 
   return word_probabilities;
 }
 
-void LeftToRightEvaluator::add_topic_and_update_state_and_coefficients(calState& state,
-                                                                       uint topic, uint position) const {
+void LeftToRightEvaluator::add_topic_and_update_state_and_coefficients(LocalState& state,
+                                                                       uint topic,
+                                                                       uint position) {
   // Put that new topic into the counts
-  state.doc_topic.at(position) = new_topic;
+  state.doc_topics.at(position) = topic;
 
-  add_or_remove_topic_and_update_state_coefficients(state, topic, true);
+  add_or_remove_topic_and_update_state_and_coefficients(state, topic, true);
 }
 
-void LeftToRightEvaluator::remove_topic_and_update_state(LocalState& state, uint topic) const {
-  add_or_remove_topic_and_update_state_coefficients(state, topic, false);
+void LeftToRightEvaluator::remove_topic_and_update_state_and_coefficients(LocalState& state,
+                                                                          uint topic) {
+  add_or_remove_topic_and_update_state_and_coefficients(state, topic, false);
 }
 
-void LeftToRightEvaluator::add_or_remove_topic_and_update_state_coefficients(LocalState& state,
-                                                                             uint topic, bool incr) const {
+void LeftToRightEvaluator::add_or_remove_topic_and_update_state_and_coefficients(LocalState& state,
+                                                                                 uint topic,
+                                                                                 bool incr) {
   double denom = (tokens_per_topic_.at(topic) + beta_sum_);
 
   // Remove this token from all counts.
@@ -170,7 +175,7 @@ void LeftToRightEvaluator::add_or_remove_topic_and_update_state_coefficients(Loc
 
   // Add the old topic's contribution back into the
   // normalizing constants.
-  state.topic_beta_mass += beta * state.topic_counts.at(topic) / denom;
+  state.topic_beta_mass += beta_ * state.topic_counts.at(topic) / denom;
 
   // Reset the cached coefficient for this topic
   cached_coefficients_.at(topic) = (alpha_.at(topic) + state.topic_counts.at(topic)) / denom;
@@ -191,12 +196,12 @@ void LeftToRightEvaluator::maintain_dense_index_addition(LocalState& state, uint
     // topics) and working backwards
     state.dense_index = state.non_zero_topics;
 
-    while (state.dense_index > 0 && state.topic_indices.at(dense_index - 1) > topic) {
-      state.topic_indices.at(state.dense_index) = state.topic_indices.at(state.dense_index - 1);
-      dense_index--;
+    while (state.dense_index > 0 && state.topic_index.at(state.dense_index - 1) > topic) {
+      state.topic_index.at(state.dense_index) = state.topic_index.at(state.dense_index - 1);
+      --state.dense_index;
     }
 
-    state.topic_indices.at(state.dense_index) = topic;
+    state.topic_index.at(state.dense_index) = topic;
     state.non_zero_topics++;
   }
 }
@@ -211,12 +216,12 @@ void LeftToRightEvaluator::maintain_dense_index_elimination(LocalState& state, u
 
     // We know it's in there somewhere, so we don't
     // need bounds checking.
-    while (state.topic_indices.at(dense_index++) != topic);
+    while (state.topic_index.at(state.dense_index++) != topic);
 
     // shift all remaining dense indices to the left.
     while (state.dense_index < state.non_zero_topics) {
-      if (state.dense_index < state.topic_indices.size() - 1) {
-        state.topic_indices.at(state.dense_index) = state.topic_indices.at(state.dense_index + 1);
+      if (state.dense_index < state.topic_index.size() - 1) {
+        state.topic_index.at(state.dense_index) = state.topic_index.at(state.dense_index + 1);
 
       }
 
@@ -247,7 +252,7 @@ void LeftToRightEvaluator::update_topic_scores(LocalState& state) const {
     state.topic_term_mass += score;
     state.topic_term_scores.at(index) = score;
 
-    index++;
+    ++index;
   }
 }
 
@@ -264,7 +269,7 @@ int LeftToRightEvaluator::sample_new_topic(LocalState& state) const {
     i = -1;
 
     while (sample > 0) {
-      i++;
+      ++i;
       sample -= state.topic_term_scores.at(i);
     }
 
@@ -276,7 +281,7 @@ int LeftToRightEvaluator::sample_new_topic(LocalState& state) const {
       sample /= beta_;
 
       for (state.dense_index = 0; state.dense_index < state.non_zero_topics; ++state.dense_index) {
-        topic = state.topic_indices.at(state.dense_index);
+        topic = state.topic_index.at(state.dense_index);
 
         sample -= state.topic_counts.at(topic) / (tokens_per_topic_.at(topic) + beta_sum_);
 
@@ -287,12 +292,12 @@ int LeftToRightEvaluator::sample_new_topic(LocalState& state) const {
       }
     } else {
       sample -= state.topic_beta_mass;
-      sample /= beta;
+      sample /= beta_;
       new_topic = 0;
       sample -= alpha_.at(new_topic) / (tokens_per_topic_.at(new_topic) + beta_sum_);
 
       while (sample > 0.0) {
-        new_topic++;
+        ++new_topic;
         sample -= alpha_.at(new_topic) / (tokens_per_topic_.at(new_topic) + beta_sum_);
       }
     }
