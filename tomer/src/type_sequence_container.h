@@ -8,12 +8,17 @@ public:
   TypeSequenceContainer();
   TypeSequenceContainer(const Corpus& tokens);
 
+  TypeSequenceContainer(const TypeSequenceContainer& other) = default;
+
   ~TypeSequenceContainer() = default;
+
+  TypeSequenceContainer& operator=(const TypeSequenceContainer& rhs) = default;
 
   void add(const Corpus& tokens);
   void add(const Document& tokens);
+  void add(const TypeSequence& ts);
 
-  TypeSequence at(std::size_t position) const;
+  const TypeSequence& at(std::size_t position) const;
 
   std::size_t size() const;
 
@@ -24,10 +29,8 @@ private:
   void create_types_and_update_alphabet(const Document& tokens);
   Type get_next_type() const;
 
-  TypeSequenceContainer(const TypeSequenceContainer& other) = delete;
   TypeSequenceContainer(TypeSequenceContainer&& other) = delete;
 
-  TypeSequenceContainer& operator=(const TypeSequenceContainer& rhs) = delete;
   TypeSequenceContainer& operator=(TypeSequenceContainer&& rhs) = delete;
 
 };

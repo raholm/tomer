@@ -9,17 +9,23 @@ TypeSequence::TypeSequence(const Document& tokens)
   create_types_and_update_alphabet(tokens);
 }
 
+TypeSequence::TypeSequence(TypeVector&& tokens, AlphabetPtr alphabet)
+  : types_{std::move(tokens)}, alphabet_{alphabet}
+{
+
+}
+
 TypeSequence::TypeSequence(const Document& tokens, AlphabetPtr alphabet)
   : types_(tokens.size()), alphabet_{alphabet}
 {
   create_types_and_update_alphabet(tokens);
 }
 
-Type TypeSequence::at(std::size_t position) const {
+const Type& TypeSequence::at(std::size_t position) const {
   return types_.at(position);
 }
 
-Token TypeSequence::token_at(std::size_t position) const {
+const Token& TypeSequence::token_at(std::size_t position) const {
   Type type = types_.at(position);
   auto it = alphabet_->begin();
   std::advance(it, type);

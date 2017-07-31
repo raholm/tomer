@@ -6,21 +6,25 @@ TypeSequenceContainer::TypeSequenceContainer()
 
 }
 
-TypeSequenceContainer::TypeSequenceContainer(const Corpus& tokens)
-  : types_(tokens.size()), alphabet_{new Alphabet()}
+TypeSequenceContainer::TypeSequenceContainer(const Corpus& corpus)
+  : types_(corpus.size()), alphabet_{new Alphabet()}
 {
-  add(tokens);
+  add(corpus);
 }
 
-void TypeSequenceContainer::add(const Corpus& tokens) {
-  for (auto const& doc : tokens) add(doc);
+void TypeSequenceContainer::add(const Corpus& corpus) {
+  for (auto const& document : corpus) add(document);
 }
 
-void TypeSequenceContainer::add(const Document& tokens) {
-  types_.push_back(TypeSequence(tokens, alphabet_));
+void TypeSequenceContainer::add(const Document& document) {
+  add(TypeSequence{document, alphabet_});
 }
 
-TypeSequence TypeSequenceContainer::at(std::size_t position) const {
+void TypeSequenceContainer::add(const TypeSequence& type_sequence) {
+  types_.push_back(type_sequence);
+}
+
+const TypeSequence& TypeSequenceContainer::at(std::size_t position) const {
   return types_.at(position);
 }
 

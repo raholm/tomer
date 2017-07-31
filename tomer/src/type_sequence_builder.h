@@ -1,0 +1,33 @@
+#ifndef TYPE_SEQUENCE_BUILDER_H
+#define TYPE_SEQUENCE_BUILDER_H
+
+#include "def.h"
+#include "type_sequence_container.h"
+
+class TypeSequenceBuilder {
+public:
+  TypeSequenceBuilder();
+
+  ~TypeSequenceBuilder() = default;
+
+  void add(const Corpus& corpus);
+  void add(const Document& document);
+
+  const TypeSequenceContainer& get_data() const;
+
+private:
+  Type next_type_;
+  TypeSequenceContainer container_;
+  AlphabetPtr alphabet_;
+
+  TypeVector create_type_vector_and_update_alphabet(const Document& document);
+
+  TypeSequenceBuilder(const TypeSequenceBuilder& other) = delete;
+  TypeSequenceBuilder(TypeSequenceBuilder&& other) = delete;
+
+  TypeSequenceBuilder& operator=(const TypeSequenceBuilder& rhs) = delete;
+  TypeSequenceBuilder& operator=(TypeSequenceBuilder&& rhs) = delete;
+
+};
+
+#endif // TYPE_SEQUENCE_BUILDER_H
