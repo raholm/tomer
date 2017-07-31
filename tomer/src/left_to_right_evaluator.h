@@ -17,7 +17,9 @@ public:
 
   ~LeftToRightEvaluator() = default;
 
-  double evaluate(const CorpusTypeSequence& types, uint n_particles, bool resampling) const;
+  double evaluate(const CorpusTypeSequence& types,
+                  uint n_particles,
+                  bool resampling) const;
 
 private:
   uint n_topics_;
@@ -55,22 +57,23 @@ private:
 
   };
 
-  DoubleVector get_word_probabilities(const DocumentTypeSequence& types, bool resampling) const;
+  DoubleVector get_word_probabilities(const DocumentTypeSequence& types,
+                                      bool resampling) const;
 
-  void add_topic_and_update_state_and_coefficients(LocalState& state, uint topic,
+  void add_topic_and_update_state_and_coefficients(LocalState& state,
+                                                   uint topic,
                                                    uint position) const;
-  void remove_topic_and_update_state_coefficients(LocalState& state, uint topic) const;
+  void remove_topic_and_update_state_coefficients(LocalState& state,
+                                                  uint topic) const;
   void add_or_remove_topic_and_update_state_coefficients(LocalState& state,
-                                                         uint topic, bool incr) const;
-
+                                                         uint topic,
+                                                         bool incr) const;
   void maintain_dense_index_addition(LocalState& state, uint topic) const;
-
   void maintain_dense_index_elimination(LocalState& state, uint topic) const;
 
   void update_topic_scores(LocalState& state) const;
 
   int sample_new_topic(LocalState& state) const;
-
   double sample_from_uniform() const;
 };
 

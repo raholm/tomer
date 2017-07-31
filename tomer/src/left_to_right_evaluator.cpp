@@ -13,19 +13,21 @@ LeftToRightEvaluator(uint n_topics, double beta, double beta_sum,
 
 }
 
-double LeftToRightEvaluator::evaluate(const CorpusTypeSequence& types, uint n_particles, bool resampling) const {
+double LeftToRightEvaluator::evaluate(const CorpusTypeSequence& types,
+                                      uint n_particles,
+                                      bool resampling) const {
   DoubleMatrix particle_probabilities{n_particles};
 
   double total_log_likelihood = 0;
-  double log_n_particles = log(n_particles)
+  double log_n_particles = log(n_particles);
   double doc_log_likelihood, log_prob, sum;
   uint max_len = 0;
 
-  for (auto const& doc_ts : types.get_sequences()) {
+  for (unsigned i = 0; i < types.size(); ++i) {
     doc_log_likelihood = 0;
 
     for (unsigned particle = 0; particle < n_particles; ++particle) {
-      particle_probabilities.at(particle) = get_word_probabilities(doc_ts, resampling);
+      particle_probabilities.at(particle) = get_word_probabilities(types.at(i), resampling);
       max_len = std::max(max_len,  particle_probabilities.at(particle));
     }
 
@@ -51,9 +53,9 @@ double LeftToRightEvaluator::evaluate(const CorpusTypeSequence& types, uint n_pa
 }
 
 DoubleVector LeftToRightEvaluator::get_word_probabilities(const DocumentTypeSequence& types,
-                                                  bool resampling) const {
+                                                          bool resampling) const {
 
-  int doc_length = types.size();
+  uint doc_length = types.length();
   int type, old_topic, new_topic, topic;
 
   DoubleVector word_probabilities{doc_length}
@@ -90,7 +92,7 @@ DoubleVector LeftToRightEvaluator::get_word_probabilities(const DocumentTypeSequ
       // Iterate up to the current limit
       for (unsigned position = 0; position < limit; ++position) {
 
-        type = types.at(position)
+        type = types.at(position);
 
         // Check for out-of-vocabulary words
         if (type >= type_topic_counts_.size()) continue;
@@ -107,15 +109,14 @@ DoubleVector LeftToRightEvaluator::get_word_probabilities(const DocumentTypeSequ
 
         add_topic_and_update_state_and_coefficients(state, new_topic, position);
       }
-
     }
 
     // We've just resampled all tokens UP TO the current limit,
     //  now sample the token AT the current limit.
     type = types.at(limit)
 
-    // Check for out-of-vocabulary words
-    if (type >= type_topic_counts_.size()) continue;
+      // Check for out-of-vocabulary words
+      if (type >= type_topic_counts_.size()) continue;
 
     state.type_topic_counts = type_topic_counts_.at(type);
 
@@ -133,8 +134,8 @@ DoubleVector LeftToRightEvaluator::get_word_probabilities(const DocumentTypeSequ
 
   //	Clean up our mess: reset the coefficients to values with only
   //	smoothing. The next doc will update its own non-zero topics...
-  for (state.dense_index = 0; state.dense_index < state.non_zero_topics; state.dense_index++) {
-    topic = state.topic_indices.at(state.dense_index);
+  for (unsigned i = 0; i < state.non_zero_topics; ++i) {
+    topic = state.topic_indices.at(i);
     cached_coefficients_.at(topic) = alpha_.at(topic) / (tokens_per_topic_.at(topic) + beta_sum_);
   }
 
@@ -154,7 +155,7 @@ void LeftToRightEvaluator::remove_topic_and_update_state(LocalState& state, uint
 }
 
 void LeftToRightEvaluator::add_or_remove_topic_and_update_state_coefficients(LocalState& state,
-                                                       uint topic, bool incr) const {
+                                                                             uint topic, bool incr) const {
   double denom = (tokens_per_topic_.at(topic) + beta_sum_);
 
   // Remove this token from all counts.
