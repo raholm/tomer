@@ -3,12 +3,13 @@
 #' @description This is an algorithm for approximating p(w | ...) blabla
 #'
 #' @export
-evaluate_left_to_right <- function(corpus, state, n_topics, beta, alpha, n_particles) {
+evaluate_left_to_right <- function(corpus, state, n_topics, alpha, beta, n_particles, resampling) {
     checkr::assert_tidy_table(state, c("type", "token", "topic"))
     checkr::assert_tidy_table(corpus, c("id", "text"))
     checkr::assert_integer(n_topics, len=1, lower=1)
     checkr::assert_numeric(beta, len=1, lower=0)
     checkr::assert_numeric(alpha, len=n_topics, lower=0)
+    checkr::assert_logical(resampling, len=1)
 
     n_docs <- nrow(corpus)
 
@@ -37,7 +38,14 @@ evaluate_left_to_right <- function(corpus, state, n_topics, beta, alpha, n_parti
         dplyr::mutate(type=as.numeric(type) - 1,
                       topic=as.numeric(topic) - 1)
 
-    evaluate_left_to_right_cpp(tokens, n_docs, alphabet, topic_counts,
-                               type_topic_counts, n_topics, beta, alpha,
-                               n_particles);
+    evaluate_left_to_right_cpp(tokens,
+                               n_docs,
+                               alphabet,
+                               n_topics,
+                               topic_counts,
+                               type_topic_counts,
+                               alpha,
+                               beta,
+                               n_particles,
+                               resampling);
 }
