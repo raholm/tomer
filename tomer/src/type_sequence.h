@@ -1,15 +1,19 @@
 #ifndef TYPE_SEQUENCE_H
 #define TYPE_SEQUENCE_H
 
-#include "def.h"
+#include <vector>
 
-class TypeSequenceContainer;
+#include "alphabet.h"
+
 class TypeSequenceBuilder;
 
 class TypeSequence {
 public:
-  TypeSequence() = default;
-  TypeSequence(const Document& tokens);
+  using Type = Alphabet::Type;
+  using TypeVector = std::vector<Type>;
+  using Token = Alphabet::Token;
+  using AlphabetPtr = Alphabet::SPtr;
+  using size_type = TypeVector::size_type;
 
   TypeSequence(const TypeSequence& other) = default;
   TypeSequence(TypeSequence&& other) = default;
@@ -19,24 +23,20 @@ public:
   TypeSequence& operator=(const TypeSequence& rhs) = default;
   TypeSequence& operator=(TypeSequence&& rhs) = default;
 
-  const Type& at(std::size_t position) const;
-  const Token& token_at(std::size_t position) const;
+  const Type& at(size_type position) const;
+  const Token& token_at(size_type position) const;
 
-  uint size() const;
-  uint length() const;
+  size_type size() const;
+  size_type length() const;
 
 private:
   TypeVector types_;
   AlphabetPtr alphabet_;
 
-  TypeSequence(const Document& tokens, AlphabetPtr alphabet);
+  TypeSequence(const TypeVector& types, AlphabetPtr alphabet);
   TypeSequence(TypeVector&& types, AlphabetPtr alphabet);
 
-  void create_types_and_update_alphabet(const Document& tokens);
-  Type get_next_type() const;
-
   friend class TypeSequenceBuilder;
-  friend class TypeSequenceContainer;
 
 };
 

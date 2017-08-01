@@ -3,35 +3,34 @@
 
 #include "type_sequence.h"
 
+class TypeSequenceBuilder;
+
 class TypeSequenceContainer {
 public:
-  TypeSequenceContainer();
-  TypeSequenceContainer(const Corpus& tokens);
+  using TypeSequences = std::vector<TypeSequence>;
+  using size_type = TypeSequences::size_type;
 
   TypeSequenceContainer(const TypeSequenceContainer& other) = default;
+  TypeSequenceContainer(TypeSequenceContainer&& other) = default;
 
   ~TypeSequenceContainer() = default;
 
   TypeSequenceContainer& operator=(const TypeSequenceContainer& rhs) = default;
+  TypeSequenceContainer& operator=(TypeSequenceContainer&& rhs) = default;
 
-  void add(const Corpus& tokens);
-  void add(const Document& tokens);
-  void add(const TypeSequence& ts);
+  const TypeSequence& at(size_type position) const;
 
-  const TypeSequence& at(std::size_t position) const;
-
-  std::size_t size() const;
+  size_type size() const;
 
 private:
-  std::vector<TypeSequence> types_;
-  AlphabetPtr alphabet_;
+  TypeSequences types_;
 
-  void create_types_and_update_alphabet(const Document& tokens);
-  Type get_next_type() const;
+  TypeSequenceContainer() = default;
 
-  TypeSequenceContainer(TypeSequenceContainer&& other) = delete;
+  void add(const TypeSequence& ts);
+  void add(TypeSequence&& ts);
 
-  TypeSequenceContainer& operator=(TypeSequenceContainer&& rhs) = delete;
+  friend class TypeSequenceBuilder;
 
 };
 

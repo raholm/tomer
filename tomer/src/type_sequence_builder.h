@@ -2,11 +2,18 @@
 #define TYPE_SEQUENCE_BUILDER_H
 
 #include "def.h"
+#include "alphabet.h"
 #include "type_sequence_container.h"
 
 class TypeSequenceBuilder {
 public:
+  using Type = Alphabet::Type;
+  using TypeVector = std::vector<Type>;
+  using AlphabetPtr = Alphabet::SPtr;
+
   TypeSequenceBuilder();
+  TypeSequenceBuilder(const Alphabet& alphabet, bool fixed);
+  TypeSequenceBuilder(Alphabet&& alphabet, bool fixed);
 
   ~TypeSequenceBuilder() = default;
 
@@ -16,10 +23,11 @@ public:
   const TypeSequenceContainer& get_data() const;
 
 private:
-  Type next_type_;
   TypeSequenceContainer container_;
   AlphabetPtr alphabet_;
+  bool fixed_;
 
+  TypeVector create_type_vector(const Document& document);
   TypeVector create_type_vector_and_update_alphabet(const Document& document);
 
   TypeSequenceBuilder(const TypeSequenceBuilder& other) = delete;

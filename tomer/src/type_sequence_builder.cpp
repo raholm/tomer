@@ -3,7 +3,19 @@
 #include "type_sequence.h"
 
 TypeSequenceBuilder::TypeSequenceBuilder()
-  : next_type_{0}, container_{}, alphabet_{new Alphabet()}
+  : container_{}, alphabet_{std::make_shared<Alphabet>(Alphabet())}, fixed_{false}
+{
+
+}
+
+TypeSequenceBuilder::TypeSequenceBuilder(const Alphabet& alphabet, bool fixed)
+  : container_{}, alphabet_{std::make_shared<Alphabet>(Alphabet{alphabet})}, fixed_{fixed}
+{
+
+}
+
+TypeSequenceBuilder::TypeSequenceBuilder(Alphabet&& alphabet, bool fixed)
+  : container_{}, alphabet_{std::make_shared<Alphabet>(Alphabet{std::move(alphabet)})}, fixed_{fixed}
 {
 
 }
@@ -13,7 +25,13 @@ void TypeSequenceBuilder::add(const Corpus& corpus) {
 }
 
 void TypeSequenceBuilder::add(const Document& document) {
-  auto types = create_type_vector_and_update_alphabet(document);
+  TypeSequenceBuilder::TypeVector types;
+
+  if (fixed_)
+    types = create_type_vector(document);
+  else
+    types = create_type_vector_and_update_alphabet(document);
+
   TypeSequence ts{std::move(types), alphabet_};
   container_.add(ts);
 }
@@ -22,14 +40,29 @@ const TypeSequenceContainer& TypeSequenceBuilder::get_data() const {
   return container_;
 }
 
-TypeVector TypeSequenceBuilder::create_type_vector_and_update_alphabet(const Document& document) {
-  TypeVector types(document.size());
+TypeSequenceBuilder::TypeVector
+TypeSequenceBuilder::create_type_vector(const Document& document) {
+  TypeSequenceBuilder::TypeVector types(document.size());
+  TypeSequenceBuilder::Type type;
 
   for (auto const& token : document) {
-    auto p = alphabet_->insert(std::pair<Token, Type>(token, next_type_));
-    types.push_back(p.first->second);
+    if (alphabet_->has(token)) {
+      type = alphabet_->at(token);
+      types.push_back(type);
+    }
+  }
 
-    if (p.second) ++next_type_;
+  return types;
+}
+
+TypeSequenceBuilder::TypeVector
+TypeSequenceBuilder::create_type_vector_and_update_alphabet(const Document& document) {
+  TypeSequenceBuilder::TypeVector types(document.size());
+  TypeSequenceBuilder::Type type;
+
+  for (auto const& token : document) {
+    type = alphabet_->add(token);
+    types.push_back(type);
   }
 
   return types;
