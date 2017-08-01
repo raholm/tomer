@@ -19,7 +19,6 @@ Corpus create_corpus_from_R(const Rcpp::DataFrame& corpus,
   std::size_t previous_id = current_id;
   current_doc.push_back(doc_token.at(0));
 
-
   for (unsigned i = 1; i < doc_id.size(); ++i) {
     current_id = doc_id.at(i);
 
@@ -117,8 +116,6 @@ double evaluate_left_to_right_cpp(const Rcpp::DataFrame& corpus,
   builder.add(_corpus);
 
   TypeSequenceContainer type_sequences = builder.get_data();
-
-
 
   IntVector _topic_counts = create_topic_counts_from_R(topic_counts, n_topics);
   IntMatrix _type_topic_counts = create_type_topic_counts_from_R(type_topic_counts,
