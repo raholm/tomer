@@ -2,6 +2,7 @@
 #define LEFT_TO_RIGHT_EVALUATOR_H
 
 #include <vector>
+#include <random>
 
 #include "def.h"
 #include "type_sequence.h"
@@ -11,31 +12,18 @@ using DocumentTypeSequence = TypeSequence;
 using CorpusTypeSequence = TypeSequenceContainer;
 
 class LeftToRightEvaluator {
-public:
-  LeftToRightEvaluator(std::size_t n_topics,
-                       const DoubleVector& alpha,
-                       double beta,
-                       const IntVector& tokens_per_topic,
-                       const IntMatrix& type_topic_counts);
-
-  ~LeftToRightEvaluator() = default;
-
-  double evaluate(const CorpusTypeSequence& types,
-                  std::size_t n_particles,
-                  bool resampling);
-
 private:
-  std::size_t n_topics_;
-  double beta_;
-  double beta_sum_;
-  DoubleVector alpha_;
-  double alpha_sum_;
+  struct UniformSampler {
+    std::random_device dev_;
+    std::mt19937 gen_;
+    std::uniform_real_distribution<double> dist_;
 
-  double smoothing_only_mass_;
+    UniformSampler()
+      : dev_{}, gen_{dev_()}, dist_{0.0, 1.0}
+    {}
 
-  IntVector tokens_per_topic_;
-  IntMatrix type_topic_counts_;
-  DoubleVector cached_coefficients_;
+    double next() { return dist_(gen_); }
+  };
 
   struct LocalState {
     std::size_t dense_index;
@@ -54,8 +42,35 @@ private:
     DoubleVector topic_term_scores;
     IntVector topic_term_indices;
     IntVector topic_term_values;
-
   };
+
+public:
+  LeftToRightEvaluator(std::size_t n_topics,
+                       const DoubleVector& alpha,
+                       double beta,
+                       const IntVector& topic_counts,
+                       const IntMatrix& type_topic_counts);
+
+  ~LeftToRightEvaluator() = default;
+
+  double evaluate(const CorpusTypeSequence& types,
+                  std::size_t n_particles,
+                  bool resampling);
+
+private:
+  std::size_t n_topics_;
+  double beta_;
+  double beta_sum_;
+  DoubleVector alpha_;
+  double alpha_sum_;
+
+  double smoothing_only_mass_;
+
+  IntVector topic_counts_;
+  IntMatrix type_topic_counts_;
+  DoubleVector cached_coefficients_;
+
+  UniformSampler sampler_;
 
   DoubleVector get_word_probabilities(const DocumentTypeSequence& types,
                                       bool resampling);
@@ -73,8 +88,7 @@ private:
 
   void update_topic_scores(LocalState& state) const;
 
-  int sample_new_topic(LocalState& state) const;
-  double sample_from_uniform() const;
+  int sample_new_topic(LocalState& state);
 
 };
 
