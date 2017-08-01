@@ -12,18 +12,13 @@ using Type = std::size_t;
 using Document = std::vector<Token>;
 using Corpus = std::vector<Document>;
 
-using TypeVector = std::vector<Type>;
-using TypeMatrix = std::vector<TypeVector>;
-
-using Alphabet = std::map<Token, Type, std::less<Token>>;
-using AlphabetPtr = std::shared_ptr<Alphabet>;
-
-// using uint = std::size_t;
-
-using UIntVector = std::vector<uint>;
+using IntVector = std::vector<uint>;
 using DoubleVector = std::vector<double>;
+using StringVector = Document;
+using TypeVector = std::vector<Type>;
 
-using UIntMatrix = std::vector<UIntVector>;
+using IntMatrix = std::vector<IntVector>;
 using DoubleMatrix = std::vector<DoubleVector>;
+using TypeMatrix = std::vector<TypeVector>;
 
 #endif // DEF_H
