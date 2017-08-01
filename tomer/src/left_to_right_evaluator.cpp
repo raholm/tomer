@@ -72,12 +72,9 @@ DoubleVector LeftToRightEvaluator::get_word_probabilities(const DocumentTypeSequ
 
   uint doc_length = types.length();
   int type, old_topic, new_topic, topic;
+  uint tokens_so_far = 0;
 
   DoubleVector word_probabilities(doc_length);
-
-  // Keep track of the number of tokens we've examined, not
-  // including out-of-vocabulary words
-  uint tokens_so_far = 0;
 
   LocalState state;
 
@@ -85,31 +82,19 @@ DoubleVector LeftToRightEvaluator::get_word_probabilities(const DocumentTypeSequ
   state.topic_counts = IntVector(n_topics_);
   state.topic_index = IntVector(n_topics_);
 
-  // Build an array that densely lists the topics that
-  // have non-zero counts.
   state.dense_index = 0;
+  state.non_zero_topics = 0;
 
-  // Record the total number of non-zero topics
-  state.non_zero_topics = state.dense_index;
-
-  // Initialize the topic count/beta sampling bucket
   state.topic_beta_mass = 0.0;
   state.topic_term_mass = 0.0;
 
   state.topic_term_scores = DoubleVector(n_topics_);
 
-  // All counts are now zero, we are starting completely fresh.
-  // Iterate over the positions (words) in the document
   for (unsigned limit = 0; limit < doc_length; ++limit) {
-    // Record the marginal probability of the token
-    //  at the current limit, summed over all topics.
     if (resampling) {
-      // Iterate up to the current limit
       for (unsigned position = 0; position < limit; ++position) {
-
         type = types.at(position);
 
-        // Check for out-of-vocabulary words
         if (type < 0 || type >= type_topic_counts_.size()) continue;
 
         state.type = type;
@@ -130,11 +115,8 @@ DoubleVector LeftToRightEvaluator::get_word_probabilities(const DocumentTypeSequ
       }
     }
 
-    // We've just resampled all tokens UP TO the current limit,
-    // now sample the token AT the current limit.
     type = types.at(limit);
 
-    // Check for out-of-vocabulary words
     if (type < 0 || type >= type_topic_counts_.size()) continue;
 
     state.type = type;
@@ -156,8 +138,6 @@ DoubleVector LeftToRightEvaluator::get_word_probabilities(const DocumentTypeSequ
     ++tokens_so_far;
   }
 
-  //	Clean up our mess: reset the coefficients to values with only
-  //	smoothing. The next doc will update its own non-zero topics...
   for (unsigned i = 0; i < state.non_zero_topics; ++i) {
     topic = state.topic_index.at(i);
     cached_coefficients_.at(topic) = alpha_.at(topic) / (topic_counts_.at(topic) + beta_sum_);
@@ -169,9 +149,7 @@ DoubleVector LeftToRightEvaluator::get_word_probabilities(const DocumentTypeSequ
 void LeftToRightEvaluator::add_topic_and_update_state_and_coefficients(LocalState& state,
                                                                        uint topic,
                                                                        uint position) {
-  // Put that new topic into the counts
   state.doc_topics.at(position) = topic;
-
   add_or_remove_topic_and_update_state_and_coefficients(state, topic, true);
 }
 
@@ -185,21 +163,13 @@ void LeftToRightEvaluator::add_or_remove_topic_and_update_state_and_coefficients
                                                                                  bool incr) {
   double denom = (topic_counts_.at(topic) + beta_sum_);
 
-  // Remove this token from all counts.
-  // Remove this topic's contribution to the
-  // normalizing constants.
-  // Note that we are using clamped estimates of P(w|t),
-  // so we are NOT changing smoothingOnlyMass.
   state.topic_beta_mass -= beta_ * state.topic_counts.at(topic) / denom;
 
   if (incr) ++state.topic_counts.at(topic);
   else --state.topic_counts.at(topic);
 
-  // Add the old topic's contribution back into the
-  // normalizing constants.
   state.topic_beta_mass += beta_ * state.topic_counts.at(topic) / denom;
 
-  // Reset the cached coefficient for this topic
   cached_coefficients_.at(topic) = (alpha_.at(topic) + state.topic_counts.at(topic)) / denom;
 
   if (incr) maintain_dense_index_addition(state, topic);
@@ -208,14 +178,7 @@ void LeftToRightEvaluator::add_or_remove_topic_and_update_state_and_coefficients
 
 
 void LeftToRightEvaluator::maintain_dense_index_addition(LocalState& state, uint topic) const {
-  // If this is a new topic for this document,
-  //  add the topic to the dense index.
   if (state.topic_counts.at(topic) == 1) {
-    // First find the point where we
-    // should insert the new topic by going to
-    // the end (which is the only reason we're keeping
-    // track of the number of non-zero
-    // topics) and working backwards
     state.dense_index = state.non_zero_topics;
 
     while (state.dense_index > 0 && state.topic_index.at(state.dense_index - 1) > topic) {
@@ -229,19 +192,12 @@ void LeftToRightEvaluator::maintain_dense_index_addition(LocalState& state, uint
 }
 
 void LeftToRightEvaluator::maintain_dense_index_elimination(LocalState& state, uint topic) const {
-  // Maintain the dense index, if we are deleting
-  // the old topic
   if (state.topic_counts.at(topic) == 0) {
-    // First get to the dense location associated with
-    // the old topic.
     state.dense_index = 0;
 
-    // We know it's in there somewhere, so we don't
-    // need bounds checking.
     while (state.topic_index.at(state.dense_index) != topic)
       state.dense_index++;
 
-    // shift all remaining dense indices to the left.
     while (state.dense_index < state.non_zero_topics) {
       if (state.dense_index < state.topic_index.size() - 1) {
         state.topic_index.at(state.dense_index) = state.topic_index.at(state.dense_index + 1);
@@ -255,8 +211,6 @@ void LeftToRightEvaluator::maintain_dense_index_elimination(LocalState& state, u
 }
 
 void LeftToRightEvaluator::update_topic_scores(LocalState& state) const {
-  // Now go over the type/topic counts, calculating the score
-  // for each topic.
   int index = 0;
   int current_topic, current_value;
   double score;
@@ -278,14 +232,11 @@ void LeftToRightEvaluator::update_topic_scores(LocalState& state) const {
 }
 
 int LeftToRightEvaluator::sample_new_topic(LocalState& state) {
-  // Is this sampling from multinomial?
-
   double sample = sampler_.next() * (smoothing_only_mass_ +
                                      state.topic_beta_mass +
                                      state.topic_term_mass);
   double orig_sample = sample;
 
-  // Make sure it actually gets set
   int topic, new_topic = -1;
 
   if (sample < state.topic_term_mass) {
