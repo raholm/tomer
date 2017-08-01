@@ -1,59 +1,59 @@
 #ifndef LEFT_TO_RIGHT_EVALUATOR_H
 #define LEFT_TO_RIGHT_EVALUATOR_H
 
+#include <vector>
+
 #include "def.h"
 #include "type_sequence.h"
 #include "type_sequence_container.h"
 
-using CorpusTypeSequence = TypeSequenceContainer;
 using DocumentTypeSequence = TypeSequence;
+using CorpusTypeSequence = TypeSequenceContainer;
 
 class LeftToRightEvaluator {
 public:
-  LeftToRightEvaluator(uint n_topics, double beta, double beta_sum,
-                       const DoubleVector& alpha, double alpha_sum,
-                       const UIntVector& tokens_per_topic,
-                       const UIntMatrix& type_topic_counts);
+  LeftToRightEvaluator(std::size_t n_topics,
+                       const DoubleVector& alpha,
+                       double beta,
+                       const IntVector& tokens_per_topic,
+                       const IntMatrix& type_topic_counts);
 
   ~LeftToRightEvaluator() = default;
 
   double evaluate(const CorpusTypeSequence& types,
-                  uint n_particles,
+                  std::size_t n_particles,
                   bool resampling);
 
 private:
-  uint n_topics_;
+  std::size_t n_topics_;
   double beta_;
   double beta_sum_;
   DoubleVector alpha_;
   double alpha_sum_;
+
   double smoothing_only_mass_;
 
-  uint topic_mask_;
-  uint topic_bits_;
-
-  UIntVector tokens_per_topic_;
+  IntVector tokens_per_topic_;
+  IntMatrix type_topic_counts_;
   DoubleVector cached_coefficients_;
 
-  UIntMatrix type_topic_counts_;
-
   struct LocalState {
-    int dense_index;
-    int non_zero_topics;
+    std::size_t dense_index;
+    std::size_t non_zero_topics;
 
     double topic_beta_mass;
     double topic_term_mass;
 
-    UIntVector doc_topics;
+    IntVector doc_topics;
+    IntVector topic_counts;
+    IntVector topic_index;
 
-    UIntVector topic_counts;
-    UIntVector topic_index;
-
-    UIntVector type_topic_counts;
+    std::size_t type;
+    IntVector type_topic_counts;
 
     DoubleVector topic_term_scores;
-    UIntVector topic_term_indices;
-    UIntVector topic_term_values;
+    IntVector topic_term_indices;
+    IntVector topic_term_values;
 
   };
 
