@@ -1,11 +1,13 @@
 #include <Rcpp.h>
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "def.h"
 #include "alphabet.h"
 #include "type_sequence_builder.h"
 #include "left_to_right_evaluator.h"
+#include "left_to_right_evaluator_mod.h"
 
 Corpus create_corpus_from_R(const Rcpp::DataFrame& corpus,
                             std::size_t n_docs) {
@@ -123,6 +125,9 @@ double evaluate_left_to_right_cpp(const Rcpp::DataFrame& corpus,
                                                                  n_topics);
   DoubleVector _alpha = Rcpp::as<DoubleVector>(alpha);
 
-  LeftToRightEvaluator evaluator{n_topics, _alpha, beta, _topic_counts, _type_topic_counts};
+  // LeftToRightEvaluator evaluator{n_topics, _alpha, beta, _topic_counts, _type_topic_counts};
+  std::unique_ptr<TopicSampler> sampler = std::unique_ptr<TopicSampler>(new SparseLDATopicSampler());
+  LeftToRightEvaluatorMod evaluator{n_topics, _alpha, beta,
+      _topic_counts, _type_topic_counts, std::move(sampler)};
   return evaluator.evaluate(type_sequences, n_particles, resampling);
 }

@@ -71,7 +71,7 @@ DoubleVector LeftToRightEvaluatorMod::get_word_probabilities(const DocumentTypeS
   state_.n_tokens_seen = 0;
   state_.doc_position = 0;
 
-  // sampler_->begin(state_);
+  sampler_->begin(state_);
 
   for (unsigned limit = 0; limit < doc_length; ++limit) {
     if (resampling) {
@@ -105,14 +105,14 @@ DoubleVector LeftToRightEvaluatorMod::get_word_probabilities(const DocumentTypeS
 
     word_probs.at(limit) = sampler_->get_word_prob(state_);
 
-    // new_topic = sampler_->sample_topic(state_);
+    new_topic = sampler_->sample_topic(state_);
 
-    // update_addition(current_type, new_topic, limit);
+    update_addition(current_type, new_topic, limit);
 
-    // state_.n_tokens_seen++;
+    state_.n_tokens_seen++;
   }
 
-  // sampler_->end(state_);
+  sampler_->end(state_);
 
   return word_probs;
 }

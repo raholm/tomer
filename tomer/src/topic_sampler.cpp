@@ -223,7 +223,7 @@ void SparseLDATopicSampler::update_topic_scores(const LeftToRightState& state) {
     current_topic = index;
     current_value = state.current_type_topic_counts.at(current_topic);
 
-    // score = cached_coefficients_.at(current_topic) * current_value;
+    score = cached_coefficients_.at(current_topic) * current_value;
 
     topic_term_mass_ += score;
     topic_term_scores_.at(current_topic) = score;
