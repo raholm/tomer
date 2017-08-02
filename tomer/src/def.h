@@ -8,6 +8,7 @@
 
 using Token = std::string;
 using Type = std::size_t;
+using Topic = std::size_t;
 
 using Document = std::vector<Token>;
 using Corpus = std::vector<Document>;
