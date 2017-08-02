@@ -32,6 +32,8 @@ Corpus create_corpus_from_R(const Rcpp::DataFrame& corpus,
     previous_id = current_id;
   }
 
+  c.push_back(current_doc);
+
   return c;
 }
 
