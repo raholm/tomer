@@ -49,7 +49,6 @@ Alphabet create_alphabet_from_R(const Rcpp::DataFrame& alphabet) {
   for (unsigned i = 0; i < types.size(); ++i) {
     type = types.at(i);
     token = tokens.at(i);
-
     a.insert(std::make_pair(token, type));
   }
 
@@ -92,7 +91,6 @@ IntMatrix create_type_topic_counts_from_R(const Rcpp::DataFrame& type_topic_coun
     type = types.at(i);
     topic = topics.at(i);
     count = counts.at(i);
-
     ttc.at(type).at(topic) = count;
   }
 
