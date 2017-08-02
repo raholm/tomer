@@ -1,5 +1,6 @@
 #include "topic_sampler.h"
 
+#include <iostream>
 #include <algorithm>
 
 LDATopicSampler::LDATopicSampler()
@@ -24,7 +25,7 @@ void LDATopicSampler::update_elimination(const LeftToRightState& state) {
 
 }
 
-double LDATopicSampler::get_word_prob(const LeftToRightState& state) const {
+double LDATopicSampler::get_word_prob(const LeftToRightState& state) {
   Topic current_topic = state.topic;
 
   // Is this supposed to be the local or global counts?
@@ -45,13 +46,13 @@ double LDATopicSampler::get_word_prob(const LeftToRightState& state) const {
   return prob_word_given_topic * prob_topic_given_topics;
 }
 
-Topic LDATopicSampler::sample_topic(const LeftToRightState& state) const {
+Topic LDATopicSampler::sample_topic(const LeftToRightState& state) {
   auto probs = get_topic_probabilities(state);
   dist_ = std::discrete_distribution<Topic>{probs.begin(), probs.end()};
-  return dist_(gen_);
+  return dist_(gen_);;
 }
 
-DoubleVector LDATopicSampler::get_topic_probabilities(const LeftToRightState& state) const {
+DoubleVector LDATopicSampler::get_topic_probabilities(const LeftToRightState& state) {
   DoubleVector probs(state.n_topics);
   double left_numerator, left_denominator;
   double left_factor, right_factor;
@@ -76,8 +77,18 @@ DoubleVector LDATopicSampler::get_topic_probabilities(const LeftToRightState& st
 }
 
 SparseLDATopicSampler::SparseLDATopicSampler() :
-  rand_dev_{}, gen_{rand_dev_()}, dist_(0, 1),
-  has_init_{false}
+  rand_dev_{},
+  gen_{rand_dev_()},
+  dist_(0, 1),
+  has_init_{false},
+  smoothing_only_mass_{},
+  cached_coefficients_{},
+  topic_term_scores_{},
+  topic_beta_mass_{},
+  topic_term_mass_{},
+  topic_index_{},
+  dense_index_{},
+  non_zero_topics_{}
 {}
 
 
@@ -86,14 +97,23 @@ void SparseLDATopicSampler::begin(const LeftToRightState& state) {
 
   cached_coefficients_ = DoubleVector(state.n_topics);
   smoothing_only_mass_ = 0;
+
   dense_index_ = 0;
   non_zero_topics_ = 0;
+
+  topic_beta_mass_ = 0;
+  topic_term_mass_ = 0;
+
+  topic_index_ = IntVector(state.n_topics);
+  topic_term_scores_ = DoubleVector(state.n_topics);
 
   for (unsigned topic = 0; topic < state.n_topics; ++topic) {
     double denom = (state.topic_counts.at(topic) + state.beta_sum);
     smoothing_only_mass_ += state.alpha.at(topic) * state.beta / denom;
     cached_coefficients_.at(topic) = state.alpha.at(topic) / denom;
   }
+
+  has_init_ = true;
 }
 
 void SparseLDATopicSampler::end(const LeftToRightState& state) {
@@ -103,6 +123,17 @@ void SparseLDATopicSampler::end(const LeftToRightState& state) {
     topic = topic_index_.at(i);
     cached_coefficients_.at(topic) = state.alpha.at(topic) /
       (state.topic_counts.at(topic) + state.beta_sum);
+  }
+
+  dense_index_ = 0;
+  non_zero_topics_ = 0;
+
+  topic_beta_mass_ = 0;
+  topic_term_mass_ = 0;
+
+  for (unsigned i = 0; i < state.n_topics; ++i) {
+    topic_term_scores_.at(i) = 0;
+    topic_index_.at(i) = 0;
   }
 }
 
@@ -115,7 +146,7 @@ void SparseLDATopicSampler::update_elimination(const LeftToRightState& state) {
 }
 
 void SparseLDATopicSampler::update(const LeftToRightState& state,
-                                    bool incr) {
+                                   bool incr) {
   Topic topic = state.topic;
   double denom = (state.topic_counts.at(topic) + state.beta_sum);
 
@@ -132,12 +163,12 @@ void SparseLDATopicSampler::update(const LeftToRightState& state,
   cached_coefficients_.at(topic) =
     (state.alpha.at(topic) + state.local_topic_counts.at(topic)) / denom;
 
-  if (incr) maintain_dense_index__addition(state);
-  else maintain_dense_index__elimination(state);
+  if (incr) maintain_dense_index_addition(state);
+  else maintain_dense_index_elimination(state);
 }
 
 
-void SparseLDATopicSampler::maintain_dense_index__addition(const LeftToRightState& state) {
+void SparseLDATopicSampler::maintain_dense_index_addition(const LeftToRightState& state) {
   Topic topic = state.topic;
 
   if (state.local_topic_counts.at(topic) == 1) {
@@ -145,7 +176,7 @@ void SparseLDATopicSampler::maintain_dense_index__addition(const LeftToRightStat
 
     while (dense_index_ > 0 && topic_index_.at(dense_index_ - 1) > topic) {
       topic_index_.at(dense_index_) = topic_index_.at(dense_index_ - 1);
-      dense_index_++;
+      dense_index_--;
     }
 
     topic_index_.at(dense_index_) = topic;
@@ -153,7 +184,7 @@ void SparseLDATopicSampler::maintain_dense_index__addition(const LeftToRightStat
   }
 }
 
-void SparseLDATopicSampler::maintain_dense_index__elimination(const LeftToRightState& state) {
+void SparseLDATopicSampler::maintain_dense_index_elimination(const LeftToRightState& state) {
   Topic topic = state.topic;
 
   if (state.local_topic_counts.at(topic) == 0) {
@@ -174,14 +205,35 @@ void SparseLDATopicSampler::maintain_dense_index__elimination(const LeftToRightS
   }
 }
 
-double SparseLDATopicSampler::get_word_prob(const LeftToRightState& state) const {
+double SparseLDATopicSampler::get_word_prob(const LeftToRightState& state) {
+  update_topic_scores(state);
   return  (smoothing_only_mass_ + topic_beta_mass_ + topic_term_mass_) /
     (state.alpha_sum + state.n_tokens_seen);
 }
 
-Topic SparseLDATopicSampler::sample_topic(const LeftToRightState& state) const {
-  update_topic_scores(state);
+void SparseLDATopicSampler::update_topic_scores(const LeftToRightState& state) {
+  int index = 0;
+  int current_topic, current_value;
+  double score;
 
+  topic_term_mass_ = 0.0;
+
+  while (index < state.current_type_topic_counts.size() &&
+         state.current_type_topic_counts.at(index) > 0) {
+    current_topic = index;
+    current_value = state.current_type_topic_counts.at(current_topic);
+
+    // score = cached_coefficients_.at(current_topic) * current_value;
+
+    topic_term_mass_ += score;
+    topic_term_scores_.at(current_topic) = score;
+
+    index++;
+  }
+}
+
+Topic SparseLDATopicSampler::sample_topic(const LeftToRightState& state) {
+  update_topic_scores(state);
   double sample = dist_(gen_) * (smoothing_only_mass_ +
                                  topic_beta_mass_ +
                                  topic_term_mass_);
@@ -236,25 +288,4 @@ Topic SparseLDATopicSampler::sample_topic(const LeftToRightState& state) const {
   }
 
   return new_topic;
-}
-
-void SparseLDATopicSampler::update_topic_scores(const LeftToRightState& state) const {
-  int index = 0;
-  int current_topic, current_value;
-  double score;
-
-  topic_term_mass_ = 0.0;
-
-  while (index < state.current_type_topic_counts.size() &&
-         state.current_type_topic_counts.at(index) > 0) {
-    current_topic = index;
-    current_value = state.current_type_topic_counts.at(index);
-
-    score = cached_coefficients_.at(current_topic) * current_value;
-
-    topic_term_mass_ += score;
-    topic_term_scores_.at(index) = score;
-
-    index++;
-  }
 }

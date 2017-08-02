@@ -1,5 +1,7 @@
 #include "left_to_right_evaluator_mod.h"
 
+#include <iostream>
+
 LeftToRightEvaluatorMod::LeftToRightEvaluatorMod(std::size_t n_topics,
                                                  const DoubleVector& alpha,
                                                  double beta,
@@ -42,6 +44,8 @@ double LeftToRightEvaluatorMod::evaluate(const DocumentTypeSequence& types,
     sum = 0;
 
     for (unsigned particle = 0; particle < n_particles; ++particle) {
+      if (position >= particle_probs.at(particle).size()) break;
+
       sum += particle_probs.at(particle).at(position);
     }
 
@@ -61,13 +65,13 @@ DoubleVector LeftToRightEvaluatorMod::get_word_probabilities(const DocumentTypeS
   Type current_type;
   Topic old_topic, new_topic;
 
-  if (doc_length > state_.doc_topics.size())
-    state_.doc_topics = IntVector(doc_length);
+  // if (doc_length > state_.doc_topics.size())
+  state_.doc_topics = IntVector(doc_length);
 
   state_.n_tokens_seen = 0;
   state_.doc_position = 0;
 
-  sampler_->begin(state_);
+  // sampler_->begin(state_);
 
   for (unsigned limit = 0; limit < doc_length; ++limit) {
     if (resampling) {
@@ -77,7 +81,7 @@ DoubleVector LeftToRightEvaluatorMod::get_word_probabilities(const DocumentTypeS
         if (!is_valid(current_type))
           continue;
 
-        old_topic = state_.doc_topics.at(current_type);
+        old_topic = state_.doc_topics.at(position);
 
         update_elimination(current_type, old_topic, position);
 
@@ -92,26 +96,29 @@ DoubleVector LeftToRightEvaluatorMod::get_word_probabilities(const DocumentTypeS
     if (!is_valid(current_type))
       continue;
 
-    old_topic = state_.doc_topics.at(current_type);
+    old_topic = state_.doc_topics.at(limit);
 
-    update_elimination(current_type, old_topic, limit);
+    state_.doc_position = limit;
+    state_.type = current_type;
+    state_.current_type_topic_counts = state_.type_topic_counts.at(current_type);
+    state_.topic = old_topic;
 
     word_probs.at(limit) = sampler_->get_word_prob(state_);
 
-    new_topic = sampler_->sample_topic(state_);
+    // new_topic = sampler_->sample_topic(state_);
 
-    update_addition(current_type, new_topic, limit);
+    // update_addition(current_type, new_topic, limit);
 
-    state_.n_tokens_seen++;
+    // state_.n_tokens_seen++;
   }
 
-  sampler_->end(state_);
+  // sampler_->end(state_);
 
   return word_probs;
 }
 
 bool LeftToRightEvaluatorMod::is_valid(const Type& type) {
-  return type < 0 || type >= state_.n_types;
+  return type > 0 && type < state_.n_types;
 }
 
 void LeftToRightEvaluatorMod::update_elimination(const Type& type,

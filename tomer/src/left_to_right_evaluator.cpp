@@ -8,15 +8,15 @@ LeftToRightEvaluator::LeftToRightEvaluator(std::size_t n_topics,
                                            const DoubleVector& alpha,
                                            double beta,
                                            const IntVector& topic_counts,
-                                           const IntMatrix& type_topic_counts)
-  : n_topics_{n_topics},
-    alpha_{alpha},
-    beta_{beta},
-    topic_counts_{topic_counts},
-    type_topic_counts_{type_topic_counts},
-    cached_coefficients_(n_topics),
-    smoothing_only_mass_{0},
-    sampler_{}
+                                           const IntMatrix& type_topic_counts) :
+  n_topics_{n_topics},
+  alpha_{alpha},
+  beta_{beta},
+  topic_counts_{topic_counts},
+  type_topic_counts_{type_topic_counts},
+  cached_coefficients_(n_topics),
+  smoothing_only_mass_{0},
+  sampler_{}
 {
   alpha_sum_ = std::accumulate(alpha.cbegin(), alpha.cend(), 0.0);
   beta_sum_ = type_topic_counts.size() * beta;
