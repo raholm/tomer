@@ -19,7 +19,7 @@ LeftToRightEvaluator::LeftToRightEvaluator(std::size_t n_topics,
     sampler_{}
 {
   alpha_sum_ = std::accumulate(alpha.cbegin(), alpha.cend(), 0.0);
-  beta_sum_ = n_topics * beta;
+  beta_sum_ = type_topic_counts.size() * beta;
 
   for (unsigned topic = 0; topic < n_topics_; ++topic) {
     double denom = (topic_counts_.at(topic) + beta_sum_);
