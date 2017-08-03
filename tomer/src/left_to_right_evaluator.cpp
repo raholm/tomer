@@ -2,7 +2,6 @@
 
 #include <iostream>
 #include <cmath>
-#include <algorithm>
 
 LeftToRightEvaluator::LeftToRightEvaluator(std::size_t n_topics,
                                            const DoubleVector& alpha,
