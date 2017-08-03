@@ -11,7 +11,9 @@
 
 Corpus create_corpus_from_R(const Rcpp::DataFrame& corpus,
                             std::size_t n_docs) {
-  Corpus c(n_docs);
+  Corpus c;
+  c.reserve(n_docs);
+
   Document current_doc;
 
   IntVector doc_id = Rcpp::as<IntVector>(corpus["id"]);
@@ -100,16 +102,16 @@ IntMatrix create_type_topic_counts_from_R(const Rcpp::DataFrame& type_topic_coun
 }
 
 // [[Rcpp::export]]
-double evaluate_left_to_right_cpp(const Rcpp::DataFrame& corpus,
-                                  std::size_t n_docs,
-                                  const Rcpp::DataFrame& alphabet,
-                                  std::size_t n_topics,
-                                  const Rcpp::DataFrame& topic_counts,
-                                  const Rcpp::DataFrame& type_topic_counts,
-                                  const Rcpp::NumericVector& alpha,
-                                  double beta,
-                                  std::size_t n_particles,
-                                  bool resampling) {
+Rcpp::NumericVector evaluate_left_to_right_cpp(const Rcpp::DataFrame& corpus,
+                                               std::size_t n_docs,
+                                               const Rcpp::DataFrame& alphabet,
+                                               std::size_t n_topics,
+                                               const Rcpp::DataFrame& topic_counts,
+                                               const Rcpp::DataFrame& type_topic_counts,
+                                               const Rcpp::NumericVector& alpha,
+                                               double beta,
+                                               std::size_t n_particles,
+                                               bool resampling) {
   Corpus _corpus = create_corpus_from_R(corpus, n_docs);
   Alphabet _alphabet = create_alphabet_from_R(alphabet);
   std::size_t n_types = _alphabet.size();
@@ -125,9 +127,18 @@ double evaluate_left_to_right_cpp(const Rcpp::DataFrame& corpus,
                                                                  n_topics);
   DoubleVector _alpha = Rcpp::as<DoubleVector>(alpha);
 
-  // LeftToRightEvaluator evaluator{n_topics, _alpha, beta, _topic_counts, _type_topic_counts};
-  std::unique_ptr<TopicSampler> sampler = std::unique_ptr<TopicSampler>(new SparseLDATopicSampler());
-  LeftToRightEvaluatorMod evaluator{n_topics, _alpha, beta,
-      _topic_counts, _type_topic_counts, std::move(sampler)};
-  return evaluator.evaluate(type_sequences, n_particles, resampling);
+  LeftToRightEvaluator evaluator{n_topics, _alpha, beta, _topic_counts, _type_topic_counts};
+  std::unique_ptr<TopicSampler> sampler1 = std::unique_ptr<TopicSampler>(new LDATopicSampler());
+  LeftToRightEvaluatorMod evaluator1{n_topics, _alpha, beta, _topic_counts,
+      _type_topic_counts, std::move(sampler1)};
+
+  std::unique_ptr<TopicSampler> sampler2 = std::unique_ptr<TopicSampler>(new SparseLDATopicSampler());
+  LeftToRightEvaluatorMod evaluator2{n_topics, _alpha, beta, _topic_counts,
+      _type_topic_counts, std::move(sampler2)};
+
+  LeftToRightEvaluator evaluator3{n_topics, _alpha, beta, _topic_counts, _type_topic_counts};
+
+  return Rcpp::NumericVector::create(evaluator1.evaluate(type_sequences, n_particles, resampling),
+                                     evaluator2.evaluate(type_sequences, n_particles, resampling),
+                                     evaluator3.evaluate(type_sequences, n_particles, resampling));
 }

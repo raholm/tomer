@@ -6,7 +6,7 @@
 using namespace Rcpp;
 
 // evaluate_left_to_right_cpp
-double evaluate_left_to_right_cpp(const Rcpp::DataFrame& corpus, std::size_t n_docs, const Rcpp::DataFrame& alphabet, std::size_t n_topics, const Rcpp::DataFrame& topic_counts, const Rcpp::DataFrame& type_topic_counts, const Rcpp::NumericVector& alpha, double beta, std::size_t n_particles, bool resampling);
+Rcpp::NumericVector evaluate_left_to_right_cpp(const Rcpp::DataFrame& corpus, std::size_t n_docs, const Rcpp::DataFrame& alphabet, std::size_t n_topics, const Rcpp::DataFrame& topic_counts, const Rcpp::DataFrame& type_topic_counts, const Rcpp::NumericVector& alpha, double beta, std::size_t n_particles, bool resampling);
 RcppExport SEXP _tomer_evaluate_left_to_right_cpp(SEXP corpusSEXP, SEXP n_docsSEXP, SEXP alphabetSEXP, SEXP n_topicsSEXP, SEXP topic_countsSEXP, SEXP type_topic_countsSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP n_particlesSEXP, SEXP resamplingSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
