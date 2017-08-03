@@ -16,7 +16,7 @@ struct LeftToRightState {
     alpha{alpha},
     alpha_sum{std::accumulate(alpha.cbegin(), alpha.cend(), 0.0)},
     beta{beta},
-    beta_sum{n_topics * beta},
+    beta_sum{type_topic_counts.size() * beta},
     topic_counts{topic_counts},
     type_topic_counts{type_topic_counts},
     local_topic_counts(n_topics),
@@ -46,6 +46,7 @@ struct LeftToRightState {
   Topic topic;
 
   IntVector local_topic_counts;
+  // TODO: Perhaps have this as a pointer to const to prevent copying
   IntVector current_type_topic_counts;
 };
 
