@@ -65,8 +65,13 @@ DoubleVector LeftToRightEvaluatorMod::get_word_probabilities(const DocumentTypeS
   Type current_type;
   Topic old_topic, new_topic;
 
-  // if (doc_length > state_.doc_topics.size())
-  state_.doc_topics = IntVector(doc_length);
+  // Reallocate only when necessary
+  if (doc_length > state_.doc_topics.size())
+    state_.doc_topics = IntVector(doc_length);
+  else
+    std::fill(state_.doc_topics.begin(), state_.doc_topics.end(), 0);
+
+  std::fill(state_.local_topic_counts.begin(), state_.local_topic_counts.end(), 0);
 
   state_.n_tokens_seen = 0;
   state_.doc_position = 0;
@@ -96,12 +101,10 @@ DoubleVector LeftToRightEvaluatorMod::get_word_probabilities(const DocumentTypeS
     if (!is_valid(current_type))
       continue;
 
-    old_topic = state_.doc_topics.at(limit);
-
     state_.doc_position = limit;
     state_.type = current_type;
     state_.current_type_topic_counts = state_.type_topic_counts.at(current_type);
-    state_.topic = old_topic;
+    state_.topic = state_.doc_topics.at(limit);
 
     word_probs.at(limit) = sampler_->get_word_prob(state_);
 
@@ -118,7 +121,7 @@ DoubleVector LeftToRightEvaluatorMod::get_word_probabilities(const DocumentTypeS
 }
 
 bool LeftToRightEvaluatorMod::is_valid(const Type& type) {
-  return type > 0 && type < state_.n_types;
+  return type >= 0 && type < state_.n_types;
 }
 
 void LeftToRightEvaluatorMod::update_elimination(const Type& type,
