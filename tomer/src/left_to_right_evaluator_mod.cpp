@@ -11,7 +11,7 @@ LeftToRightEvaluatorMod::LeftToRightEvaluatorMod(std::size_t n_topics,
   state_{n_topics, alpha, beta, topic_counts, type_topic_counts},
   sampler_{std::move(sampler)}
 {
-
+  sampler_->init(state_);
 }
 
 

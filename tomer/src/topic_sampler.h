@@ -12,6 +12,8 @@ class TopicSampler {
 
   virtual ~TopicSampler() = default;
 
+  virtual void init(const LeftToRightState& state) = 0;
+
   virtual void begin(const LeftToRightState& state) = 0;
   virtual void end(const LeftToRightState& state) = 0;
 
@@ -30,6 +32,8 @@ public:
   LDATopicSampler();
 
   ~LDATopicSampler() = default;
+
+  void init(const LeftToRightState& state) override;
 
   void begin(const LeftToRightState& state) override;
   void end(const LeftToRightState& state) override;
@@ -55,6 +59,8 @@ public:
 
   ~SparseLDATopicSampler() = default;
 
+  void init(const LeftToRightState& state) override;
+
   void begin(const LeftToRightState& state) override;
   void end(const LeftToRightState& state) override;
 
@@ -69,7 +75,7 @@ private:
   std::mt19937 gen_;
   std::uniform_real_distribution<double> dist_;
 
-  bool has_init_;
+  bool has_begun_;
 
   double smoothing_only_mass_;
   DoubleVector cached_coefficients_;

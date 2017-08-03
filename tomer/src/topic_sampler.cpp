@@ -9,6 +9,10 @@ LDATopicSampler::LDATopicSampler()
 
 }
 
+void LDATopicSampler::init(const LeftToRightState& state) {
+
+}
+
 void LDATopicSampler::begin(const LeftToRightState& state) {
 
 }
@@ -81,7 +85,7 @@ SparseLDATopicSampler::SparseLDATopicSampler() :
   rand_dev_{},
   gen_{rand_dev_()},
   dist_{0.0, 1.0},
-  has_init_{false},
+  has_begun_{false},
   smoothing_only_mass_{0},
   cached_coefficients_{},
   topic_term_scores_{},
@@ -92,12 +96,19 @@ SparseLDATopicSampler::SparseLDATopicSampler() :
   non_zero_topics_{0}
 {}
 
-
-void SparseLDATopicSampler::begin(const LeftToRightState& state) {
-  if (has_init_) return;
-
+void SparseLDATopicSampler::init(const LeftToRightState& state) {
   cached_coefficients_ = DoubleVector(state.n_topics);
   smoothing_only_mass_ = 0;
+
+  for (unsigned topic = 0; topic < state.n_topics; ++topic) {
+    double denom = (state.topic_counts.at(topic) + state.beta_sum);
+    smoothing_only_mass_ += state.alpha.at(topic) * state.beta / denom;
+    cached_coefficients_.at(topic) = state.alpha.at(topic) / denom;
+  }
+}
+
+void SparseLDATopicSampler::begin(const LeftToRightState& state) {
+  if (has_begun_) return;
 
   dense_index_ = 0;
   non_zero_topics_ = 0;
@@ -108,13 +119,8 @@ void SparseLDATopicSampler::begin(const LeftToRightState& state) {
   topic_index_ = IntVector(state.n_topics);
   topic_term_scores_ = DoubleVector(state.n_topics);
 
-  for (unsigned topic = 0; topic < state.n_topics; ++topic) {
-    double denom = (state.topic_counts.at(topic) + state.beta_sum);
-    smoothing_only_mass_ += state.alpha.at(topic) * state.beta / denom;
-    cached_coefficients_.at(topic) = state.alpha.at(topic) / denom;
-  }
 
-  has_init_ = true;
+  has_begun_ = true;
 }
 
 void SparseLDATopicSampler::end(const LeftToRightState& state) {
