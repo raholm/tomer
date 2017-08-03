@@ -49,7 +49,8 @@ double LDATopicSampler::get_word_prob(const LeftToRightState& state) {
 Topic LDATopicSampler::sample_topic(const LeftToRightState& state) {
   auto probs = get_topic_probabilities(state);
   dist_ = std::discrete_distribution<Topic>{probs.begin(), probs.end()};
-  return dist_(gen_);;
+  Topic topic = dist_(gen_);
+  return topic;
 }
 
 DoubleVector LDATopicSampler::get_topic_probabilities(const LeftToRightState& state) {
