@@ -42,7 +42,7 @@ public:
 
 private:
   std::random_device rand_dev_;
-  std::default_random_engine gen_;
+  std::mt19937 gen_;
   std::discrete_distribution<Topic> dist_;
 
   DoubleVector get_topic_probabilities(const LeftToRightState& state);
@@ -66,7 +66,7 @@ public:
 
 private:
   std::random_device rand_dev_;
-  std::default_random_engine gen_;
+  std::mt19937 gen_;
   std::uniform_real_distribution<double> dist_;
 
   bool has_init_;

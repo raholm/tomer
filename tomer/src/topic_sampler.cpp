@@ -28,7 +28,7 @@ void LDATopicSampler::update_elimination(const LeftToRightState& state) {
 double LDATopicSampler::get_word_prob(const LeftToRightState& state) {
   Topic current_topic = state.topic;
 
-  // Is this supposed to be the local or global counts?
+  // TODO: Is this supposed to be the local or global counts?
   double prob_word_given_topic_numerator =
     state.current_type_topic_counts.at(current_topic) + state.beta;
   double prob_word_given_topic_denominator =
@@ -79,16 +79,16 @@ DoubleVector LDATopicSampler::get_topic_probabilities(const LeftToRightState& st
 SparseLDATopicSampler::SparseLDATopicSampler() :
   rand_dev_{},
   gen_{rand_dev_()},
-  dist_(0, 1),
+  dist_{0.0, 1.0},
   has_init_{false},
-  smoothing_only_mass_{},
+  smoothing_only_mass_{0},
   cached_coefficients_{},
   topic_term_scores_{},
-  topic_beta_mass_{},
-  topic_term_mass_{},
+  topic_beta_mass_{0},
+  topic_term_mass_{0},
   topic_index_{},
-  dense_index_{},
-  non_zero_topics_{}
+  dense_index_{0},
+  non_zero_topics_{0}
 {}
 
 
