@@ -1,44 +1,64 @@
-#ifndef TYPE_SEQUENCE_H
-#define TYPE_SEQUENCE_H
+#ifndef TOMER_TYPE_SEQUENCE_H_
+#define TOMER_TYPE_SEQUENCE_H_
 
 #include <vector>
 
 #include "alphabet.h"
+#include "def.h"
 
-class TypeSequenceBuilder;
+namespace tomer {
 
-class TypeSequence {
-public:
-  using Type = Alphabet::Type;
-  using TypeVector = std::vector<Type>;
-  using Token = Alphabet::Token;
-  using AlphabetPtr = Alphabet::SPtr;
-  using size_type = TypeVector::size_type;
+  class TypeSequenceBuilder;
 
-  TypeSequence(const TypeSequence& other) = default;
-  TypeSequence(TypeSequence&& other) = default;
+  class TypeSequence {
+  public:
+    using type = Alphabet::type;
+    using type_vector = Vector<type>;
+    using token = Alphabet::token;
+    using alphabet_ptr = Alphabet::shared_ptr;
 
-  ~TypeSequence() = default;
+    TypeSequence(const TypeSequence& other) = default;
+    TypeSequence(TypeSequence&& other) = default;
 
-  TypeSequence& operator=(const TypeSequence& rhs) = default;
-  TypeSequence& operator=(TypeSequence&& rhs) = default;
+    ~TypeSequence() = default;
 
-  const Type& at(size_type position) const;
-  const Token& token_at(size_type position) const;
+    TypeSequence& operator=(const TypeSequence& rhs) = default;
+    TypeSequence& operator=(TypeSequence&& rhs) = default;
 
-  size_type size() const;
-  size_type length() const;
+    inline const Type& at(size_type position) const {
+      return types_.at(position);
+    }
 
-private:
-  TypeVector types_;
-  AlphabetPtr alphabet_;
+    inline const Token& token_at(size_type position) const {
+      auto type = at(position);
+      return alphabet_->at(type);
+    }
 
-  TypeSequence(const TypeVector& types, AlphabetPtr alphabet);
-  TypeSequence(TypeVector&& types, AlphabetPtr alphabet);
+    inline size_t size() const {
+      return types_.size();
+    }
 
-  friend class TypeSequenceBuilder;
+    size_t length() const {
+      return size();
+    }
 
-};
+  private:
+    TypeVector types_;
+    AlphabetPtr alphabet_;
 
+    TypeSequence(const TypeVector& types, AlphabetPtr alphabet)
+      : types_{types},
+        alphabet_{alphabet} {}
+
+    TypeSequence(TypeVector&& types, AlphabetPtr alphabet)
+      : types_{std::move(types)},
+        alphabet_{alphabet} {}
+
+
+    friend class TypeSequenceBuilder;
+
+  };
+
+} // namespace tomer
 
 #endif // TYPE_SEQUENCE_H

@@ -1,25 +1,39 @@
-#ifndef DEF_H
-#define DEF_H
+#ifndef TOMER_DEF_H_
+#define TOMER_DEF_H_
 
 #include <string>
 #include <vector>
 #include <map>
 #include <memory>
 
-using Token = std::string;
-using Type = std::size_t;
-using Topic = std::size_t;
+namespace tomer {
 
-using Document = std::vector<Token>;
-using Corpus = std::vector<Document>;
+  using String = std::String;
+  using size_t = std::size_t;
 
-using IntVector = std::vector<uint>;
-using DoubleVector = std::vector<double>;
-using StringVector = Document;
-using TypeVector = std::vector<Type>;
+  template<typename T>
+  using Vector = std::vector<T>;
 
-using IntMatrix = std::vector<IntVector>;
-using DoubleMatrix = std::vector<DoubleVector>;
-using TypeMatrix = std::vector<TypeVector>;
+  template<typename Key, typename Value>
+  using Map = std::map<Key, Value>;
+
+  using Token = String;
+  using Type = size_t;
+  using Topic = size_t;
+
+  using Document = Vector<Token>;
+  using Corpus = Vector<Document>;
+
+  using IntVector = Vector<size_t>;
+  using DoubleVector = Vector<double>;
+  using StringVector = Document;
+  using TypeVector = Vector<Type>;
+
+  using IntMatrix = Vector<IntVector>;
+  using DoubleMatrix = Vector<DoubleVector>;
+  using TypeMatrix = Vector<TypeVector>;
+
+} // namespace tomer
+
 
 #endif // DEF_H

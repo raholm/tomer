@@ -1,41 +1,57 @@
-#ifndef ALPHABET_H
-#define ALPHABET_H
+#ifndef TOMER_ALPHABET_H_
+#define TOMER_ALPHABET_H_
 
-#include <map>
 #include <memory>
 
-class Alphabet {
-public:
-  using Token = std::string;
-  using Type = std::size_t;
-  using SPtr = std::shared_ptr<Alphabet>;
-  using size_type = std::map<Token, Type>::size_type;
+#include "def.h"
 
-  Alphabet();
-  Alphabet(const std::map<Token, Type>& alphabet);
-  Alphabet(const Alphabet& other) = default;;
-  Alphabet(Alphabet&& other) = default;;
+namespace tomer {
 
-  ~Alphabet() = default;
+  class Alphabet {
+  public:
+    using token = String;
+    using type = size_t;
+    using shared_ptr = std::shared_ptr<Alphabet>;
 
-  Alphabet& operator=(const Alphabet& rhs) = default;
-  Alphabet& operator=(Alphabet&& rhs) = default;
+    Alphabet();
+    Alphabet(const Map<token, type>& alphabet);
+    Alphabet(const Alphabet& other) = default;;
+    Alphabet(Alphabet&& other) = default;;
 
-  Type add(const Token& token);
+    ~Alphabet() = default;
 
-  bool has(const Type& type) const;
-  bool has(const Token& token) const;
+    Alphabet& operator=(const Alphabet& rhs) = default;
+    Alphabet& operator=(Alphabet&& rhs) = default;
 
-  const Token& at(const Type& position);
-  const Type& at(const Token& position);
+    type add(const token& token);
 
-  size_type size() const;
+    inline bool has(const type& type) const {
+      return inv_alphabet_.find(type) != inv_alphabet_.cend();
+    }
 
-private:
-  Type next_type_;
-  std::map<Token, Type> alphabet_;
-  std::map<Type, Token> inv_alphabet_;
+    inline bool has(const token& token) const {
+      return alphabet_.find(token) != alphabet_.cend();
+    }
 
-};
+    inline const token& at(const type& position) {
+      return inv_alphabet_.at(position);
+    }
 
-#endif // ALPHABET_H
+    inline const type& at(const token& position) {
+      return alphabet_.at(position);
+    }
+
+    inline size_t size() const {
+      return alphabet_.size();
+    }
+
+  private:
+    type next_type_;
+    Map<token, type> alphabet_;
+    Map<type, token> inv_alphabet_;
+
+  };
+
+} // namespace tomer
+
+#endif // TOMER_ALPHABET_H_
