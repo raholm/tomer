@@ -1,18 +1,13 @@
-#ifndef TOMER_TOPIC_SAMPLER_H_
-#define TOMER_TOPIC_SAMPLER_H_
-
-#include <random>
-
-#include "def.h"
-#include "left_to_right_state.h"
+#ifndef TOMER_MARGINAL_PROB_ESTIMATOR_H_
+#define TOMER_MARGINAL_PROB_ESTIMATOR_H_
 
 namespace tomer {
 
-  class TopicSampler {
+  class MarginalProbEsimator {
   public:
-    TopicSampler() = default;
+    MarginalProbEsimator() = default;
 
-    virtual ~TopicSampler() = default;
+    virtual ~MarginalProbEsimator() = default;
 
     virtual void init(const LeftToRightState& state) {}
 
@@ -22,32 +17,24 @@ namespace tomer {
     virtual void update_addition(const LeftToRightState& state) {}
     virtual void update_elimination(const LeftToRightState& state) {};
 
-    virtual Topic next_topic(const LeftToRightState& state) = 0;
+    virtual double get_prob(const LeftToRightState& state) const = 0;
 
   };
 
-  class LDATopicSampler : public TopicSampler {
+  class LDATokenMarginalProbEstimator : public MarginalProbEsimator {
   public:
-    LDATopicSampler();
+    LDATokenMarginalProbEstimator() = default;
 
-    ~LDATopicSampler() = default;
+    ~LDATokenMarginalProbEstimator() = default;
 
-    Topic next_topic(const LeftToRightState& state) const override;
-
-  private:
-    std::random_device rand_dev_;
-    mutable std::mt19937 gen_;
-    std::discrete_distribution<Topic> dist_;
-
-    DoubleVector get_topic_probabilities(const LeftToRightState& state) const;
+    double get_prob(const LeftToRightState& state) const override;
 
   };
 
-  class SparseLDATopicSampler : public TopicSampler {
-  public:
-    SparseLDATopicSampler();
+  class SparseLDATokenMarginalProbEstimator : public MarginalProbEsimator {
+    SparseLDATokenMarginalProbEstimator();
 
-    ~SparseLDATopicSampler() = default;
+    ~SparseLDATokenMarginalProbEstimator() = default;
 
     void init(const LeftToRightState& state) override;
 
@@ -57,19 +44,13 @@ namespace tomer {
     void update_addition(const LeftToRightState& state) override;
     void update_elimination(const LeftToRightState& state) override;
 
-    Topic next_topic(const LeftToRightState& state) const override;
+    Topic get_prob(const LeftToRightState& state) const override;
 
   private:
-    std::random_device rand_dev_;
-    std::mt19937 gen_;
-    std::uniform_real_distribution<double> dist_;
-
     bool has_begun_;
 
     double smoothing_only_mass_;
     DoubleVector cached_coefficients_;
-
-    DoubleVector topic_term_scores_;
 
     double topic_beta_mass_;
     double topic_term_mass_;
@@ -87,4 +68,4 @@ namespace tomer {
 
 } // namespace tomer
 
-#endif // TOMER_TOPIC_SAMPLER_H_
+#endif // TOMER_MARGINAL_PROB_ESTIMATOR_H_
