@@ -1,37 +1,48 @@
-#ifndef TYPE_SEQUENCE_CONTAINER_H
-#define TYPE_SEQUENCE_CONTAINER_H
+#ifndef TOMER_TYPE_SEQUENCE_CONTAINER_H_
+#define TOMER_TYPE_SEQUENCE_CONTAINER_H_
 
 #include "type_sequence.h"
+#include "def.h"
 
-class TypeSequenceBuilder;
+namespace tomer {
 
-class TypeSequenceContainer {
-public:
-  using TypeSequences = std::vector<TypeSequence>;
-  using size_type = TypeSequences::size_type;
+  class TypeSequenceBuilder;
 
-  TypeSequenceContainer(const TypeSequenceContainer& other) = default;
-  TypeSequenceContainer(TypeSequenceContainer&& other) = default;
+  class TypeSequenceContainer {
+  public:
+    TypeSequenceContainer(const TypeSequenceContainer& other) = default;
+    TypeSequenceContainer(TypeSequenceContainer&& other) = default;
 
-  ~TypeSequenceContainer() = default;
+    ~TypeSequenceContainer() = default;
 
-  TypeSequenceContainer& operator=(const TypeSequenceContainer& rhs) = default;
-  TypeSequenceContainer& operator=(TypeSequenceContainer&& rhs) = default;
+    TypeSequenceContainer& operator=(const TypeSequenceContainer& rhs) = default;
+    TypeSequenceContainer& operator=(TypeSequenceContainer&& rhs) = default;
 
-  const TypeSequence& at(size_type position) const;
+    inline const TypeSequence& at(size_t position) const {
+      return types_.at(position);
+    }
 
-  size_type size() const;
+    inline size_t size() const {
+      return types_.size();
+    }
 
-private:
-  TypeSequences types_;
+  private:
+    Vector<TypeSequence> types_;
 
-  TypeSequenceContainer() = default;
+    TypeSequenceContainer() = default;
 
-  void add(const TypeSequence& ts);
-  void add(TypeSequence&& ts);
+    inline void add(const TypeSequence& type_sequence) {
+      types_.push_back(type_sequence);
+    }
 
-  friend class TypeSequenceBuilder;
+    inline void add(TypeSequence&& type_sequence) {
+      types_.push_back(std::move(type_sequence));
+    }
 
-};
+    friend class TypeSequenceBuilder;
 
-#endif // TYPE_SEQUENCE_CONTAINER_H
+  };
+
+} // namespace tomer
+
+#endif // TOMER_TYPE_SEQUENCE_CONTAINER_H_

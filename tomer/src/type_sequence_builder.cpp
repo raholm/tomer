@@ -2,68 +2,69 @@
 
 #include "type_sequence.h"
 
-TypeSequenceBuilder::TypeSequenceBuilder()
-  : container_{}, alphabet_{std::make_shared<Alphabet>(Alphabet())}, fixed_{false}
-{
+namespace tomer {
 
-}
+  TypeSequenceBuilder::typeSequenceBuilder()
+    : container_{},
+      alphabet_{std::make_shared<Alphabet>(Alphabet())},
+      fixed_{false} {}
 
-TypeSequenceBuilder::TypeSequenceBuilder(const Alphabet& alphabet, bool fixed)
-  : container_{}, alphabet_{std::make_shared<Alphabet>(Alphabet{alphabet})}, fixed_{fixed}
-{
+  TypeSequenceBuilder::typeSequenceBuilder(const Alphabet& alphabet, bool fixed)
+    : container_{},
+      alphabet_{std::make_shared<Alphabet>(Alphabet{alphabet})},
+      fixed_{fixed} {}
 
-}
+  TypeSequenceBuilder::typeSequenceBuilder(Alphabet&& alphabet, bool fixed)
+    : container_{},
+      alphabet_{std::make_shared<Alphabet>(Alphabet{std::move(alphabet)})},
+      fixed_{fixed} {}
 
-TypeSequenceBuilder::TypeSequenceBuilder(Alphabet&& alphabet, bool fixed)
-  : container_{}, alphabet_{std::make_shared<Alphabet>(Alphabet{std::move(alphabet)})}, fixed_{fixed}
-{
+  void TypeSequenceBuilder::add(const Corpus& corpus) {
+    for (auto const& document : corpus) add(document);
+  }
 
-}
+  void TypeSequenceBuilder::add(const Document& document) {
+    TypeSequenceBuilder::type_vector types;
 
-void TypeSequenceBuilder::add(const Corpus& corpus) {
-  for (auto const& document : corpus) add(document);
-}
+    if (fixed_)
+      types = create_type_vector(document);
+    else
+      types = create_type_vector_and_update_alphabet(document);
 
-void TypeSequenceBuilder::add(const Document& document) {
-  TypeSequenceBuilder::TypeVector types;
+    TypeSequence ts{std::move(types), alphabet_};
+    container_.add(ts);
+  }
 
-  if (fixed_)
-    types = create_type_vector(document);
-  else
-    types = create_type_vector_and_update_alphabet(document);
+  const TypeSequenceContainer& TypeSequenceBuilder::get_data() const {
+    return container_;
+  }
 
-  TypeSequence ts{std::move(types), alphabet_};
-  container_.add(ts);
-}
+  TypeSequenceBuilder::type_vector
+  TypeSequenceBuilder::create_type_vector(const Document& document) {
+    TypeSequenceBuilder::type_vector types(document.size());
+    TypeSequenceBuilder::type type;
 
-const TypeSequenceContainer& TypeSequenceBuilder::get_data() const {
-  return container_;
-}
+    for (auto const& token : document) {
+      if (alphabet_->has(token)) {
+        type = alphabet_->at(token);
+        types.push_back(type);
+      }
+    }
 
-TypeSequenceBuilder::TypeVector
-TypeSequenceBuilder::create_type_vector(const Document& document) {
-  TypeSequenceBuilder::TypeVector types(document.size());
-  TypeSequenceBuilder::Type type;
+    return types;
+  }
 
-  for (auto const& token : document) {
-    if (alphabet_->has(token)) {
-      type = alphabet_->at(token);
+  TypeSequenceBuilder::type_vector
+  TypeSequenceBuilder::create_type_vector_and_update_alphabet(const Document& document) {
+    TypeSequenceBuilder::type_vector types(document.size());
+    TypeSequenceBuilder::type type;
+
+    for (auto const& token : document) {
+      type = alphabet_->add(token);
       types.push_back(type);
     }
+
+    return types;
   }
 
-  return types;
-}
-
-TypeSequenceBuilder::TypeVector
-TypeSequenceBuilder::create_type_vector_and_update_alphabet(const Document& document) {
-  TypeSequenceBuilder::TypeVector types(document.size());
-  TypeSequenceBuilder::Type type;
-
-  for (auto const& token : document) {
-    type = alphabet_->add(token);
-    types.push_back(type);
-  }
-
-  return types;
-}
+} // namespace tomer

@@ -1,41 +1,45 @@
-#ifndef TYPE_SEQUENCE_BUILDER_H
-#define TYPE_SEQUENCE_BUILDER_H
+#ifndef TOMER_TYPE_SEQUENCE_BUILDER_H_
+#define TOMER_TYPE_SEQUENCE_BUILDER_H_
 
 #include "def.h"
 #include "alphabet.h"
 #include "type_sequence_container.h"
 
-class TypeSequenceBuilder {
-public:
-  using Type = Alphabet::Type;
-  using TypeVector = std::vector<Type>;
-  using AlphabetPtr = Alphabet::SPtr;
+namespace tomer {
 
-  TypeSequenceBuilder();
-  TypeSequenceBuilder(const Alphabet& alphabet, bool fixed);
-  TypeSequenceBuilder(Alphabet&& alphabet, bool fixed);
+  class TypeSequenceBuilder {
+  public:
+    using type = Alphabet::type;
+    using type_vector = std::vector<type>;
+    using AlphabetPtr = Alphabet::shared_ptr;
 
-  ~TypeSequenceBuilder() = default;
+    TypeSequenceBuilder();
+    TypeSequenceBuilder(const Alphabet& alphabet, bool fixed);
+    TypeSequenceBuilder(Alphabet&& alphabet, bool fixed);
 
-  void add(const Corpus& corpus);
-  void add(const Document& document);
+    ~TypeSequenceBuilder() = default;
 
-  const TypeSequenceContainer& get_data() const;
+    void add(const Corpus& corpus);
+    void add(const Document& document);
 
-private:
-  TypeSequenceContainer container_;
-  AlphabetPtr alphabet_;
-  bool fixed_;
+    const TypeSequenceContainer& get_data() const;
 
-  TypeVector create_type_vector(const Document& document);
-  TypeVector create_type_vector_and_update_alphabet(const Document& document);
+  private:
+    typeSequenceContainer container_;
+    AlphabetPtr alphabet_;
+    bool fixed_;
 
-  TypeSequenceBuilder(const TypeSequenceBuilder& other) = delete;
-  TypeSequenceBuilder(TypeSequenceBuilder&& other) = delete;
+    type_vector create_type_vector(const Document& document);
+    type_vector create_type_vector_and_update_alphabet(const Document& document);
 
-  TypeSequenceBuilder& operator=(const TypeSequenceBuilder& rhs) = delete;
-  TypeSequenceBuilder& operator=(TypeSequenceBuilder&& rhs) = delete;
+    TypeSequenceBuilder(const TypeSequenceBuilder& other) = delete;
+    TypeSequenceBuilder(TypeSequenceBuilder&& other) = delete;
 
-};
+    TypeSequenceBuilder& operator=(const TypeSequenceBuilder& rhs) = delete;
+    TypeSequenceBuilder& operator=(TypeSequenceBuilder&& rhs) = delete;
 
-#endif // TYPE_SEQUENCE_BUILDER_H
+  };
+
+} // namespace tomer
+
+#endif // TOMER_TYPE_SEQUENCE_BUILDER_H_
