@@ -33,12 +33,18 @@ namespace tomer {
       return alphabet_.find(token) != alphabet_.cend();
     }
 
-    inline const Token& at(const Type& position) {
-      return inv_alphabet_.at(position);
+    inline const Token& at(const Type& position) const {
+      auto it = inv_alphabet_.find(position);
+      if (it == inv_alphabet_.end())
+        throw std::out_of_range("Type does not exist.");
+      return it->second;
     }
 
-    inline const Type& at(const Token& position) {
-      return alphabet_.at(position);
+    inline const Type& at(const Token& position) const {
+      auto it = alphabet_.find(position);
+      if (it == alphabet_.end())
+        throw std::out_of_range("Token does not exist.");
+      return it->second;
     }
 
     inline size_t size() const {
