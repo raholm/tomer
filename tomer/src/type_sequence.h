@@ -38,7 +38,7 @@ namespace tomer {
       return types_.size();
     }
 
-    size_t length() const {
+    inline size_t length() const {
       return size();
     }
 
