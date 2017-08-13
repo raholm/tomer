@@ -1,6 +1,9 @@
 #ifndef TOMER_MARGINAL_PROB_ESTIMATOR_H_
 #define TOMER_MARGINAL_PROB_ESTIMATOR_H_
 
+#include "def.h"
+#include "left_to_right_state.h"
+
 namespace tomer {
 
   class MarginalProbEsimator {
@@ -32,6 +35,7 @@ namespace tomer {
   };
 
   class SparseLDATokenMarginalProbEstimator : public MarginalProbEsimator {
+  public:
     SparseLDATokenMarginalProbEstimator();
 
     ~SparseLDATokenMarginalProbEstimator() = default;
@@ -44,7 +48,7 @@ namespace tomer {
     void update_addition(const LeftToRightState& state) override;
     void update_elimination(const LeftToRightState& state) override;
 
-    Topic get_prob(const LeftToRightState& state) const override;
+    double get_prob(const LeftToRightState& state) const override;
 
   private:
     bool has_begun_;
@@ -53,7 +57,7 @@ namespace tomer {
     DoubleVector cached_coefficients_;
 
     double topic_beta_mass_;
-    double topic_term_mass_;
+    mutable double topic_term_mass_;
 
     IntVector topic_index_;
     size_t dense_index_;
@@ -62,7 +66,7 @@ namespace tomer {
     void update(const LeftToRightState& state, bool incr);
     void maintain_dense_index_addition(const LeftToRightState& state);
     void maintain_dense_index_elimination(const LeftToRightState& state);
-    void update_topic_scores(const LeftToRightState& state);
+    void update_topic_scores(const LeftToRightState& state) const;
 
   };
 

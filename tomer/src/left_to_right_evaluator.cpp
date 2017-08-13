@@ -1,4 +1,4 @@
-#include "left_to_right_evaluator_mod.h"
+#include "left_to_right_evaluator.h"
 
 namespace tomer {
 
@@ -12,12 +12,11 @@ namespace tomer {
     state_{n_topics, alpha, beta, topic_counts, type_topic_counts},
     prob_estimator_{std::move(prob_estimator)},
     topic_sampler_{std::move(topic_sampler)} {
-      prob_estimator_->init(state_);
-      sampler_->init(state_);
+      init();
     }
 
 
-  double LeftToRightEvaluator::evaluate(const CorpusTypeSequence& types,
+  double LeftToRightEvaluator::evaluate(const TypeSequenceContainer& types,
                                         size_t n_particles,
                                         bool resampling) {
     double log_likelihood = 0;
@@ -28,7 +27,7 @@ namespace tomer {
     return log_likelihood;
   }
 
-  double LeftToRightEvaluator::evaluate(const DocumentTypeSequence& types,
+  double LeftToRightEvaluator::evaluate(const TypeSequence& types,
                                         size_t n_particles,
                                         bool resampling) {
     DoubleMatrix particle_probs(n_particles);
@@ -59,7 +58,7 @@ namespace tomer {
     return log_likelihood;
   }
 
-  DoubleVector LeftToRightEvaluator::get_word_probabilities(const DocumentTypeSequence& types,
+  DoubleVector LeftToRightEvaluator::get_word_probabilities(const TypeSequence& types,
                                                             bool resampling) {
     size_t doc_length = types.size();
     DoubleVector word_probs(doc_length);
@@ -92,7 +91,7 @@ namespace tomer {
 
           update_elimination(current_type, old_topic, position);
 
-          new_topic = sampler_->sample_topic(state_);
+          new_topic = topic_sampler_->next_topic(state_);
 
           update_addition(current_type, new_topic, position);
         }
@@ -108,7 +107,7 @@ namespace tomer {
       state_.current_type_topic_counts = state_.type_topic_counts.at(current_type);
       state_.topic = state_.doc_topics.at(limit);
 
-      word_probs.at(limit) = sampler_->get_word_prob(state_);
+      word_probs.at(limit) = prob_estimator_->get_prob(state_);
 
       new_topic = topic_sampler_->next_topic(state_);
 
@@ -124,6 +123,11 @@ namespace tomer {
 
   bool LeftToRightEvaluator::is_valid(const Type& type) {
     return type >= 0 && type < state_.n_types;
+  }
+
+  void LeftToRightEvaluator::init() {
+    prob_estimator_->init(state_);
+    topic_sampler_->init(state_);
   }
 
   void LeftToRightEvaluator::begin() {

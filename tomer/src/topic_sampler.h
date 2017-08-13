@@ -22,7 +22,7 @@ namespace tomer {
     virtual void update_addition(const LeftToRightState& state) {}
     virtual void update_elimination(const LeftToRightState& state) {};
 
-    virtual Topic next_topic(const LeftToRightState& state) = 0;
+    virtual Topic next_topic(const LeftToRightState& state) const = 0;
 
   };
 
@@ -37,7 +37,7 @@ namespace tomer {
   private:
     std::random_device rand_dev_;
     mutable std::mt19937 gen_;
-    std::discrete_distribution<Topic> dist_;
+    mutable std::discrete_distribution<Topic> dist_;
 
     DoubleVector get_topic_probabilities(const LeftToRightState& state) const;
 
@@ -61,27 +61,27 @@ namespace tomer {
 
   private:
     std::random_device rand_dev_;
-    std::mt19937 gen_;
-    std::uniform_real_distribution<double> dist_;
+    mutable std::mt19937 gen_;
+    mutable std::uniform_real_distribution<double> dist_;
 
     bool has_begun_;
 
     double smoothing_only_mass_;
     DoubleVector cached_coefficients_;
 
-    DoubleVector topic_term_scores_;
+    mutable DoubleVector topic_term_scores_;
 
     double topic_beta_mass_;
-    double topic_term_mass_;
+    mutable double topic_term_mass_;
 
     IntVector topic_index_;
-    size_t dense_index_;
+    mutable size_t dense_index_;
     size_t non_zero_topics_;
 
     void update(const LeftToRightState& state, bool incr);
     void maintain_dense_index_addition(const LeftToRightState& state);
     void maintain_dense_index_elimination(const LeftToRightState& state);
-    void update_topic_scores(const LeftToRightState& state);
+    void update_topic_scores(const LeftToRightState& state) const;
 
   };
 

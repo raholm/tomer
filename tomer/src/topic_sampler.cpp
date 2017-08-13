@@ -170,7 +170,7 @@ namespace tomer {
     }
   }
 
-  void SparseLDATopicSampler::update_topic_scores(const LeftToRightState& state) {
+  void SparseLDATopicSampler::update_topic_scores(const LeftToRightState& state) const {
     int index = 0;
     int current_topic, current_value;
     double score;
@@ -191,7 +191,7 @@ namespace tomer {
     }
   }
 
-  Topic SparseLDATopicSampler::next_topic(const LeftToRightState& state) {
+  Topic SparseLDATopicSampler::next_topic(const LeftToRightState& state) const {
     update_topic_scores(state);
     double sample = dist_(gen_) * (smoothing_only_mass_ +
                                    topic_beta_mass_ +

@@ -9,9 +9,9 @@ namespace tomer {
 
   class TypeSequenceBuilder {
   public:
-    using type = Alphabet::type;
-    using type_vector = std::vector<type>;
-    using AlphabetPtr = Alphabet::shared_ptr;
+    using Type = Alphabet::Type;
+    using TypeVector = Vector<Type>;
+    using AlphabetPtr = Alphabet::SharedPtr;
 
     TypeSequenceBuilder();
     TypeSequenceBuilder(const Alphabet& alphabet, bool fixed);
@@ -25,12 +25,12 @@ namespace tomer {
     const TypeSequenceContainer& get_data() const;
 
   private:
-    typeSequenceContainer container_;
+    TypeSequenceContainer container_;
     AlphabetPtr alphabet_;
     bool fixed_;
 
-    type_vector create_type_vector(const Document& document);
-    type_vector create_type_vector_and_update_alphabet(const Document& document);
+    TypeVector create_type_vector(const Document& document);
+    TypeVector create_type_vector_and_update_alphabet(const Document& document);
 
     TypeSequenceBuilder(const TypeSequenceBuilder& other) = delete;
     TypeSequenceBuilder(TypeSequenceBuilder&& other) = delete;

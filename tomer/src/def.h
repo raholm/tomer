@@ -8,7 +8,7 @@
 
 namespace tomer {
 
-  using String = std::String;
+  using String = std::string;
   using size_t = std::size_t;
 
   template<typename T>

@@ -27,7 +27,7 @@ namespace tomer {
     double evaluate(const TypeSequenceContainer& types,
                     size_t n_particles, bool resampling);
 
-    double evaluate(const TypeSequenceContainer& types,
+    double evaluate(const TypeSequence& types,
                     size_t n_particles, bool resampling);
 
   private:
@@ -39,6 +39,7 @@ namespace tomer {
 
     bool is_valid(const Type& type);
 
+    void init();
     void begin();
     void end();
 

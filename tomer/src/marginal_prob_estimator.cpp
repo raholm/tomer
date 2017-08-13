@@ -2,7 +2,7 @@
 
 namespace tomer {
 
-  double LDATokenMarginalProbEstimator::get_prob(const LeftToRightState& state) {
+  double LDATokenMarginalProbEstimator::get_prob(const LeftToRightState& state) const {
     Topic current_topic = state.topic;
 
     // TODO: Is this supposed to be the local or global counts?
@@ -73,10 +73,7 @@ namespace tomer {
     topic_beta_mass_ = 0;
     topic_term_mass_ = 0;
 
-    for (unsigned i = 0; i < state.n_topics; ++i) {
-      topic_term_scores_.at(i) = 0;
-      topic_index_.at(i) = 0;
-    }
+    std::fill(topic_index_.begin(), topic_index_.end(), 0);
   }
 
   void SparseLDATokenMarginalProbEstimator::update_addition(const LeftToRightState& state) {

@@ -4,17 +4,17 @@
 
 namespace tomer {
 
-  TypeSequenceBuilder::typeSequenceBuilder()
+  TypeSequenceBuilder::TypeSequenceBuilder()
     : container_{},
       alphabet_{std::make_shared<Alphabet>(Alphabet())},
       fixed_{false} {}
 
-  TypeSequenceBuilder::typeSequenceBuilder(const Alphabet& alphabet, bool fixed)
+  TypeSequenceBuilder::TypeSequenceBuilder(const Alphabet& alphabet, bool fixed)
     : container_{},
       alphabet_{std::make_shared<Alphabet>(Alphabet{alphabet})},
       fixed_{fixed} {}
 
-  TypeSequenceBuilder::typeSequenceBuilder(Alphabet&& alphabet, bool fixed)
+  TypeSequenceBuilder::TypeSequenceBuilder(Alphabet&& alphabet, bool fixed)
     : container_{},
       alphabet_{std::make_shared<Alphabet>(Alphabet{std::move(alphabet)})},
       fixed_{fixed} {}
@@ -24,7 +24,7 @@ namespace tomer {
   }
 
   void TypeSequenceBuilder::add(const Document& document) {
-    TypeSequenceBuilder::type_vector types;
+    TypeSequenceBuilder::TypeVector types;
 
     if (fixed_)
       types = create_type_vector(document);
@@ -39,10 +39,10 @@ namespace tomer {
     return container_;
   }
 
-  TypeSequenceBuilder::type_vector
+  TypeSequenceBuilder::TypeVector
   TypeSequenceBuilder::create_type_vector(const Document& document) {
-    TypeSequenceBuilder::type_vector types(document.size());
-    TypeSequenceBuilder::type type;
+    TypeSequenceBuilder::TypeVector types(document.size());
+    TypeSequenceBuilder::Type type;
 
     for (auto const& token : document) {
       if (alphabet_->has(token)) {
@@ -54,10 +54,10 @@ namespace tomer {
     return types;
   }
 
-  TypeSequenceBuilder::type_vector
+  TypeSequenceBuilder::TypeVector
   TypeSequenceBuilder::create_type_vector_and_update_alphabet(const Document& document) {
-    TypeSequenceBuilder::type_vector types(document.size());
-    TypeSequenceBuilder::type type;
+    TypeSequenceBuilder::TypeVector types(document.size());
+    TypeSequenceBuilder::Type type;
 
     for (auto const& token : document) {
       type = alphabet_->add(token);

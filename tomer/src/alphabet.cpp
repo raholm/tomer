@@ -7,7 +7,7 @@ namespace tomer {
       alphabet_{},
       inv_alphabet_{} {}
 
-  Alphabet::Alphabet(const Map<Alphabet::token, Alphabet::type>& alphabet)
+  Alphabet::Alphabet(const Map<Alphabet::Token, Alphabet::Type>& alphabet)
     : next_type_{0} {
     for (auto const& a : alphabet) {
       auto p = alphabet_.insert(a);
@@ -18,7 +18,7 @@ namespace tomer {
     }
   }
 
-  Alphabet::Type Alphabet::add(const Alphabet::token& token) {
+  Alphabet::Type Alphabet::add(const Alphabet::Token& token) {
     auto p = alphabet_.insert(std::make_pair(token, next_type_));
     if (p.second) {
       inv_alphabet_.insert(std::make_pair(next_type_, token));

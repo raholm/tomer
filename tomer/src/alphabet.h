@@ -9,12 +9,12 @@ namespace tomer {
 
   class Alphabet {
   public:
-    using token = String;
-    using type = size_t;
-    using shared_ptr = std::shared_ptr<Alphabet>;
+    using Token = String;
+    using Type = size_t;
+    using SharedPtr = std::shared_ptr<Alphabet>;
 
     Alphabet();
-    Alphabet(const Map<token, type>& alphabet);
+    Alphabet(const Map<Token, Type>& alphabet);
     Alphabet(const Alphabet& other) = default;;
     Alphabet(Alphabet&& other) = default;;
 
@@ -23,21 +23,21 @@ namespace tomer {
     Alphabet& operator=(const Alphabet& rhs) = default;
     Alphabet& operator=(Alphabet&& rhs) = default;
 
-    type add(const token& token);
+    Type add(const Token& token);
 
-    inline bool has(const type& type) const {
+    inline bool has(const Type& type) const {
       return inv_alphabet_.find(type) != inv_alphabet_.cend();
     }
 
-    inline bool has(const token& token) const {
+    inline bool has(const Token& token) const {
       return alphabet_.find(token) != alphabet_.cend();
     }
 
-    inline const token& at(const type& position) {
+    inline const Token& at(const Type& position) {
       return inv_alphabet_.at(position);
     }
 
-    inline const type& at(const token& position) {
+    inline const Type& at(const Token& position) {
       return alphabet_.at(position);
     }
 
@@ -46,9 +46,9 @@ namespace tomer {
     }
 
   private:
-    type next_type_;
-    Map<token, type> alphabet_;
-    Map<type, token> inv_alphabet_;
+    Type next_type_;
+    Map<Token, Type> alphabet_;
+    Map<Type, Token> inv_alphabet_;
 
   };
 

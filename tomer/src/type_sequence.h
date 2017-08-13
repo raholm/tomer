@@ -12,10 +12,10 @@ namespace tomer {
 
   class TypeSequence {
   public:
-    using type = Alphabet::type;
-    using type_vector = Vector<type>;
-    using token = Alphabet::token;
-    using alphabet_ptr = Alphabet::shared_ptr;
+    using Type = Alphabet::Type;
+    using TypeVector = Vector<Type>;
+    using Token = Alphabet::Token;
+    using AlphabetPtr = Alphabet::SharedPtr;
 
     TypeSequence(const TypeSequence& other) = default;
     TypeSequence(TypeSequence&& other) = default;
@@ -25,11 +25,11 @@ namespace tomer {
     TypeSequence& operator=(const TypeSequence& rhs) = default;
     TypeSequence& operator=(TypeSequence&& rhs) = default;
 
-    inline const Type& at(size_type position) const {
+    inline const Type& at(size_t position) const {
       return types_.at(position);
     }
 
-    inline const Token& token_at(size_type position) const {
+    inline const Token& token_at(size_t position) const {
       auto type = at(position);
       return alphabet_->at(type);
     }

@@ -7,7 +7,8 @@
 #include "alphabet.h"
 #include "type_sequence_builder.h"
 #include "left_to_right_evaluator.h"
-#include "left_to_right_evaluator_mod.h"
+
+using namespace tomer;
 
 Corpus create_corpus_from_R(const Rcpp::DataFrame& corpus,
                             std::size_t n_docs) {
@@ -42,7 +43,7 @@ Corpus create_corpus_from_R(const Rcpp::DataFrame& corpus,
 }
 
 Alphabet create_alphabet_from_R(const Rcpp::DataFrame& alphabet) {
-  std::map<Alphabet::Token, Alphabet::Type> a{};
+  Map<Alphabet::Token, Alphabet::Type> a{};
 
   IntVector types = Rcpp::as<IntVector>(alphabet["type"]);
   StringVector tokens = Rcpp::as<StringVector>(alphabet["token"]);
@@ -127,18 +128,18 @@ Rcpp::NumericVector evaluate_left_to_right_cpp(const Rcpp::DataFrame& corpus,
                                                                  n_topics);
   DoubleVector _alpha = Rcpp::as<DoubleVector>(alpha);
 
-  LeftToRightEvaluator evaluator{n_topics, _alpha, beta, _topic_counts, _type_topic_counts};
+  std::unique_ptr<MarginalProbEsimator> estimator1 = std::unique_ptr<MarginalProbEsimator>(new LDATokenMarginalProbEstimator());
   std::unique_ptr<TopicSampler> sampler1 = std::unique_ptr<TopicSampler>(new LDATopicSampler());
-  LeftToRightEvaluatorMod evaluator1{n_topics, _alpha, beta, _topic_counts,
-      _type_topic_counts, std::move(sampler1)};
+  LeftToRightEvaluator evaluator1{n_topics, _alpha, beta, _topic_counts,
+      _type_topic_counts, std::move(estimator1), std::move(sampler1)};
 
+  std::unique_ptr<MarginalProbEsimator> estimator2 = std::unique_ptr<MarginalProbEsimator>(new SparseLDATokenMarginalProbEstimator());
   std::unique_ptr<TopicSampler> sampler2 = std::unique_ptr<TopicSampler>(new SparseLDATopicSampler());
-  LeftToRightEvaluatorMod evaluator2{n_topics, _alpha, beta, _topic_counts,
-      _type_topic_counts, std::move(sampler2)};
+  LeftToRightEvaluator evaluator2{n_topics, _alpha, beta, _topic_counts,
+      _type_topic_counts, std::move(estimator2), std::move(sampler2)};
 
-  LeftToRightEvaluator evaluator3{n_topics, _alpha, beta, _topic_counts, _type_topic_counts};
+  // LeftToRightEvaluator evaluator3{n_topics, _alpha, beta, _topic_counts, _type_topic_counts};
 
   return Rcpp::NumericVector::create(evaluator1.evaluate(type_sequences, n_particles, resampling),
-                                     evaluator2.evaluate(type_sequences, n_particles, resampling),
-                                     evaluator3.evaluate(type_sequences, n_particles, resampling));
+                                     evaluator2.evaluate(type_sequences, n_particles, resampling));
 }
