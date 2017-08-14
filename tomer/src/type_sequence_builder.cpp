@@ -41,7 +41,8 @@ namespace tomer {
 
   TypeSequenceBuilder::TypeVector
   TypeSequenceBuilder::create_type_vector(const Document& document) {
-    TypeSequenceBuilder::TypeVector types(document.size());
+    TypeSequenceBuilder::TypeVector types;
+    types.reserve(document.size());
     TypeSequenceBuilder::Type type;
 
     for (auto const& token : document) {
@@ -56,7 +57,8 @@ namespace tomer {
 
   TypeSequenceBuilder::TypeVector
   TypeSequenceBuilder::create_type_vector_and_update_alphabet(const Document& document) {
-    TypeSequenceBuilder::TypeVector types(document.size());
+    TypeSequenceBuilder::TypeVector types;
+    types.reserve(document.size());
     TypeSequenceBuilder::Type type;
 
     for (auto const& token : document) {
