@@ -20,6 +20,8 @@ namespace tomer {
 
         TypeSequenceContainer container = builder.get_data();
         expect_true(container.size() == 1);
+        expect_error_as(container.at(-1), std::out_of_range);
+        expect_error_as(container.at(2), std::out_of_range);
 
         TypeSequence sequence = container.at(0);
         expect_true(sequence.size() == 3);
@@ -44,6 +46,8 @@ namespace tomer {
 
         TypeSequenceContainer container = builder.get_data();
         expect_true(container.size() == 3);
+        expect_error_as(container.at(-1), std::out_of_range);
+        expect_error_as(container.at(3), std::out_of_range);
 
         for (unsigned i = 0; i < container.size(); ++i) {
           TypeSequence sequence = container.at(i);
@@ -69,6 +73,8 @@ namespace tomer {
 
         TypeSequenceContainer container = builder.get_data();
         expect_true(container.size() == 3);
+        expect_error_as(container.at(-1), std::out_of_range);
+        expect_error_as(container.at(3), std::out_of_range);
 
         for (unsigned i = 0; i < container.size(); ++i) {
           TypeSequence sequence = container.at(i);
@@ -94,6 +100,8 @@ namespace tomer {
 
         TypeSequenceContainer container = builder.get_data();
         expect_true(container.size() == 3);
+        expect_error_as(container.at(-1), std::out_of_range);
+        expect_error_as(container.at(3), std::out_of_range);
 
         for (unsigned i = 0; i < container.size(); ++i) {
           TypeSequence sequence = container.at(i);
