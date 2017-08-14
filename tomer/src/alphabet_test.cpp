@@ -1,7 +1,5 @@
 #include <testthat.h>
 
-#include <iostream>
-
 #include "alphabet.h"
 
 namespace tomer {
@@ -21,7 +19,7 @@ namespace tomer {
       expect_true(alphabet.at(type) == token);
     }
 
-    context("alphabet") {
+    context("Alphabet") {
       test_that("alphabet copies correctly") {
         Alphabet a1{ALPHABET};
         has(a1, "hello", 1);
