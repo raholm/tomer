@@ -13,7 +13,6 @@ namespace tomer {
     const Alphabet ALPHABET{{{"hello", 1}}};
 
     context("TypeSequenceBuilder") {
-
       test_that("Default TypeSequenceBuilder builds document correctly") {
         TypeSequenceBuilder builder;
         builder.add(DOCUMENT);

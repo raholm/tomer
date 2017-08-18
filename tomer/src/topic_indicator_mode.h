@@ -65,7 +65,7 @@ namespace tomer {
     Map<type, topic_indicator> modes_;
     Map<Pair<type, topic_indicator>, count> counts_;
 
-    void insert_or_add_element(const type_topic_indicator_count_pair& pair) {
+    void insert_or_add_element(const type_topic_indicator_count_pair& element) {
       if (!counts_.insert(element).second)
         counts_[element.first] += element.second;
 
@@ -81,6 +81,9 @@ namespace tomer {
     }
 
   };
+
+  using TypeTopicIndicatorMode = TopicIndicatorMode<String>;
+  using PositionTypeTopicIndicatorMode = TopicIndicatorMode<size_t>;
 
 } // namespace tomer
 

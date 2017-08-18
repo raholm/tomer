@@ -17,6 +17,9 @@ namespace tomer {
   template<typename Key, typename Value>
   using Map = std::map<Key, Value>;
 
+  template<typename First, typename Second>
+  using Pair = std::pair<First, Second>;
+
   using Token = String;
   using Type = size_t;
   using Topic = size_t;
