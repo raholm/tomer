@@ -1,7 +1,7 @@
 #ifndef TOMER_BAYES_FACTOR_H_
 #define TOMER_BAYES_FACTOR_H_
 
-#include <cmath.h>
+#include <cmath>
 
 #include "def.h"
 #include "util.h"
@@ -23,7 +23,7 @@ namespace tomer {
     size_t n = topic_indicators.size();
     size_t cur_topic, prev_topic;
 
-    ++counts->counts(topic_indicators.at(0));
+    ++counts->counts.at(topic_indicators.at(0));
 
     for (unsigned i = 1; i < n; ++i) {
       cur_topic = topic_indicators.at(i);
@@ -35,7 +35,7 @@ namespace tomer {
   }
 
   double compute_log_bayes_factor_slow(const IntVector& topic_indicators,
-                                       size_t n_topics
+                                       size_t n_topics,
                                        double beta) {
     /*
       term1: sum(lgamma(beta - counts / K))
@@ -79,7 +79,7 @@ namespace tomer {
   }
 
   double compute_log_bayes_factor(const IntVector& topic_indicators,
-                                  size_t n_topics
+                                  size_t n_topics,
                                   double beta) {
     /*
       term1: sum(lgamma(beta - counts / K))
@@ -98,8 +98,8 @@ namespace tomer {
     size_t n_zero = 0;
 
     term1 = term3 = 0;
-    for (unsigned topic = 0; topic < n_toptopiccs; ++topic) {
-      topicf (counts.at(topic) == 0) {
+    for (unsigned topic = 0; topic < n_topics; ++topic) {
+      if (counts.at(topic) == 0) {
         ++n_zero;
         continue;
       }
