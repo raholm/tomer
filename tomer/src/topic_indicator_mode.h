@@ -54,6 +54,10 @@ namespace tomer {
       return modes_.find(type) != modes_.end();
     }
 
+    inline Vector<type_topic_indicator_pair> get_data() const {
+      return Vector<type_topic_indicator_pair>{modes_.cbegin(), modes_.cend()};
+    }
+
     inline topic_indicator get_mode(const type& type) const {
       auto it = modes_.find(type);
       if (it == modes_.end())
