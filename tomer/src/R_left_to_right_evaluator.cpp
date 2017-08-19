@@ -11,7 +11,7 @@
 using namespace tomer;
 
 Corpus create_corpus_from_R(const Rcpp::DataFrame& corpus,
-                            std::size_t n_docs) {
+                            size_t n_docs) {
   Corpus c;
   c.reserve(n_docs);
 
@@ -20,8 +20,8 @@ Corpus create_corpus_from_R(const Rcpp::DataFrame& corpus,
   IntVector doc_id = Rcpp::as<IntVector>(corpus["id"]);
   StringVector doc_token = Rcpp::as<StringVector>(corpus["token"]);
 
-  std::size_t current_id = doc_id.at(0);
-  std::size_t previous_id = current_id;
+  size_t current_id = doc_id.at(0);
+  size_t previous_id = current_id;
   current_doc.push_back(doc_token.at(0));
 
   for (unsigned i = 1; i < doc_id.size(); ++i) {
@@ -48,7 +48,7 @@ Alphabet create_alphabet_from_R(const Rcpp::DataFrame& alphabet) {
   IntVector types = Rcpp::as<IntVector>(alphabet["type"]);
   StringVector tokens = Rcpp::as<StringVector>(alphabet["token"]);
 
-  std::size_t type;
+  size_t type;
   std::string token;
 
   for (unsigned i = 0; i < types.size(); ++i) {
@@ -61,12 +61,12 @@ Alphabet create_alphabet_from_R(const Rcpp::DataFrame& alphabet) {
 }
 
 IntVector create_topic_counts_from_R(const Rcpp::DataFrame& topic_counts,
-                                     std::size_t n_topics) {
+                                     size_t n_topics) {
   IntVector topics = Rcpp::as<IntVector>(topic_counts["topic"]);
   IntVector counts = Rcpp::as<IntVector>(topic_counts["count"]);
   IntVector tc(n_topics);
 
-  std::size_t topic, count;
+  size_t topic, count;
 
   for (unsigned i = 0; i < topics.size(); ++i) {
     topic = topics.at(i);
@@ -78,8 +78,8 @@ IntVector create_topic_counts_from_R(const Rcpp::DataFrame& topic_counts,
 }
 
 IntMatrix create_type_topic_counts_from_R(const Rcpp::DataFrame& type_topic_counts,
-                                          std::size_t n_types,
-                                          std::size_t n_topics) {
+                                          size_t n_types,
+                                          size_t n_topics) {
   IntMatrix ttc(n_types);
 
   for (unsigned i = 0; i < n_types; ++i) {
@@ -90,7 +90,7 @@ IntMatrix create_type_topic_counts_from_R(const Rcpp::DataFrame& type_topic_coun
   IntVector topics = Rcpp::as<IntVector>(type_topic_counts["topic"]);
   IntVector counts = Rcpp::as<IntVector>(type_topic_counts["count"]);
 
-  std::size_t type, topic, count;
+  size_t type, topic, count;
 
   for (unsigned i = 0; i < types.size(); ++i) {
     type = types.at(i);
@@ -104,18 +104,18 @@ IntMatrix create_type_topic_counts_from_R(const Rcpp::DataFrame& type_topic_coun
 
 // [[Rcpp::export]]
 Rcpp::NumericVector evaluate_left_to_right_cpp(const Rcpp::DataFrame& corpus,
-                                               std::size_t n_docs,
+                                               size_t n_docs,
                                                const Rcpp::DataFrame& alphabet,
-                                               std::size_t n_topics,
+                                               size_t n_topics,
                                                const Rcpp::DataFrame& topic_counts,
                                                const Rcpp::DataFrame& type_topic_counts,
                                                const Rcpp::NumericVector& alpha,
                                                double beta,
-                                               std::size_t n_particles,
+                                               size_t n_particles,
                                                bool resampling) {
   Corpus _corpus = create_corpus_from_R(corpus, n_docs);
   Alphabet _alphabet = create_alphabet_from_R(alphabet);
-  std::size_t n_types = _alphabet.size();
+  size_t n_types = _alphabet.size();
 
   TypeSequenceBuilder builder{std::move(_alphabet), true};
   builder.add(_corpus);
