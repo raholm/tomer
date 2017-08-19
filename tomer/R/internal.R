@@ -1,0 +1,15 @@
+generate_samples_from <- function(model, filename) {
+    if (file.exists(filename)) file.remove(filename)
+
+    model$writeState(filename)
+    tbl <- read.table(filename)
+    names(tbl) <- c("doc", "source", "pos", "type", "token", "topic")
+
+    if (file.exists(filename)) file.remove(filename)
+
+    list(token=as.character(tbl$token), topic=as.numeric(tbl$topic))
+}
+
+get_bayes_factor_module <- function() {
+    Module("mod_bayes_factor", "tomer")
+}
