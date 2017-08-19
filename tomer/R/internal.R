@@ -10,6 +10,7 @@ generate_samples_from <- function(model, filename) {
     list(token=as.character(tbl$token), topic=as.numeric(tbl$topic))
 }
 
+#' @export
 get_bayes_factor_module <- function() {
     Rcpp::Module("mod_bayes_factor", "tomer")
 }
