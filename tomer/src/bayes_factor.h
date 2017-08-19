@@ -4,7 +4,6 @@
 #include <cmath>
 
 #include "def.h"
-#include "util.h"
 
 namespace tomer {
 
