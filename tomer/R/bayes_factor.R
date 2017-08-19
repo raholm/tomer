@@ -1,3 +1,4 @@
+#' @export
 log_bayes_factor <- function(corpus, mode, ntopics, beta) {
     .check_input_bayes_factor(corpus, mode, ntopics, beta)
 
