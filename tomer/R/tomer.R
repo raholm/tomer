@@ -4,7 +4,7 @@
 #' An R package for evaluating topic models
 #'
 #' @useDynLib tomer
-#' @importFrom Rcpp sourceCpp
+#' @import Rcpp
 #'
 #' @docType package
 #' @name tomer

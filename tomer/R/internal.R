@@ -11,5 +11,5 @@ generate_samples_from <- function(model, filename) {
 }
 
 get_bayes_factor_module <- function() {
-    Module("mod_bayes_factor", "tomer")
+    Rcpp::Module("mod_bayes_factor", "tomer")
 }
