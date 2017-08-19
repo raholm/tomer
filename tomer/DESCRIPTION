@@ -4,13 +4,16 @@ Version: 0.0.0.9000
 Authors@R: person("Rasmus", "Holm", email = "rasmus.holm723@gmail.com", role = c("aut", "cre"))
 Description: An R package for evaluating topic models.
 Depends: R (>= 3.4.1)
-License: What license is it under?
+License: CC0
 Encoding: UTF-8
 LazyData: true
 Suggests:
     testthat
 Imports:
-    Rcpp (>= 0.12.12)
+    Rcpp (>= 0.12.12),
+    methods,
+    dplyr,
+    checkr
 LinkingTo:
     Rcpp,
     testthat
