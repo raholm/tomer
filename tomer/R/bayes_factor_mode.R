@@ -79,7 +79,7 @@ get_bayes_factor_mode_from_model <- function(model, gibbs_iters, dst) {
 #' @export
 write_bayes_factor_mode_to_file <- function(mode, dst) {
     data <- mode$get_data()
-    write.table(x=data, file=dst)
+    write.table(x=data, file=dst, row.names=FALSE)
 }
 
 #' @title
