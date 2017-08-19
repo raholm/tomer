@@ -138,8 +138,6 @@ Rcpp::NumericVector evaluate_left_to_right_cpp(const Rcpp::DataFrame& corpus,
   LeftToRightEvaluator evaluator2{n_topics, _alpha, beta, _topic_counts,
       _type_topic_counts, std::move(estimator2), std::move(sampler2)};
 
-  // LeftToRightEvaluator evaluator3{n_topics, _alpha, beta, _topic_counts, _type_topic_counts};
-
   return Rcpp::NumericVector::create(evaluator1.evaluate(type_sequences, n_particles, resampling),
                                      evaluator2.evaluate(type_sequences, n_particles, resampling));
 }
