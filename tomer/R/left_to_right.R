@@ -40,6 +40,11 @@ evaluate_left_to_right <- function(test_documents, model, ntopics,
         dplyr::mutate(type=as.numeric(type) - 1,
                       topic=as.numeric(topic) - 1)
 
+    if (!checkr::is_numeric(test_documents$id)) {
+        test_documents <- test_documents %>%
+            dplyr::mutate(id=as.numeric(id))
+    }
+
     evaluate_left_to_right_cpp(test_documents,
                                ndocs,
                                alphabet,
