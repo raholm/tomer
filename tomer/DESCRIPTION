@@ -10,7 +10,7 @@ LazyData: true
 Suggests:
     testthat
 Imports:
-    Rcpp
+    Rcpp (>= 0.12.12)
 LinkingTo:
     Rcpp,
     testthat
