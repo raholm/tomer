@@ -5,6 +5,7 @@
 #'
 #' @useDynLib tomer
 #' @import Rcpp
+#' @importFrom Rcpp evalCpp
 #'
 #' @docType package
 #' @name tomer
