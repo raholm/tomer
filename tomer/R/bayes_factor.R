@@ -4,7 +4,7 @@ log_bayes_factor <- function(corpus, mode, ntopics, beta) {
 
     topic_indicators <- types_to_topic_indicators(corpus$token, mode)
     module <- get_bayes_factor_module()
-    module$compute_log_bayes_factor(topic_indicators, n_topics, beta)
+    module$compute_log_bayes_factor(topic_indicators, ntopics, beta)
 }
 
 .check_input_bayes_factor <- function(corpus, mode, ntopics, beta) {
