@@ -13,7 +13,7 @@ void mode_update(TypeTopicIndicatorMode* const mode,
                Rcpp::as<IntVector>(topic_indicators));
 }
 
-Rcpp::List mode_get_data(TypeTopicIndicatorMode* const mode) {
+Rcpp::DataFrame mode_get_data(TypeTopicIndicatorMode* const mode) {
   auto data = mode->get_data();
 
   Rcpp::StringVector types(data.size());
@@ -25,17 +25,17 @@ Rcpp::List mode_get_data(TypeTopicIndicatorMode* const mode) {
     topic_indicators(i) = pair.second;
   }
 
-  return Rcpp::List::create(Rcpp::Named("types") = types,
-                            Rcpp::Named("topic_indocators") = topic_indicators);
+  return Rcpp::DataFrame::create(Rcpp::Named("type") = types,
+                                 Rcpp::Named("topic_indicator") = topic_indicators);
 }
 
-Rcpp::IntegerVector mode_tokens_to_topic_indicators(TypeTopicIndicatorMode* const mode,
-                                                    const Rcpp::StringVector& tokens) {
+Rcpp::IntegerVector mode_types_to_topic_indicators(TypeTopicIndicatorMode* const mode,
+                                                   const Rcpp::StringVector& types) {
   IntVector topic_indicators;
-  topic_indicators.reserve(tokens.size());
+  topic_indicators.reserve(types.size());
 
-  for (auto const& token : tokens) {
-    auto type = Rcpp::as<TypeTopicIndicatorMode::type>(token);
+  for (auto const& t : types) {
+    auto type = Rcpp::as<TypeTopicIndicatorMode::type>(t);
     if (mode->contains(type))
       topic_indicators.push_back(mode->get_mode(type));
   }
@@ -54,7 +54,7 @@ RCPP_MODULE(mod_bayes_factor) {
     .constructor()
 
     .method("update", &mode_update)
-    .method("tokens_to_topic_indicators", &mode_tokens_to_topic_indicators)
+    .method("types_to_topic_indicators", &mode_types_to_topic_indicators)
     .method("get_data", &mode_get_data)
     ;
 
