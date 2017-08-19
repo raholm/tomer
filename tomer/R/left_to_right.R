@@ -6,7 +6,14 @@
 evaluate_left_to_right <- function(test_documents, model, ntopics,
                                    alpha, beta, nparticles, resampling) {
     checkr::assert_tidy_table(model, c("type", "token", "topic"))
+    checkr::assert_integer(model$type)
+    checkr::assert_integer(model$topic)
+    checkr::assert_character(model$token)
+
     checkr::assert_tidy_table(test_documents, c("id", "token"))
+    checkr::assert_integer(test_documents$id)
+    checkr::assert_character(test_documents$token)
+
     checkr::assert_integer(ntopics, len=1, lower=1)
     checkr::assert_integer(nparticles, len=1, lower=1)
     checkr::assert_numeric(beta, len=1, lower=0)
@@ -15,35 +22,21 @@ evaluate_left_to_right <- function(test_documents, model, ntopics,
 
     ndocs <- length(unique(test_documents$id))
 
-    ## The following -1s are there to make it
-    ## compatible with C++ (Zero-based numbering
-    ## https://en.wikipedia.org/wiki/Zero-based_numbering)
-
     alphabet <- model %>%
         dplyr::group_by(type, token) %>%
         dplyr::filter(row_number() == 1) %>%
         dplyr::ungroup() %>%
-        dplyr::select(type, token) %>%
-        dplyr::mutate(type=as.numeric(type) - 1,
-                      token=as.character(token))
+        dplyr::select(type, token)
 
     topic_counts <- model %>%
         dplyr::group_by(topic) %>%
         dplyr::summarise(count=n()) %>%
-        dplyr::ungroup() %>%
-        dplyr::mutate(topic=as.numeric(topic) - 1)
+        dplyr::ungroup()
 
     type_topic_counts <- model %>%
         dplyr::group_by(type, topic) %>%
         dplyr::summarise(count=n()) %>%
-        dplyr::ungroup() %>%
-        dplyr::mutate(type=as.numeric(type) - 1,
-                      topic=as.numeric(topic) - 1)
-
-    if (!checkr::is_numeric(test_documents$id)) {
-        test_documents <- test_documents %>%
-            dplyr::mutate(id=as.numeric(id))
-    }
+        dplyr::ungroup()
 
     evaluate_left_to_right_cpp(test_documents,
                                ndocs,
