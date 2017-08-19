@@ -8,7 +8,7 @@
 #' @param mode A bayes factor mode.
 #'
 #' @export
-type_to_topic_indicators <- function(types, mode) {
+types_to_topic_indicators <- function(types, mode) {
     mode$types_to_topic_indicators(types)
 }
 
