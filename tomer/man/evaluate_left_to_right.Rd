@@ -4,7 +4,7 @@
 \alias{evaluate_left_to_right}
 \title{Left-to-right evaluation algorithm}
 \usage{
-evaluate_left_to_right(corpus, state, n_topics, alpha, beta, n_particles,
+evaluate_left_to_right(test_documents, model, ntopics, alpha, beta, nparticles,
   resampling)
 }
 \description{
