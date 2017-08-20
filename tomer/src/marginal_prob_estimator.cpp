@@ -151,7 +151,7 @@ namespace tomer {
   }
 
   void SparseLDATokenMarginalProbEstimator::update_topic_scores(const LeftToRightState& state) const {
-    int index = 0;
+    size_t index = 0;
     int current_topic, current_value;
     double score;
 

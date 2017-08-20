@@ -15,8 +15,8 @@ namespace tomer {
 
     Alphabet();
     Alphabet(const Map<Token, Type>& alphabet);
-    Alphabet(const Alphabet& other) = default;;
-    Alphabet(Alphabet&& other) = default;;
+    Alphabet(const Alphabet& other) = default;
+    Alphabet(Alphabet&& other) = default;
 
     ~Alphabet() = default;
 
