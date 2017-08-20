@@ -7,8 +7,6 @@ namespace tomer {
     size_t n = topic_indicators.size();
     size_t cur_topic, prev_topic;
 
-    ++counts->counts.at(topic_indicators.at(0));
-
     for (unsigned i = 1; i < n; ++i) {
       cur_topic = topic_indicators.at(i);
       prev_topic = topic_indicators.at(i - 1);
@@ -39,22 +37,31 @@ namespace tomer {
 
     double log_bayes_factor = 0;
 
-    for (unsigned topic = 0; topic < n_topics; ++topic) {
+    for (unsigned r = 0; r < n_topics; ++r) {
       term1 = term2 = term3 = term4 = 0;
 
-      for (unsigned topic2 = 0; topic2 < n_topics; ++topic2) {
-        a = beta + counts.at(topic2) / n_topics;
-        b = beta + transition_counts.at(topic).at(topic2);
+      for (unsigned c = 0; c < n_topics; ++c) {
+        a = beta + (double) transition_counts.at(r).at(c);
+        b = beta + (double) counts.at(c) / n_topics;
 
-        term1 += lgamma(a);
-        term2 -= lgamma(b);
+        if (a > 0) {
+          term1 += lgamma(a);
+          term4 += a;
+        }
 
-        term3 += a;
-        term4 += b;
+        if (b > 0) {
+          term2 -= lgamma(b);
+          term3 += b;
+        }
       }
 
-      term3 = -lgamma(term3);
-      term4 = lgamma(term4);
+      if (term3 > 0) {
+        term3 = lgamma(term3);
+      }
+
+      if (term4 > 0) {
+        term4 = -lgamma(term4);
+      }
 
       log_bayes_factor += term1 + term2 + term3 + term4;
     }
@@ -81,34 +88,34 @@ namespace tomer {
     double term1, term2, term3, term4;
     size_t n_zero = 0;
 
-    term1 = term3 = 0;
-    for (unsigned topic = 0; topic < n_topics; ++topic) {
-      if (counts.at(topic) == 0) {
+    double beta_mul = n_topics * beta;
+
+    term1 = term2 = term3 = 0;
+
+    for (unsigned i = 0; i < n_topics; ++i) {
+      if (counts.at(i) == 0) {
         ++n_zero;
         continue;
       }
 
-      term1 += lgamma(beta + (double) counts.at(topic) / n_topics);
-      term3 += counts.at(topic);
-    }
+      auto term1_right = lgamma(beta + (double) counts.at(i) / n_topics);
 
-    term3 = -lgamma(n_topics * beta + term3 / n_topics);
-
-    double log_bayes_factor = (n_topics - n_zero) * term1 + n_topics * term3;
-
-    for (unsigned topic = 0; topic < n_topics; ++topic) {
-      if (counts.at(topic) == 0) continue;
-
-      term2 = 0;
-      for (unsigned topic2 = 0; topic2 < n_topics; ++topic2) {
-        term2 -= lgamma(beta + (double) transition_counts.at(topic).at(topic2));
+      for (unsigned j = 0; j < n_topics; ++j) {
+        auto term1_left = beta + (double) transition_counts.at(i).at(j);
+        term1 += (term1_left > 0) ? lgamma(term1_left) - term1_right : -term1_right;
       }
 
-      term4 = lgamma(n_topics * beta + counts.at(topic));
+      term2 += counts.at(i);
 
-      log_bayes_factor += term2 + term4;
+      term3 -= lgamma(beta_mul + counts.at(i));
     }
 
+    term2 = n_topics * lgamma(beta_mul + (double) term2 / n_topics);
+
+    if (beta_mul > 0 && n_zero > 0)
+      term3 -= n_zero * lgamma(beta_mul);
+
+    double log_bayes_factor = term1 + term2 + term3;
     return log_bayes_factor;
   }
 
