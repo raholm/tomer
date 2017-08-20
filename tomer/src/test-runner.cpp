@@ -3,5 +3,12 @@
  * 'run_testthat_tests()' C routine that can be used to run the Catch unit tests
  * available in your package.
  */
-#define TESTTHAT_TEST_RUNNER
+#define CATCH_CONFIG_RUNNER
 #include <testthat.h>
+#include <Rcpp.h>
+
+// [[Rcpp::export]]
+bool run_testthat_tests() {
+  bool success = testthat::run_tests();
+  return success;
+}

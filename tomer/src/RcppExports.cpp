@@ -25,11 +25,22 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// run_testthat_tests
+bool run_testthat_tests();
+RcppExport SEXP _tomer_run_testthat_tests() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(run_testthat_tests());
+    return rcpp_result_gen;
+END_RCPP
+}
 
 RcppExport SEXP _rcpp_module_boot_mod_bayes_factor();
 
 static const R_CallMethodDef CallEntries[] = {
     {"_tomer_evaluate_left_to_right_cpp", (DL_FUNC) &_tomer_evaluate_left_to_right_cpp, 10},
+    {"_tomer_run_testthat_tests", (DL_FUNC) &_tomer_run_testthat_tests, 0},
     {"_rcpp_module_boot_mod_bayes_factor", (DL_FUNC) &_rcpp_module_boot_mod_bayes_factor, 0},
     {NULL, NULL, 0}
 };
