@@ -59,7 +59,7 @@ get_bayes_factor_mode_from_model <- function(model, gibbs_iters, dst) {
 
     for (i in 1:gibbs_iters) {
         samples <- generate_samples_from(model, dst)
-        mode$update(samples$token[-1], samples$topic[-1])
+        mode$update(samples$token, samples$topic)
     }
 
     mode
