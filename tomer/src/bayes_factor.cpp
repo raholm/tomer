@@ -73,10 +73,9 @@ namespace tomer {
                                   size_t n_topics,
                                   double beta) {
     /*
-      term1: sum(lgamma(beta - counts / K))
-      term2: -sum(lgamma(beta + transition_counts.at(topic)))
-      term3: -lgamma(sum(beta + counts / K))
-      term4: lgamma(sum(beta + transition_counts.at(topic)))
+      term1: sum(lgamma(beta - counts / K) - lgamma(beta + transition_counts.at(topic)))
+      term2: -lgamma(sum(beta + counts / K))
+      term3: lgamma(sum(beta + transition_counts.at(topic)))
     */
 
     TopicCounts topic_counts(n_topics);
@@ -85,9 +84,8 @@ namespace tomer {
     const auto& counts = topic_counts.counts;
     const auto& transition_counts = topic_counts.transition_counts;
 
-    double term1, term2, term3, term4;
+    double term1, term2, term3;
     size_t n_zero = 0;
-
     double beta_mul = n_topics * beta;
 
     term1 = term2 = term3 = 0;
@@ -106,7 +104,6 @@ namespace tomer {
       }
 
       term2 += counts.at(i);
-
       term3 -= lgamma(beta_mul + counts.at(i));
     }
 
