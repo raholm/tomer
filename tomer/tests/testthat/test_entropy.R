@@ -1,3 +1,5 @@
+context("Entropy")
+
 test_that("entropy throws error for invalid input", {
     expect_error(entropy(c("a", "b", "c")))
     expect_error(entropy(c(1, 2, 3), base=2))
