@@ -92,6 +92,6 @@ RCPP_MODULE(mod_bayes_factor) {
 
     .method("update", &mode_update)
     .method("types_to_topic_indicators", &mode_types_to_topic_indicators)
-    .method("get_data", &mode_get_data)
+    .method("data", &mode_get_data)
     ;
 }

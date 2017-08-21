@@ -1,19 +1,4 @@
 #' @title
-#' Data frame of types to topic indicator vector
-#'
-#' @description
-#' Translate a data frame of types to their topic indicators given a mode.
-#'
-#' @param types A data frame containing the types
-#' @param mode A bayes factor mode.
-#'
-#' @export
-types_to_topic_indicators <- function(types, mode) {
-    ## TODO: This function should be removed
-    mode$types_to_topic_indicators(types)
-}
-
-#' @title
 #' Creates an empty bayes factor mode
 #'
 #' @description
@@ -38,6 +23,12 @@ get_bayes_factor_mode <- function() {
 #'
 #' @export
 get_bayes_factor_mode_from_data <- function(data) {
+    checkr::assert_subset(c("doc", "pos", "type", "topic"), names(data))
+    checkr::assert_integer(data$doc, lower=0)
+    checkr::assert_integer(data$pos, lower=0)
+    checkr::assert_integer(data$type, lower=0)
+    checkr::assert_integer(data$topic, lower=0)
+
     mode <- get_bayes_factor_mode()
     mode$update(data)
     mode
@@ -55,6 +46,8 @@ get_bayes_factor_mode_from_data <- function(data) {
 #'
 #' @export
 get_bayes_factor_mode_from_model <- function(model, gibbs_iters, dst) {
+    checkr::assert_integer(gibbs_iters, len=1, lower=1)
+
     mode <- get_bayes_factor_mode()
 
     for (i in 1:gibbs_iters) {
@@ -78,7 +71,7 @@ get_bayes_factor_mode_from_model <- function(model, gibbs_iters, dst) {
 #'
 #' @export
 write_bayes_factor_mode_to_file <- function(mode, dst) {
-    data <- mode$get_data()
+    data <- mode$data()
     write.table(x=data, file=dst, row.names=FALSE)
 }
 
@@ -94,6 +87,8 @@ write_bayes_factor_mode_to_file <- function(mode, dst) {
 #'
 #' @export
 read_bayes_factor_mode_from_file <- function(src) {
+    checkr::assert_file_type(src, ".mode")
+
     data <- read.table(src)
     get_bayes_factor_mode_from_data(data)
 }
