@@ -7,7 +7,7 @@ generate_samples_from <- function(model, filename) {
 
     if (file.exists(filename)) file.remove(filename)
 
-    table %>%
+    tbl %>%
         dplyr::select(doc, pos, type, topic)
 }
 
