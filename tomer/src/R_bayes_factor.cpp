@@ -16,7 +16,7 @@ void mode_update(TypeTopicIndicatorMode* const mode,
   Rcpp::IntegerVector doc = types_topic_indicators["doc"];
   Rcpp::IntegerVector pos = types_topic_indicators["pos"];
   Rcpp::IntegerVector type = types_topic_indicators["type"];
-  Rcpp::IntegerVector topic_indicators = types_topic_indicators["topic_indicator"];
+  Rcpp::IntegerVector topic_indicators = types_topic_indicators["topic"];
 
 
   for (unsigned i = 0; i < n; ++i) {
@@ -51,7 +51,7 @@ Rcpp::DataFrame mode_get_data(TypeTopicIndicatorMode* const mode) {
   return Rcpp::DataFrame::create(Rcpp::Named("doc") = doc,
                                  Rcpp::Named("pos") = pos,
                                  Rcpp::Named("type") = type,
-                                 Rcpp::Named("topic_indicator") = topic_indicator);
+                                 Rcpp::Named("topic") = topic_indicator);
 }
 
 Rcpp::IntegerVector mode_types_to_topic_indicators(TypeTopicIndicatorMode* const mode,
