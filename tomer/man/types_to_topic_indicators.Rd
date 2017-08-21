@@ -2,15 +2,15 @@
 % Please edit documentation in R/bayes_factor_mode.R
 \name{types_to_topic_indicators}
 \alias{types_to_topic_indicators}
-\title{Type vector to topic indicator vector}
+\title{Data frame of types to topic indicator vector}
 \usage{
 types_to_topic_indicators(types, mode)
 }
 \arguments{
-\item{types}{A vector of types.}
+\item{types}{A data frame containing the types}
 
 \item{mode}{A bayes factor mode.}
 }
 \description{
-Translate a vector of types to their topic indicators given a mode.
+Translate a data frame of types to their topic indicators given a mode.
 }

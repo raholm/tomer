@@ -88,7 +88,7 @@ double compute_log_bayes_factor_cpp(const Rcpp::IntegerVector& topic_indicators,
 
 RCPP_MODULE(mod_bayes_factor) {
   Rcpp::class_<TypeTopicIndicatorMode>("TypeTopicIndicatorMode")
-    .constructor()
+    .default_constructor()
 
     .method("update", &mode_update)
     .method("types_to_topic_indicators", &mode_types_to_topic_indicators)

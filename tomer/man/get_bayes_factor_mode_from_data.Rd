@@ -4,13 +4,11 @@
 \alias{get_bayes_factor_mode_from_data}
 \title{Creates a bayes factor mode given data}
 \usage{
-get_bayes_factor_mode_from_data(types, topic_indicators)
+get_bayes_factor_mode_from_data(data)
 }
 \arguments{
-\item{types}{A vector of types.}
-
-\item{topic_indicators}{A vector of topic indicators.}
+\item{types}{A data frame of types and topic indicators.}
 }
 \description{
-Creates a bayes factor mode given a type vector and a topic indicator vector.
+Creates a bayes factor mode given a data frame of types and topic indicators.
 }
