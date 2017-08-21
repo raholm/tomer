@@ -86,8 +86,22 @@ namespace tomer {
 
   };
 
-  using TypeTopicIndicatorMode = TopicIndicatorMode<String>;
-  using PositionTypeTopicIndicatorMode = TopicIndicatorMode<size_t>;
+  struct LDAType {
+    LDAType() = default;
+
+    bool operator<(const LDAType& rhs) const {
+      return (doc < rhs.doc) ||
+        (doc == rhs.doc && pos < rhs.pos) ||
+        (doc == rhs.doc && pos == rhs.pos && type < rhs.type);
+    }
+
+    size_t doc;
+    size_t pos;
+    size_t type;
+
+  };
+
+  using TypeTopicIndicatorMode = TopicIndicatorMode<LDAType>;
 
 } // namespace tomer
 

@@ -15,7 +15,6 @@ namespace tomer {
       init();
     }
 
-
   double LeftToRightEvaluator::evaluate(const TypeSequenceContainer& types,
                                         size_t n_particles,
                                         bool resampling) {

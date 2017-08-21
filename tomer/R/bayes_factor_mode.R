@@ -1,14 +1,15 @@
 #' @title
-#' Type vector to topic indicator vector
+#' Data frame of types to topic indicator vector
 #'
 #' @description
-#' Translate a vector of types to their topic indicators given a mode.
+#' Translate a data frame of types to their topic indicators given a mode.
 #'
-#' @param types A vector of types.
+#' @param types A data frame containing the types
 #' @param mode A bayes factor mode.
 #'
 #' @export
 types_to_topic_indicators <- function(types, mode) {
+    ## TODO: This function should be removed
     mode$types_to_topic_indicators(types)
 }
 
@@ -31,15 +32,14 @@ get_bayes_factor_mode <- function() {
 #' Creates a bayes factor mode given data
 #'
 #' @description
-#' Creates a bayes factor mode given a type vector and a topic indicator vector.
+#' Creates a bayes factor mode given a data frame of types and topic indicators.
 #'
-#' @param types A vector of types.
-#' @param topic_indicators A vector of topic indicators.
+#' @param types A data frame of types and topic indicators.
 #'
 #' @export
-get_bayes_factor_mode_from_data <- function(types, topic_indicators) {
+get_bayes_factor_mode_from_data <- function(data) {
     mode <- get_bayes_factor_mode()
-    mode$update(types, topic_indicators)
+    mode$update(data)
     mode
 }
 
@@ -59,7 +59,7 @@ get_bayes_factor_mode_from_model <- function(model, gibbs_iters, dst) {
 
     for (i in 1:gibbs_iters) {
         samples <- generate_samples_from(model, dst)
-        mode$update(samples$token, samples$topic)
+        mode$update(samples)
     }
 
     mode

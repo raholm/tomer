@@ -7,37 +7,73 @@
 using namespace tomer;
 
 void mode_update(TypeTopicIndicatorMode* const mode,
-                 const Rcpp::StringVector& tokens,
-                 const Rcpp::IntegerVector& topic_indicators) {
-  mode->update(Rcpp::as<StringVector>(tokens),
+                 const Rcpp::DataFrame& types_topic_indicators) {
+  auto n = types_topic_indicators.nrow();
+
+  TypeTopicIndicatorMode::type_vector types(n);
+  TypeTopicIndicatorMode::type t;
+
+  Rcpp::IntegerVector doc = types_topic_indicators["doc"];
+  Rcpp::IntegerVector pos = types_topic_indicators["pos"];
+  Rcpp::IntegerVector type = types_topic_indicators["type"];
+  Rcpp::IntegerVector topic_indicators = types_topic_indicators["topic_indicator"];
+
+
+  for (unsigned i = 0; i < n; ++i) {
+    t.doc = doc(i);
+    t.pos = pos(i);
+    t.type = type(i);
+
+    types.at(i) = t;
+  }
+
+  mode->update(types,
                Rcpp::as<IntVector>(topic_indicators));
 }
 
 Rcpp::DataFrame mode_get_data(TypeTopicIndicatorMode* const mode) {
   auto data = mode->get_data();
+  auto n = data.size();
 
-  Rcpp::StringVector types(data.size());
-  Rcpp::IntegerVector topic_indicators(data.size());
+  Rcpp::IntegerVector doc(n);
+  Rcpp::IntegerVector pos(n);
+  Rcpp::IntegerVector type(n);
+  Rcpp::IntegerVector topic_indicator(n);
 
-  for (unsigned i = 0; i < data.size(); ++i) {
+  for (unsigned i = 0; i < n; ++i) {
     auto pair = data.at(i);
-    types(i) = pair.first;
-    topic_indicators(i) = pair.second;
+    doc(i) = pair.first.doc;
+    pos(i) = pair.first.pos;
+    type(i) = pair.first.type;
+    topic_indicator(i) = pair.second;
   }
 
-  return Rcpp::DataFrame::create(Rcpp::Named("type") = types,
-                                 Rcpp::Named("topic_indicator") = topic_indicators);
+  return Rcpp::DataFrame::create(Rcpp::Named("doc") = doc,
+                                 Rcpp::Named("pos") = pos,
+                                 Rcpp::Named("type") = type,
+                                 Rcpp::Named("topic_indicator") = topic_indicator);
 }
 
 Rcpp::IntegerVector mode_types_to_topic_indicators(TypeTopicIndicatorMode* const mode,
-                                                   const Rcpp::StringVector& types) {
-  IntVector topic_indicators;
-  topic_indicators.reserve(types.size());
+                                                   const Rcpp::DataFrame& types) {
+  auto n = types.nrow();
 
-  for (auto const& t : types) {
-    auto type = Rcpp::as<TypeTopicIndicatorMode::type>(t);
-    if (mode->contains(type))
-      topic_indicators.push_back(mode->get_mode(type));
+  IntVector topic_indicators;
+  topic_indicators.reserve(n);
+
+  TypeTopicIndicatorMode::type t;
+
+  Rcpp::IntegerVector doc = types["doc"];
+  Rcpp::IntegerVector pos = types["pos"];
+  Rcpp::IntegerVector type = types["type"];
+
+  for (unsigned i = 0; i < n; ++i) {
+    t.doc = doc(i);
+    t.pos = pos(i);
+    t.type = type(i);
+
+    if (mode->contains(t))
+      topic_indicators.push_back(mode->get_mode(t));
   }
 
   return Rcpp::wrap(topic_indicators);

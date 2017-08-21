@@ -7,7 +7,8 @@ generate_samples_from <- function(model, filename) {
 
     if (file.exists(filename)) file.remove(filename)
 
-    list(token=as.character(tbl$token), topic=as.numeric(tbl$topic))
+    table %>%
+        dplyr::select(doc, pos, type, topic)
 }
 
 get_bayes_factor_module <- function() {
