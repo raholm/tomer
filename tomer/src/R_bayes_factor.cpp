@@ -79,6 +79,7 @@ Rcpp::IntegerVector mode_types_to_topic_indicators(TypeTopicIndicatorMode* const
   return Rcpp::wrap(topic_indicators);
 }
 
+// [[Rcpp::export]]
 double compute_log_bayes_factor_cpp(const Rcpp::IntegerVector& topic_indicators,
                                     size_t n_topics,
                                     double beta) {
@@ -93,6 +94,4 @@ RCPP_MODULE(mod_bayes_factor) {
     .method("types_to_topic_indicators", &mode_types_to_topic_indicators)
     .method("get_data", &mode_get_data)
     ;
-
-  function("compute_log_bayes_factor", &compute_log_bayes_factor_cpp);
 }
