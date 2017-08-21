@@ -89,6 +89,6 @@ write_bayes_factor_mode_to_file <- function(mode, dst) {
 read_bayes_factor_mode_from_file <- function(src) {
     checkr::assert_file_type(src, ".mode")
 
-    data <- read.table(src)
+    data <- read.table(src, header=T)
     get_bayes_factor_mode_from_data(data)
 }
