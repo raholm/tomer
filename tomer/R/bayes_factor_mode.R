@@ -95,5 +95,5 @@ write_bayes_factor_mode_to_file <- function(mode, dst) {
 #' @export
 read_bayes_factor_mode_from_file <- function(src) {
     data <- read.table(src)
-    get_bayes_factor_mode_from_data(data$type, data$topic_indicator)
+    get_bayes_factor_mode_from_data(data)
 }
