@@ -1,3 +1,4 @@
+#' @export
 sample_document <- function(size, model, alpha) {
     ntopics <- nrow(model)
     nwords <- ncol(model)
@@ -28,6 +29,7 @@ sample_document <- function(size, model, alpha) {
     dplyr::data_frame(token=words, topic=topic_indicators)
 }
 
+#' @export
 sample_corpus <- function(n, size, model, alpha) {
     ntopics <- nrow(model)
     nwords <- ncol(model)
