@@ -71,20 +71,3 @@ sample_corpus <- function(n, size, model, alpha) {
     plyr::rbind.fill(lapply(1:n, sample_document)) %>%
         dplyr::as_data_frame()
 }
-
-
-model <- matrix(c(1, 2, 3, 3, 2, 1), nrow=2)
-size <- c(2, 5, 10, 15)
-alpha <- 5
-n <- 4
-
-document <- sample_document(size[3], model, alpha)
-corpus <- sample_corpus(n, size, model, alpha)
-
-words <- as.factor(c("foo", "bar", "foo1", "foo"))
-
-corpus
-corpus$token <- as.character(words[corpus$token])
-corpus$id <- as.character(corpus$id)
-
-corpus %>% texcur::tf_merge_tokens()
