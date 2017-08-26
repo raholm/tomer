@@ -36,6 +36,12 @@ namespace tomer {
   using DoubleMatrix = Vector<DoubleVector>;
   using TypeMatrix = Vector<TypeVector>;
 
+  // NPMI
+  typename WordIndex = size_t;
+  typename Word = String;
+  typename Count = size_t;
+
+
 } // namespace tomer
 
 
