@@ -14,8 +14,8 @@ sample_document <- function(size, model, alpha) {
 
     topic_probs <- MCMCpack::rdirichlet(n, alpha)
 
-    topic_types <- 1:ntopics
-    token_types <- 1:nwords
+    topic_types <- 0:(ntopics - 1)
+    token_types <- 0:(nwords - 1)
 
     sampler <- function(id) {
         topic_indicators <- sample(x=topic_types,
