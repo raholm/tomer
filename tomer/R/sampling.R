@@ -27,7 +27,7 @@ sample_document <- function(size, model, alpha) {
             sample(x=token_types,
                    size=1,
                    replace=TRUE,
-                   prob=model[topic,])
+                   prob=model[topic + 1,])
 
         })
 
