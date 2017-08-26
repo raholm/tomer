@@ -17,7 +17,7 @@ sample_document <- function(size, model, alpha) {
     topic_types <- 1:ntopics
     token_types <- 1:nwords
 
-    sample_document <- function(id) {
+    sampler <- function(id) {
         topic_indicators <- sample(x=topic_types,
                                    size=size[id],
                                    replace=TRUE,
@@ -36,6 +36,6 @@ sample_document <- function(size, model, alpha) {
                           topic=topic_indicators)
     }
 
-    plyr::rbind.fill(lapply(1:n, sample_document)) %>%
+    plyr::rbind.fill(lapply(1:n, sampler)) %>%
         dplyr::as_data_frame()
 }
