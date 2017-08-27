@@ -10,6 +10,7 @@
 namespace tomer {
 
   static const WordIndex UNOBSERVED_WORDINDEX = -1;
+  static const Word UNKNOWN_WORD = "<!!unknown!!>";
 
   class WordToIndexTransformer {
   public:
@@ -46,6 +47,20 @@ namespace tomer {
       return indexes;
     }
 
+    inline Word revert(const WordIndex& index) {
+      return get_word_or_invalid_word(index);
+    }
+
+    inline Vector<Word> revert(const Vector<WordIndex>& doc) {
+      Vector<Word> words;
+      words.reserve(doc.size());
+
+      for (auto const& index : doc)
+        words.push_back(revert(index));
+
+      return words;
+    }
+
   private:
     WordIndex next_index_;
     Vector<Word> words_;
@@ -57,6 +72,11 @@ namespace tomer {
         words_.push_back(word);
         ++next_index_;
       }
+    }
+
+    inline Word get_word_or_invalid_word(const WordIndex& index) const {
+      if (index < 0 || index >= next_index_) return UNKNOWN_WORD;
+      return words_.at(index);
     }
 
     inline WordIndex get_index_or_invalid_index(const Word& word) const {
