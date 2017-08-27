@@ -7,10 +7,9 @@
 
 #include "def.h"
 
-
 namespace tomer {
 
-  static const WordIndex INVALID_WORDINDEX = -1;
+  static const WordIndex UNOBSERVED_WORDINDEX = -1;
 
   class WordToIndexTransformer {
   public:
@@ -47,23 +46,6 @@ namespace tomer {
       return indexes;
     }
 
-    inline bool has(const Word& word) const {
-      return indexes_.find(word) != indexes_.end();
-    }
-
-    inline const WordIndex& at(const Word& word) const {
-      auto it = indexes_.find(word);
-      if (it == indexes_.end())
-        throw std::out_of_range("Word does not exist.");
-      return it->second;
-    }
-
-    inline const Word& at(const WordIndex& index) const {
-      if (index < 0 || index >= next_index_)
-        throw std::out_of_range("Index does not exist.");
-      return words_.at(index);
-    }
-
   private:
     WordIndex next_index_;
     Vector<Word> words_;
@@ -79,7 +61,7 @@ namespace tomer {
 
     inline WordIndex get_index_or_invalid_index(const Word& word) const {
       auto it = indexes_.find(word);
-      if (it == indexes_.end()) return INVALID_WORDINDEX;
+      if (it == indexes_.end()) return UNOBSERVED_WORDINDEX;
       return it->second;
     }
 
@@ -101,13 +83,13 @@ namespace tomer {
     TopicWordIndexRelation(TopicWordIndexRelation&& other) = default;
 
     inline void update(WordIndex word) {
-      if (word == word_ || word == INVALID_WORDINDEX) return;
+      if (word == word_ || word == UNOBSERVED_WORDINDEX) return;
       related_words_.insert(word);
     }
 
     inline void update(const Vector<WordIndex>& words) {
       std::copy_if(words.cbegin(), words.cend(), std::inserter(related_words_, related_words_.end()),
-                   [&](WordIndex const& word) { return word != word_ && word != INVALID_WORDINDEX; } );
+                   [&](WordIndex const& word) { return word != word_ && word != UNOBSERVED_WORDINDEX; } );
     }
 
     inline bool is_related_to(const WordIndex& word) const {
@@ -126,7 +108,7 @@ namespace tomer {
     explicit TopicWordIndexRelationMap(const Vector<WordIndex>& words,
                                        const Vector<TopicWordIndexRelation> relations) {
       for (unsigned i = 0; i < words.size(); ++i)
-        if (words.at(i) != INVALID_WORDINDEX)
+        if (words.at(i) != UNOBSERVED_WORDINDEX)
           relations_.insert(std::make_pair(words.at(i), relations.at(i)));
     }
 
@@ -136,7 +118,7 @@ namespace tomer {
     ~TopicWordIndexRelationMap() = default;
 
     void update(const WordIndex& word, const WordIndex related_word) {
-      if (word == INVALID_WORDINDEX) return;
+      if (word == UNOBSERVED_WORDINDEX) return;
       auto it = relations_.find(word);
       if (it == relations_.end())
         relations_.insert(std::make_pair(word, TopicWordIndexRelation(word, related_word)));
@@ -145,7 +127,7 @@ namespace tomer {
     }
 
     void update(const WordIndex& word, const Vector<WordIndex>& related_words) {
-      if (word == INVALID_WORDINDEX) return;
+      if (word == UNOBSERVED_WORDINDEX) return;
       auto it = relations_.find(word);
       if (it == relations_.end())
         relations_.insert(std::make_pair(word, TopicWordIndexRelation(word, related_words)));
@@ -178,15 +160,15 @@ namespace tomer {
         counts_{} {}
 
     inline void update(const Word& word) {
-      if (transformer_.has(word)) add_or_incr(word);
+      add_or_incr(word);
     }
 
     inline void update(const Word& word1, const Word& word2) {
       if (word1 == word2) return;
       auto word1_index = transformer_.transform(word1);
       auto word2_index = transformer_.transform(word2);
-      if (word1_index == INVALID_WORDINDEX ||
-          word2_index == INVALID_WORDINDEX) return;
+      if (word1_index == UNOBSERVED_WORDINDEX ||
+          word2_index == UNOBSERVED_WORDINDEX) return;
 
       if ((word_relations_.contains(word1_index) &&
            word_relations_.get_relation(word1_index).is_related_to(word2_index)) ||
@@ -215,7 +197,7 @@ namespace tomer {
 
     inline void add_or_incr(const Word& word) {
       auto index = transformer_.transform(word);
-      if (index == INVALID_WORDINDEX) return;
+      if (index == UNOBSERVED_WORDINDEX) return;
       auto p = counts_.insert(std::make_pair(index, 1));
       if (!p.second) counts_[index] += 1;
     }
