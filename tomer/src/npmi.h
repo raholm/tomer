@@ -34,7 +34,7 @@ namespace tomer {
     }
 
     inline WordIndex transform(const Word& word) const {
-      return has(word) ? at(word) : INVALID_WORDINDEX;
+      return get_index_or_invalid_index(word);
     }
 
     inline Vector<WordIndex> transform(const Vector<Word>& doc) const {
@@ -51,14 +51,14 @@ namespace tomer {
       return indexes_.find(word) != indexes_.end();
     }
 
-    const WordIndex& at(const Word& word) const {
+    inline const WordIndex& at(const Word& word) const {
       auto it = indexes_.find(word);
       if (it == indexes_.end())
         throw std::out_of_range("Word does not exist.");
       return it->second;
     }
 
-    const Word& at(const WordIndex& index) const {
+    inline const Word& at(const WordIndex& index) const {
       if (index < 0 || index >= next_index_)
         throw std::out_of_range("Index does not exist.");
       return words_.at(index);
@@ -75,6 +75,12 @@ namespace tomer {
         words_.push_back(word);
         ++next_index_;
       }
+    }
+
+    inline WordIndex get_index_or_invalid_index(const Word& word) const {
+      auto it = indexes_.find(word);
+      if (it == indexes_.end()) return INVALID_WORDINDEX;
+      return it->second;
     }
 
   };
