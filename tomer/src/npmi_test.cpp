@@ -27,8 +27,34 @@ namespace tomer {
         expect_true(transformer.revert(4) == UNKNOWN_WORD);
       }
 
-      test_that("TopicWordIndexRelation ") {
+      test_that("TopicWordIndexRelation works properly") {
+        TopicWordIndexRelation relation(0);
 
+        WordIndex idata = 1;
+        Vector<WordIndex> vdata{0, 1, UNOBSERVED_WORDINDEX, 2, 1};
+
+        expect_false(relation.is_related_to(0));
+        expect_false(relation.is_related_to(1));
+        expect_false(relation.is_related_to(2));
+        expect_false(relation.is_related_to(UNOBSERVED_WORDINDEX));
+
+        relation.update(idata);
+        relation.update(vdata);
+
+        expect_false(relation.is_related_to(0));
+        expect_true(relation.is_related_to(1));
+        expect_true(relation.is_related_to(2));
+        expect_false(relation.is_related_to(UNOBSERVED_WORDINDEX));
+
+        TopicWordIndexRelation relation2(0, idata);
+        expect_false(relation2.is_related_to(0));
+        expect_true(relation2.is_related_to(1));
+
+        TopicWordIndexRelation relation3(0, vdata);
+        expect_false(relation3.is_related_to(0));
+        expect_true(relation3.is_related_to(1));
+        expect_true(relation3.is_related_to(2));
+        expect_false(relation3.is_related_to(UNOBSERVED_WORDINDEX));
       }
     }
 

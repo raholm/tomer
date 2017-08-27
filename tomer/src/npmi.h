@@ -94,10 +94,14 @@ namespace tomer {
         related_words_{} {}
     explicit TopicWordIndexRelation(WordIndex word, const WordIndex& related_word)
       : word_{word},
-        related_words_{related_word} {}
+        related_words_{} {
+          update(related_word);
+        }
     explicit TopicWordIndexRelation(WordIndex word, const Vector<WordIndex>& related_words)
       : word_{word},
-        related_words_{related_words.cbegin(), related_words.cend()} {}
+        related_words_{} {
+          update(related_words);
+        }
 
     TopicWordIndexRelation(const TopicWordIndexRelation& other) = default;
     TopicWordIndexRelation(TopicWordIndexRelation&& other) = default;
@@ -109,7 +113,9 @@ namespace tomer {
 
     inline void update(const Vector<WordIndex>& words) {
       std::copy_if(words.cbegin(), words.cend(), std::inserter(related_words_, related_words_.end()),
-                   [&](WordIndex const& word) { return word != word_ && word != UNOBSERVED_WORDINDEX; } );
+                   [&](WordIndex const& word) {
+                     return word != word_ && word != UNOBSERVED_WORDINDEX;
+                   });
     }
 
     inline bool is_related_to(const WordIndex& word) const {
