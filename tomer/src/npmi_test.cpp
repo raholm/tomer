@@ -56,6 +56,18 @@ namespace tomer {
         expect_true(relation3.is_related_to(2));
         expect_false(relation3.is_related_to(UNOBSERVED_WORDINDEX));
       }
+
+      test_that("TopicWordIndexRelationMap works properly") {
+
+      }
+
+      test_that("WordCount works properly") {
+
+      }
+
+      test_that("NormalisedPointwiseMutualInformationEvaluator works properly") {
+
+      }
     }
 
   } // namespace test
