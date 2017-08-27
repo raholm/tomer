@@ -67,6 +67,12 @@ void calculate_word_counts_and_window_count(const Rcpp::List& documents,
                                        doc_words.begin() + tail_id};
       }
 
+      /*
+        Note: should each word only count once for each window, i.e., make words_in_window a set?
+        For example the window (foo, bar, foo) is actually just (foo, bar, bar|foo) instead of
+        (foo, bar, foo, bar|foo, bar|foo)
+       */
+
       auto nwords = words_in_window.size();
 
       for (unsigned left_idx = 0; left_idx < nwords; ++left_idx) {
@@ -82,6 +88,13 @@ void calculate_word_counts_and_window_count(const Rcpp::List& documents,
   }
 
   data.window_count = window_count;
+}
+
+template<typename T>
+void remove_duplicates(Vector<T>& v) {
+  Set<T> s;
+  for (auto const& e : v) s.insert(e);
+  v.assign(s.begin(), s.end());
 }
 
 Rcpp::NumericVector evaluate_npmi_cpp(const Rcpp::List& topics,
