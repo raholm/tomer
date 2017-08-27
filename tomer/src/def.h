@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <set>
 #include <memory>
 
 namespace tomer {
@@ -16,6 +17,9 @@ namespace tomer {
 
   template<typename Key, typename Value>
   using Map = std::map<Key, Value>;
+
+  template<typename T>
+  using Set = std::set<T>;
 
   template<typename First, typename Second>
   using Pair = std::pair<First, Second>;
@@ -37,9 +41,9 @@ namespace tomer {
   using TypeMatrix = Vector<TypeVector>;
 
   // NPMI
-  typename WordIndex = size_t;
-  typename Word = String;
-  typename Count = size_t;
+  using WordIndex = int;
+  using Word = String;
+  using Count = size_t;
 
 
 } // namespace tomer

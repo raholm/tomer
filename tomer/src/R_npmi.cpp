@@ -26,7 +26,7 @@ WordCount create_word_counts(const Rcpp::List& topics) {
   TopicWordIndexRelationMap relations;
 
   for (unsigned i = 0; i < ntopics; ++i) {
-    auto topic_words = Rcpp::as<Vector<Word>(topics(i));
+    Vector<Word> topic_words = Rcpp::as<Vector<Word>>(topics(i));
     transformer.update(topic_words);
     auto topic_word_indexes = transformer.transform(topic_words);
 
@@ -47,9 +47,8 @@ void calculate_word_counts_and_window_count(const Rcpp::List& documents,
   WordCount& word_counts = data.word_counts;
 
   for (unsigned i = 0; i < ndocs; ++i) {
-    auto doc_words = Rcpp::as<Vector<Word>(documents(i));
-    auto doc_word_indexes = data.transformer.transform(doc_words);
-    auto doc_length = doc_word_indexes.size();
+    Vector<Word> doc_words = Rcpp::as<Vector<Word>>(documents(i));
+    auto doc_length = doc_words.size();
 
     if (window_size == 0)
       nwindows = 1;
@@ -62,10 +61,10 @@ void calculate_word_counts_and_window_count(const Rcpp::List& documents,
       if (window_size == 0) {
         words_in_window = doc_words;
       } else {
-        auto head_id = std::min(0, j - window_size);
-        auto tail_id = std::min(j, doc_words.size());
-        words_in_window = Vector<Word>(doc_words.cbegin() + head_id,
-                                       doc_words.cbegin() + tail_id);
+        auto head_id = std::max((size_t) 0, (size_t) j - window_size);
+        auto tail_id = std::min((size_t) j, (size_t) doc_words.size());
+        words_in_window = Vector<Word>{doc_words.begin() + head_id,
+                                       doc_words.begin() + tail_id};
       }
 
       auto nwords = words_in_window.size();
@@ -96,7 +95,7 @@ Rcpp::NumericVector evaluate_npmi_cpp(const Rcpp::List& topics,
   Vector<double> vals(ntopics);
 
   for (unsigned i = 0; i < ntopics; ++i) {
-    auto topic_words = Rcpp::as<Vector<Word>(topics(i));
+    Vector<Word> topic_words = Rcpp::as<Vector<Word>>(topics(i));
     vals.at(i) = evaluator.evaluate(topic_words);
   }
 
