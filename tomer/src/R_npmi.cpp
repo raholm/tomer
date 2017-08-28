@@ -90,13 +90,6 @@ void calculate_word_counts_and_window_count(const Rcpp::List& documents,
   data.window_count = window_count;
 }
 
-template<typename T>
-void remove_duplicates(Vector<T>& v) {
-  Set<T> s;
-  for (auto const& e : v) s.insert(e);
-  v.assign(s.begin(), s.end());
-}
-
 Rcpp::NumericVector evaluate_npmi_cpp(const Rcpp::List& topics,
                                       const Rcpp::List& documents,
                                       size_t window_size) {
