@@ -16,6 +16,10 @@ namespace tomer {
         expect_true(v1.at(i) == v2.at(i));
     }
 
+    inline bool is_equal(double a, double b) {
+      return std::fabs(a - b) < 0.00001;
+    }
+
   } // namespace test
 } // namespace tomer
 

@@ -283,7 +283,7 @@ namespace tomer {
 
     inline double compute_association(const Word& left, const Word& right) const {
       auto left_count = word_counts_.get_count(left);
-      auto right_count = word_counts_.get_count(left);
+      auto right_count = word_counts_.get_count(right);
       auto combined_count = word_counts_.get_count(left, right);
 
       if (missing_count(left_count) ||

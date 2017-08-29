@@ -148,8 +148,7 @@ namespace tomer {
         expect_true(word_counts.get_count("superman", "foo") == 1);
         expect_true(word_counts.get_count("foo", "superman") == 1);
         expect_true(word_counts.get_count("superman", "bar") == 0);
-        expect_true(word_counts.get_count("bat", "superman") == 0);
-
+        expect_true(word_counts.get_count("bar", "superman") == 0);
         expect_true(word_counts.get_count("foo", "batman") == 0);
 
         size_t window_count = 5;
@@ -160,9 +159,9 @@ namespace tomer {
           count(foo) = 2
           count(bar) = 2
           count(foo, bar) = 2
-          numerator = log((2 * 5) / (2 * 2)) = log(10 / 4)
+          numerator = log((2 * 5) / (2 * 2)) = log(10 / 4) = log(5 / 2)
           denominator = -log(2 / 5)
-          val = ?
+          val = log(5 / 2) / -log(2 / 5)
 
           (foo, batman)
           count(foo) = 2
@@ -174,29 +173,60 @@ namespace tomer {
           count(foo) = 2
           count(superman) = 1
           count(foo, superman) = 1
-          numerator = log((1 * 5) / (2 * 1))
+          numerator = log((1 * 5) / (2 * 1)) = log(5 / 2)
           denominator = -log(1 / 5)
-          val = ?
+          val = log(5 / 2) / -log(1 / 5)
 
           (foo, spiderman)
+          count(foo) = 2
+          count(spiderman) = 0
+          count(foo, spiderman) = 0
+          val = 0
 
           (bar, batman)
+          count(foo) = 2
+          count(spiderman) = 0
+          count(foo, spiderman) = 0
+          val = 0
 
           (bar, superman)
+          count(bar) = 2
+          count(superman) = 1
+          count(bar, superman) = 0
+          val = 0
 
           (bar, spiderman)
+          count(bar) = 2
+          count(spiderman) = 0
+          count(bar, spiderman) = 0
+          val = 0
 
           (batman, superman)
+          count(batman) = 3
+          count(superman) = 1
+          count(batman, superman) = 2
+          numerator = log((2 * 5) / (3 * 1))
+          denominator = -log(2 / 5)
+          val = log(10 / 3) / -log(2 / 5)
 
           (batman, spiderman)
+          count(batman) = 3
+          count(spiderman) = 0
+          count(batman, spiderman) = 0
+          val = 0
 
           (superman, spiderman)
-         */
+          count(superman) = 1
+          count(spiderman) = 0
+          count(superman, spiderman) = 0
+          val = 0
+        */
 
         double actual = evaluator.evaluate({"foo", "bar", "batman", "superman", "spiderman"});
-        double expected = 0;
-        expect_true(actual == expected);
-
+        double expected = log((double) 5 / 2) / -log((double) 2 / 5) +
+          log((double) 5 / 2) / -log((double) 1 / 5) +
+          log((double) 10 / 3) / -log((double) 2 / 5);
+        expect_true(is_equal(actual, expected));
       }
     }
 
