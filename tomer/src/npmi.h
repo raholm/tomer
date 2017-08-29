@@ -28,8 +28,8 @@ namespace tomer {
       add_if_missing(word);
     }
 
-    inline void update(const Vector<Word>& doc) {
-      for (auto const& word : doc)
+    inline void update(const Vector<Word>& words) {
+      for (auto const& word : words)
         add_if_missing(word);
     }
 
@@ -37,11 +37,11 @@ namespace tomer {
       return get_index_or_invalid_index(word);
     }
 
-    inline Vector<WordIndex> transform(const Vector<Word>& doc) const {
+    inline Vector<WordIndex> transform(const Vector<Word>& words) const {
       Vector<WordIndex> indexes;
-      indexes.reserve(doc.size());
+      indexes.reserve(words.size());
 
-      for (auto const& word : doc)
+      for (auto const& word : words)
         indexes.push_back(transform(word));
 
       return indexes;
@@ -51,11 +51,11 @@ namespace tomer {
       return get_word_or_invalid_word(index);
     }
 
-    inline Vector<Word> revert(const Vector<WordIndex>& doc) {
+    inline Vector<Word> revert(const Vector<WordIndex>& indexes) {
       Vector<Word> words;
-      words.reserve(doc.size());
+      words.reserve(indexes.size());
 
-      for (auto const& index : doc)
+      for (auto const& index : indexes)
         words.push_back(revert(index));
 
       return words;
@@ -165,6 +165,12 @@ namespace tomer {
       return relations_.find(word) != relations_.end();
     }
 
+    inline bool is_related_to(const WordIndex& word, const WordIndex& related) const {
+      auto it = relations_.find(word);
+      if (it == relations_.end()) return false;
+      return it->second.is_related_to(related);
+    }
+
     inline const TopicWordIndexRelation& get_relation(const WordIndex& word) const {
       auto it = relations_.find(word);
       if (it == relations_.end())
@@ -197,9 +203,9 @@ namespace tomer {
           word2_index == UNOBSERVED_WORDINDEX) return;
 
       if ((word_relations_.contains(word1_index) &&
-           word_relations_.get_relation(word1_index).is_related_to(word2_index)) ||
+           word_relations_.is_related_to(word1_index, word2_index)) ||
           (word_relations_.contains(word2_index) &&
-           word_relations_.get_relation(word2_index).is_related_to(word1_index))) {
+           word_relations_.is_related_to(word2_index, word1_index))) {
         Word combined = get_combined_word(word1, word2);
         transformer_.update(combined);
         add_or_incr(combined);

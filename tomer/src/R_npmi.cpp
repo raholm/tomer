@@ -1,6 +1,7 @@
 #include <Rcpp.h>
 
 #include "def.h"
+#include "util.h"
 #include "npmi.h"
 
 using namespace tomer;
@@ -73,6 +74,7 @@ void calculate_word_counts_and_window_count(const Rcpp::List& documents,
         (foo, bar, foo, bar|foo, bar|foo)
        */
 
+      remove_duplicates(words_in_window);
       auto nwords = words_in_window.size();
 
       for (unsigned left_idx = 0; left_idx < nwords; ++left_idx) {
