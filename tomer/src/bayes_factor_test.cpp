@@ -4,6 +4,7 @@
 #include <cmath>
 #include <random>
 
+#include "test_helper.h"
 #include "bayes_factor.h"
 
 namespace tomer {
@@ -74,7 +75,12 @@ namespace tomer {
           log(3 * 2 * 1) + log(3 * 2 * 1);
         double actual = compute_log_bayes_factor(topic_indicators, n_topics, beta);
 
-        expect_true(equal(actual, expected));
+        expect_true(is_equal(actual, expected));
+
+        topic_indicators = {1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1};
+        actual = compute_log_bayes_factor(topic_indicators, n_topics, 1);
+        expected = log((double) 8 / 7);
+        expect_true(is_equal(actual, expected));
       }
 
       test_that("compute_log_bayes_factor is equal to compute_log_bayes_factor_slow") {
