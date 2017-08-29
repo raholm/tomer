@@ -191,8 +191,17 @@ namespace tomer {
         word_relations_{word_relations},
         counts_{} {}
 
+    inline void update(const Vector<Word>& words) {
+      for (auto const& word : words) update(word);
+    }
+
     inline void update(const Word& word) {
       add_or_incr(word);
+    }
+
+    inline void update(const Vector<Word>& words1, const Vector<Word>& words2) {
+      auto n = std::min(words1.size(), words2.size());
+      for (unsigned i = 0; i < n; ++i) update(words1.at(i), words2.at(i));
     }
 
     inline void update(const Word& word1, const Word& word2) {
