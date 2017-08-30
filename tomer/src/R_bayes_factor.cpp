@@ -8,7 +8,7 @@ using namespace tomer;
 
 void mode_update(TypeTopicIndicatorMode* const mode,
                  const Rcpp::DataFrame& types_topic_indicators) {
-  auto n = types_topic_indicators.nrow();
+  unsigned n = types_topic_indicators.nrow();
 
   TypeTopicIndicatorMode::type_vector types(n);
   TypeTopicIndicatorMode::type t;
@@ -33,7 +33,7 @@ void mode_update(TypeTopicIndicatorMode* const mode,
 
 Rcpp::DataFrame mode_get_data(TypeTopicIndicatorMode* const mode) {
   auto data = mode->get_data();
-  auto n = data.size();
+  unsigned n = data.size();
 
   Rcpp::IntegerVector doc(n);
   Rcpp::IntegerVector pos(n);
@@ -56,7 +56,7 @@ Rcpp::DataFrame mode_get_data(TypeTopicIndicatorMode* const mode) {
 
 Rcpp::IntegerVector mode_types_to_topic_indicators(TypeTopicIndicatorMode* const mode,
                                                    const Rcpp::DataFrame& types) {
-  auto n = types.nrow();
+  unsigned n = types.nrow();
 
   IntVector topic_indicators;
   topic_indicators.reserve(n);

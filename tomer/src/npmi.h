@@ -191,6 +191,9 @@ namespace tomer {
         word_relations_{word_relations},
         counts_{} {}
 
+    WordCount(const WordCount& other) = default;
+    WordCount(WordCount&& other) = default;
+
     inline void update(const Vector<Word>& words) {
       for (auto const& word : words) update(word);
     }

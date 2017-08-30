@@ -1,2 +1,2 @@
 CXX_STD=CXX11
-PKG_CPPFLAGS=-I../inst/include -DCOMPILING_TESTTHAT
+PKG_CPPFLAGS=-g -Wall -Wpedantic -Werror -Wformat -I../inst/include -DCOMPILING_TESTTHAT

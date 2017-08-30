@@ -121,7 +121,7 @@ namespace tomer {
   }
 
   bool LeftToRightEvaluator::is_valid(const Type& type) {
-    return type >= 0 && type < state_.n_types;
+    return type < state_.n_types;
   }
 
   void LeftToRightEvaluator::init() {
