@@ -38,6 +38,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// evaluate_npmi_cpp
+Rcpp::NumericVector evaluate_npmi_cpp(const Rcpp::List& topics, const Rcpp::List& documents, size_t window_size);
+RcppExport SEXP _tomer_evaluate_npmi_cpp(SEXP topicsSEXP, SEXP documentsSEXP, SEXP window_sizeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type topics(topicsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type documents(documentsSEXP);
+    Rcpp::traits::input_parameter< size_t >::type window_size(window_sizeSEXP);
+    rcpp_result_gen = Rcpp::wrap(evaluate_npmi_cpp(topics, documents, window_size));
+    return rcpp_result_gen;
+END_RCPP
+}
 // run_testthat_tests
 bool run_testthat_tests();
 RcppExport SEXP _tomer_run_testthat_tests() {
@@ -54,6 +67,7 @@ RcppExport SEXP _rcpp_module_boot_mod_bayes_factor();
 static const R_CallMethodDef CallEntries[] = {
     {"_tomer_compute_log_bayes_factor_cpp", (DL_FUNC) &_tomer_compute_log_bayes_factor_cpp, 3},
     {"_tomer_evaluate_left_to_right_cpp", (DL_FUNC) &_tomer_evaluate_left_to_right_cpp, 10},
+    {"_tomer_evaluate_npmi_cpp", (DL_FUNC) &_tomer_evaluate_npmi_cpp, 3},
     {"_tomer_run_testthat_tests", (DL_FUNC) &_tomer_run_testthat_tests, 0},
     {"_rcpp_module_boot_mod_bayes_factor", (DL_FUNC) &_rcpp_module_boot_mod_bayes_factor, 0},
     {NULL, NULL, 0}

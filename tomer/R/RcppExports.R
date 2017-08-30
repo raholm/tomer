@@ -9,6 +9,10 @@ evaluate_left_to_right_cpp <- function(corpus, n_docs, alphabet, n_topics, topic
     .Call('_tomer_evaluate_left_to_right_cpp', PACKAGE = 'tomer', corpus, n_docs, alphabet, n_topics, topic_counts, type_topic_counts, alpha, beta, n_particles, resampling)
 }
 
+evaluate_npmi_cpp <- function(topics, documents, window_size) {
+    .Call('_tomer_evaluate_npmi_cpp', PACKAGE = 'tomer', topics, documents, window_size)
+}
+
 run_testthat_tests <- function() {
     .Call('_tomer_run_testthat_tests', PACKAGE = 'tomer')
 }
