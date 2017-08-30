@@ -44,8 +44,9 @@ void calculate_word_counts_and_window_count(const Rcpp::List& documents,
                                             NpmiData& data) {
   auto ndocs = documents.size();
   size_t nwindows, window_count = 0;
-  Vector<Word> words_in_window;
+  Vector<Word> words_in_window(window_size);
   WordCount& word_counts = data.word_counts;
+  size_t head_id, tail_id, nwords;
 
   for (unsigned i = 0; i < ndocs; ++i) {
     Vector<Word> doc_words = Rcpp::as<Vector<Word>>(documents(i));
@@ -61,15 +62,19 @@ void calculate_word_counts_and_window_count(const Rcpp::List& documents,
     for (unsigned j = 1; j < (nwindows + 1); ++j) {
       if (window_size == 0) {
         words_in_window = doc_words;
+        remove_duplicates(words_in_window);
+        nwords = words_in_window.size();
       } else {
-        auto head_id = std::max((size_t) 0, (size_t) j - window_size);
-        auto tail_id = std::min((size_t) j, (size_t) doc_words.size());
-        words_in_window = Vector<Word>{doc_words.begin() + head_id,
-                                       doc_words.begin() + tail_id};
-      }
+        head_id = (j > window_size) ? j - window_size : 0;
+        tail_id = std::min((size_t) j, (size_t) doc_words.size());
+        nwords = tail_id - head_id;
 
-      remove_duplicates(words_in_window);
-      auto nwords = words_in_window.size();
+        for (unsigned k = 0; k < nwords; ++k) {
+          words_in_window.at(k) = doc_words.at(head_id + k);
+        }
+
+        remove_duplicates(words_in_window, nwords);
+      }
 
       for (unsigned left_idx = 0; left_idx < nwords; ++left_idx) {
         auto left_word = words_in_window.at(left_idx);
@@ -86,6 +91,7 @@ void calculate_word_counts_and_window_count(const Rcpp::List& documents,
   data.window_count = window_count;
 }
 
+// [[Rcpp::export]]
 Rcpp::NumericVector evaluate_npmi_cpp(const Rcpp::List& topics,
                                       const Rcpp::List& documents,
                                       size_t window_size) {
