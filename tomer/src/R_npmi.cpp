@@ -2,7 +2,7 @@
 
 #include "def.h"
 #include "util.h"
-#include "npmi.h"
+#include "topic_evaluator.h"
 
 using namespace tomer;
 
