@@ -68,12 +68,6 @@ void calculate_word_counts_and_window_count(const Rcpp::List& documents,
                                        doc_words.begin() + tail_id};
       }
 
-      /*
-        Note: should each word only count once for each window, i.e., make words_in_window a set?
-        For example the window (foo, bar, foo) is actually just (foo, bar, bar|foo) instead of
-        (foo, bar, foo, bar|foo, bar|foo)
-       */
-
       remove_duplicates(words_in_window);
       auto nwords = words_in_window.size();
 
