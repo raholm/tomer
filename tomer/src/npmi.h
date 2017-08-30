@@ -295,6 +295,7 @@ namespace tomer {
 
       double numerator = log((double) (combined_count * window_count_) / (left_count * right_count));
       double denominator = -log((double) combined_count / window_count_);
+      if (denominator == 0) return 0.0;
       return numerator / denominator;
     }
 
