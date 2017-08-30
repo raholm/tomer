@@ -6,19 +6,19 @@
 namespace tomer {
 
   template<typename T>
-    void remove_duplicates(Vector<T>& v) {
+    void remove_duplicates(Vector<T>* const v) {
     Set<T> s;
-    for (auto const& e : v) s.insert(e);
-    v.assign(s.begin(), s.end());
+    for (auto const& e : *v) s.insert(e);
+    v->assign(s.begin(), s.end());
   }
 
   template<typename T>
-  void remove_duplicates(Vector<T>& v, size_t& size) {
+  void remove_duplicates_inplace(Vector<T>* const v, size_t* const size) {
     Set<T> s;
-    for (unsigned i = 0; i < size; ++i) s.insert(v.at(i));
-    size_t idx = -1;
-    for (auto const& e : s) v.at(++idx) = e;
-    size = idx;
+    for (unsigned i = 0; i < *size; ++i) s.insert(v->at(i));
+    size_t idx = 0;
+    for (auto const& e : s) v->at(idx++) = e;
+    *size = s.size();
   }
 
   template<typename T>

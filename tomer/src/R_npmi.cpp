@@ -62,7 +62,7 @@ void calculate_word_counts_and_window_count(const Rcpp::List& documents,
     for (unsigned j = 1; j < (nwindows + 1); ++j) {
       if (window_size == 0) {
         words_in_window = doc_words;
-        remove_duplicates(words_in_window);
+        remove_duplicates(&words_in_window);
         nwords = words_in_window.size();
       } else {
         head_id = (j > window_size) ? j - window_size : 0;
@@ -73,7 +73,7 @@ void calculate_word_counts_and_window_count(const Rcpp::List& documents,
           words_in_window.at(k) = doc_words.at(head_id + k);
         }
 
-        remove_duplicates(words_in_window, nwords);
+        remove_duplicates_inplace(&words_in_window, &nwords);
       }
 
       for (unsigned left_idx = 0; left_idx < nwords; ++left_idx) {
