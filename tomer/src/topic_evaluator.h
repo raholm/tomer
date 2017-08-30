@@ -12,7 +12,7 @@ namespace tomer {
 
     virtual ~TopicEvaluator() = default;
 
-    inline double evaluate(const Vector<Word>& topic_words) const {
+    double evaluate(const Vector<Word>& topic_words) const {
       double val = 0.0;
       Word left_word, right_word;
       auto n = topic_words.size();
@@ -46,7 +46,7 @@ namespace tomer {
     ~TopicCoherenceEvaluator() = default;
 
   protected:
-    double compute_association(const Word& left, const Word& right) const override {
+    inline double compute_association(const Word& left, const Word& right) const override {
       auto right_count = word_counts_.get_count(right);
       auto combined_count = word_counts_.get_count(left, right);
       return log((combined_count + 1) / right_count);
@@ -69,7 +69,7 @@ namespace tomer {
     ~NormalisedPointwiseMutualInformationEvaluator() = default;
 
   protected:
-    inline double compute_association(const Word& left, const Word& right) const override {
+    double compute_association(const Word& left, const Word& right) const override {
       auto left_count = word_counts_.get_count(left);
       auto right_count = word_counts_.get_count(right);
       auto combined_count = word_counts_.get_count(left, right);

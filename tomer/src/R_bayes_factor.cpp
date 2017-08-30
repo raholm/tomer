@@ -10,8 +10,8 @@ void mode_update(TypeTopicIndicatorMode* const mode,
                  const Rcpp::DataFrame& types_topic_indicators) {
   unsigned n = types_topic_indicators.nrow();
 
-  TypeTopicIndicatorMode::type_vector types(n);
-  TypeTopicIndicatorMode::type t;
+  TypeTopicIndicatorMode::TypeVector types(n);
+  TypeTopicIndicatorMode::Type t;
 
   Rcpp::IntegerVector doc = types_topic_indicators["doc"];
   Rcpp::IntegerVector pos = types_topic_indicators["pos"];
@@ -61,7 +61,7 @@ Rcpp::IntegerVector mode_types_to_topic_indicators(TypeTopicIndicatorMode* const
   IntVector topic_indicators;
   topic_indicators.reserve(n);
 
-  TypeTopicIndicatorMode::type t;
+  TypeTopicIndicatorMode::Type t;
 
   Rcpp::IntegerVector doc = types["doc"];
   Rcpp::IntegerVector pos = types["pos"];

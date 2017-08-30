@@ -8,26 +8,26 @@ namespace tomer {
   template<typename T>
   class TopicIndicatorMode {
   public:
-    using type = T;
-    using topic_indicator = size_t;
-    using type_topic_indicator_pair = Pair<type, topic_indicator>;
+    using Type = T;
+    using TopicIndicator = size_t;
+    using TypeTopicIndicatorPair = Pair<Type, TopicIndicator>;
 
-    using type_vector = Vector<type>;
-    using topic_indicator_vector = Vector<topic_indicator>;
-    using type_topic_indicator_pair_vector = Vector<type_topic_indicator_pair>;
+    using TypeVector = Vector<Type>;
+    using TopicIndicatorVector = Vector<TopicIndicator>;
+    using TypeTopicIndicatorPairVector = Vector<TypeTopicIndicatorPair>;
 
   private:
-    using count = size_t;
-    using type_topic_indicator_count_pair = Pair<type_topic_indicator_pair, count>;
+    using Count = size_t;
+    using TypeTopicIndicatorCountPair = Pair<TypeTopicIndicatorPair, Count>;
 
   public:
     TopicIndicatorMode() = default;
-    TopicIndicatorMode(const type_vector& types,
-                       const topic_indicator_vector& topic_indicators) {
+    TopicIndicatorMode(const TypeVector& types,
+                       const TopicIndicatorVector& topic_indicators) {
       update(types, topic_indicators);
     }
 
-    TopicIndicatorMode(const type_topic_indicator_pair_vector& type_topic_indicators) {
+    TopicIndicatorMode(const TypeTopicIndicatorPairVector& type_topic_indicators) {
       update(type_topic_indicators);
     }
 
@@ -36,8 +36,8 @@ namespace tomer {
 
     ~TopicIndicatorMode() = default;
 
-    void update(const type_vector& types,
-                const topic_indicator_vector& topic_indicators) {
+    inline void update(const TypeVector& types,
+                       const TopicIndicatorVector& topic_indicators) {
       if (types.size() != topic_indicators.size())
         throw std::invalid_argument("Types and Topic Indicators have different sizes.");
 
@@ -45,20 +45,20 @@ namespace tomer {
         insert_or_add_element(std::make_pair(std::make_pair(types.at(i), topic_indicators.at(i)), 1));
     }
 
-    void update(const type_topic_indicator_pair_vector& type_topic_indicators) {
+    inline void update(const TypeTopicIndicatorPairVector& type_topic_indicators) {
       for (auto const& pair : type_topic_indicators)
         insert_or_add_element(std::make_pair(pair, 1));
     }
 
-    inline bool contains(const type& type) const {
+    inline bool contains(const Type& type) const {
       return modes_.find(type) != modes_.end();
     }
 
-    inline Vector<type_topic_indicator_pair> get_data() const {
-      return Vector<type_topic_indicator_pair>{modes_.cbegin(), modes_.cend()};
+    inline Vector<TypeTopicIndicatorPair> get_data() const {
+      return Vector<TypeTopicIndicatorPair>{modes_.cbegin(), modes_.cend()};
     }
 
-    inline topic_indicator get_mode(const type& type) const {
+    inline TopicIndicator get_mode(const Type& type) const {
       auto it = modes_.find(type);
       if (it == modes_.end())
         throw std::out_of_range("Type has no mode.");
@@ -66,10 +66,10 @@ namespace tomer {
     }
 
   private:
-    Map<type, topic_indicator> modes_;
-    Map<Pair<type, topic_indicator>, count> counts_;
+    Map<Type, TopicIndicator> modes_;
+    Map<Pair<Type, TopicIndicator>, Count> counts_;
 
-    void insert_or_add_element(const type_topic_indicator_count_pair& element) {
+    void insert_or_add_element(const TypeTopicIndicatorCountPair& element) {
       if (!counts_.insert(element).second)
         counts_[element.first] += element.second;
 
