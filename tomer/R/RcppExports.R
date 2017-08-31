@@ -13,6 +13,10 @@ evaluate_npmi_cpp <- function(topics, documents, window_size) {
     .Call('_tomer_evaluate_npmi_cpp', PACKAGE = 'tomer', topics, documents, window_size)
 }
 
+evaluate_topic_coherence_cpp <- function(topics, documents) {
+    .Call('_tomer_evaluate_topic_coherence_cpp', PACKAGE = 'tomer', topics, documents)
+}
+
 run_testthat_tests <- function() {
     .Call('_tomer_run_testthat_tests', PACKAGE = 'tomer')
 }
