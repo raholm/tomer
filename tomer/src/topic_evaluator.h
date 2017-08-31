@@ -49,11 +49,16 @@ namespace tomer {
     inline double compute_association(const Word& left, const Word& right) const override {
       auto right_count = word_counts_.get_count(right);
       auto combined_count = word_counts_.get_count(left, right);
-      return log((combined_count + 1) / right_count);
+      if (missing_count(right_count)) return 0.0;
+      return log((double) (combined_count + 1) / right_count);
     }
 
   private:
     WordCount word_counts_;
+
+    inline bool missing_count(size_t count) const {
+      return count == 0;
+    }
 
   };
 

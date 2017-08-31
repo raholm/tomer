@@ -42,9 +42,9 @@ namespace tomer {
 
   // NPMI
   using WordIndex = int;
-  using Word = String;
+  using Word = Token;
   using Count = size_t;
-
+  using WordWindow = Document;
 
 } // namespace tomer
 

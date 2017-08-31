@@ -1,19 +1,20 @@
 #ifndef TOMER_UTIL_H_
 #define TOMER_UTIL_H_
 
+#include <Rcpp.h>
 #include <iostream>
 
 namespace tomer {
 
   template<typename T>
-    void remove_duplicates(Vector<T>* const v) {
+  inline void remove_duplicates(Vector<T>* const v) {
     Set<T> s;
     for (auto const& e : *v) s.insert(e);
     v->assign(s.begin(), s.end());
   }
 
   template<typename T>
-  void remove_duplicates_inplace(Vector<T>* const v, size_t* const size) {
+  inline void remove_duplicates_inplace(Vector<T>* const v, size_t* const size) {
     Set<T> s;
     for (unsigned i = 0; i < *size; ++i) s.insert(v->at(i));
     size_t idx = 0;
@@ -27,6 +28,10 @@ namespace tomer {
     for (auto const& e : v)
       std::cout << e << " ";
     std::cout << std::endl;
+  }
+
+  inline Corpus convert_from_R(const Rcpp::List& l) {
+    return Rcpp::as<Corpus>(l);
   }
 
 } // namespace tomer
