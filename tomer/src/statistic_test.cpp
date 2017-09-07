@@ -106,6 +106,58 @@ namespace tomer {
     }
 
     context("Chunking Likelihood Ratio") {
+      test_that("fill_chunking_lr_test_data fills in the correct counts") {
+        size_t n_topics = 2;
+        ChunkingLRTestData topic_counts{n_topics};
+        IntVector topic_indicators{0, 1, 0, 0, 1, 1, 1, 0, 0};
+
+        fill_chunking_lr_test_data(topic_indicators, &topic_counts);
+
+        const IntVector& counts = topic_counts.counts;
+        const IntMatrix& transition_counts = topic_counts.transition_counts;
+
+        expect_true(counts.at(0) == 4);
+        expect_true(counts.at(1) == 4);
+
+        expect_true(transition_counts.at(0).at(0) == 2);
+        expect_true(transition_counts.at(0).at(1) == 2);
+        expect_true(transition_counts.at(1).at(0) == 2);
+        expect_true(transition_counts.at(1).at(1) == 2);
+      }
+
+      test_that("compute_chunking_lr_test is correct") {
+        size_t n_topics = 2;
+        double beta = 1;
+        IntVector topic_indicators{0, 1, 0, 0, 1, 1, 1, 0, 0};
+        int nd = topic_indicators.size();
+        int nd1 = nd - 1;
+        double denom = nd + n_topics * beta;
+        denom *= denom;
+
+        double expected = 2 *
+          (2 * log(2 / (nd1 * (4 + beta) * (4 + beta) / denom)) + // (0 -> 0)
+           2 * log(2 / (nd1 * (4 + beta) * (4 + beta) / denom)) + // (0 -> 1)
+           2 * log(2 / (nd1 * (4 + beta) * (4 + beta) / denom)) + // (1 -> 0)
+           2 * log(2 / (nd1 * (4 + beta) * (4 + beta) / denom)) // (1 -> 1)
+           );
+        double actual = compute_chunking_lr_test(topic_indicators, n_topics, beta);
+        expect_true(is_equal(actual, expected));
+
+        topic_indicators = {1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1};
+        nd = topic_indicators.size();
+        nd1 = nd - 1;
+        denom = nd + n_topics * beta;
+        denom *= denom;
+
+        expected = 2 *
+          (2 * log(2 / (nd1 * (4 + beta) * (4 + beta) / denom)) + // (0 -> 0)
+           2 * log(2 / (nd1 * (4 + beta) * (6 + beta) / denom)) + // (0 -> 1)
+           2 * log(2 / (nd1 * (6 + beta) * (4 + beta) / denom)) + // (1 -> 0)
+           4 * log(4 / (nd1 * (6 + beta) * (6 + beta) / denom)) // (1 -> 1)
+           );
+        actual = compute_chunking_lr_test(topic_indicators, n_topics, beta);
+        expect_true(is_equal(actual, expected));
+      }
 
     }
 

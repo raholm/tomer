@@ -257,7 +257,7 @@ namespace tomer {
       }
     }
 
-    return score;
+    return 2 * score;
   }
 
 } // namespace tomer
