@@ -2,7 +2,7 @@
 
 #include "def.h"
 #include "topic_indicator_mode.h"
-#include "bayes_factor.h"
+#include "statistic.h"
 
 using namespace tomer;
 
@@ -83,7 +83,7 @@ Rcpp::IntegerVector mode_types_to_topic_indicators(TypeTopicIndicatorMode* const
 double compute_log_bayes_factor_cpp(const Rcpp::IntegerVector& topic_indicators,
                                     size_t n_topics,
                                     double beta) {
-  return compute_log_bayes_factor(Rcpp::as<IntVector>(topic_indicators), n_topics, beta);
+  return compute_sequence_bf_test(Rcpp::as<IntVector>(topic_indicators), n_topics, beta);
 }
 
 RCPP_MODULE(mod_bayes_factor) {
