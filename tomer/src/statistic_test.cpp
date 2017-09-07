@@ -102,7 +102,52 @@ namespace tomer {
     }
 
     context("Chunking Bayes Factor") {
+      test_that("fill_chunking_bf_test_data fills in the correct counts") {
+        size_t n_topics = 2;
+        IntMatrix topic_indicators{
+          {1, 1, 0, 0, 0, 1, 0, 1, 1},
+            {0, 0, 1, 1, 1, 0, 1, 0, 0},
+              {0, 1, 0, 1, 0, 1, 0, 1, 0, 1}
+        };
 
+        ChunkingBFTestData data(n_topics, topic_indicators.size());
+        fill_chunking_bf_test_data(topic_indicators, &data);
+
+        expect_true(data.global_counts.at(0) == 14);
+        expect_true(data.global_counts.at(1) == 14);
+
+        expect_true(data.local_counts.at(0).at(0) == 4);
+        expect_true(data.local_counts.at(0).at(1) == 5);
+
+        expect_true(data.local_counts.at(1).at(0) == 5);
+        expect_true(data.local_counts.at(1).at(1) == 4);
+
+        expect_true(data.local_counts.at(2).at(0) == 5);
+        expect_true(data.local_counts.at(2).at(1) == 5);
+      }
+
+      test_that("compute_chunking_bf_test is correct") {
+        size_t n_topics = 2;
+        double beta = 1;
+        IntMatrix topic_indicators{
+          {1, 1, 0, 0, 0, 1, 0, 1, 1},
+            {0, 0, 1, 1, 1, 0, 1, 0, 0},
+              {0, 1, 0, 1, 0, 1, 0, 1, 0, 1}
+        };
+        auto c = topic_indicators.size();
+        auto c1 = c - 1;
+        auto beta_mul = n_topics * beta;
+
+        double expected = lgamma(beta + 14) + lgamma(beta + 14) -
+          lgamma(beta_mul + 2 * 14) +
+          c1 * (n_topics * lgamma(beta) - lgamma(beta_mul)) -
+          (2 * lgamma(beta + 4) + 4 * lgamma(beta + 5)) +
+          lgamma(beta_mul + topic_indicators.at(0).size()) +
+          lgamma(beta_mul + topic_indicators.at(1).size()) +
+          lgamma(beta_mul + topic_indicators.at(2).size());
+        double actual = compute_chunking_bf_test(topic_indicators, n_topics, beta);
+        expect_true(is_equal(actual, expected));
+      }
     }
 
     context("Chunking Likelihood Ratio") {
@@ -158,7 +203,6 @@ namespace tomer {
         actual = compute_chunking_lr_test(topic_indicators, n_topics, beta);
         expect_true(is_equal(actual, expected));
       }
-
     }
 
   } // namespace test

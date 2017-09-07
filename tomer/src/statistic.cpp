@@ -175,9 +175,12 @@ namespace tomer {
       term3 = (n_chunks - 1) * (n_topics * lgamma(beta) - lgamma(beta_mul));
 
     // Compute term5
-    term5 = lgamma(beta_mul + (double) std::accumulate(chunk_sizes.cbegin(),
-                                                       chunk_sizes.cend(),
-                                                       0));
+    term5 = std::accumulate(chunk_sizes.cbegin(),
+                            chunk_sizes.cend(),
+                            0.0,
+                            [beta_mul](const double& acc, const size_t& chunk_size) {
+                              return acc + lgamma(beta_mul + chunk_size);
+                            });
 
     // Compute term4
     size_t n_zero_global = 0, n_zero_local = 0;
@@ -202,17 +205,6 @@ namespace tomer {
     if (beta > 0 && (n_zero_global > 0 || n_zero_local > 0)) {
       term4 -= (n_zero_global * n_chunks + n_zero_local) * lgamma(beta);
     }
-
-    // for (unsigned c = 0; c < n_chunks; ++c) {
-    //   const auto& current_counts = local_counts.at(c);
-    //   term5 += chunk_sizes.at(c);
-
-    //   for (unsigned k = 0; k < n_topics; ++k) {
-    //     if (current_counts.at(k) == 0) continue;
-    //     auto a = beta + (double) current_counts.at(k);
-    //     term4 -= lgamma(a);
-    //   }
-    // }
 
     double score = term1 + term2 + term3 + term4 + term5;
     return score;
