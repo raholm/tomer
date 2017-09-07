@@ -221,19 +221,10 @@ namespace tomer {
   // Chunking Test (Likelihood Ratio)
   void fill_chunking_lr_test_data(const IntVector& topic_indicators,
                                   ChunkingLRTestData* data) {
-    size_t n = topic_indicators.size();
-    size_t cur_topic, prev_topic;
-
-    auto& counts = data->counts;
-    auto& transition_counts = data->transition_counts;
-
-    for (unsigned i = 1; i < n; ++i) {
-      cur_topic = topic_indicators.at(i);
-      prev_topic = topic_indicators.at(i - 1);
-
-      ++counts.at(cur_topic);
-      ++transition_counts.at(prev_topic).at(cur_topic);
-    }
+    SequenceBFTestData tmp_data(data->counts.size());
+    fill_sequence_bf_test_data(topic_indicators, &tmp_data);
+    data->counts = std::move(tmp_data.counts);
+    data->transition_counts = std::move(tmp_data.transition_counts);
   }
 
   double compute_chunking_lr_test(const IntVector& topic_indicators,
