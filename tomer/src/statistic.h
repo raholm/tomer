@@ -5,6 +5,27 @@
 
 namespace tomer {
 
+  // Sequence Test (Bayes Factor)
+  struct SequenceTestData {
+    explicit SequenceTestData(size_t n_topics)
+      : counts(n_topics),
+      transition_counts(n_topics, IntVector(n_topics)) {}
+
+    IntVector counts;
+    IntMatrix transition_counts;
+
+  };
+
+  void fill_sequence_test_data(const IntVector& topic_indicators,
+                               SequenceTestData* counts);
+  double compute_sequence_test_slow(const IntVector& topic_indicators,
+                                    size_t n_topics,
+                                    double beta);
+  double compute_sequence_test(const IntVector& topic_indicators,
+                               size_t n_topics,
+                                  double beta);
+
+  // Chunking Test (Bayes Factor)
   struct ChunkingTestData {
     explicit ChunkingTestData(size_t n_topics, size_t n_chunks)
       : global_counts(n_topics),
@@ -20,8 +41,9 @@ namespace tomer {
                                size_t n_topics,
                                double beta);
 
-  struct GTestData {
-    explicit GTestData(size_t n_topics)
+  // Chunking Test (Likelihood Ratio)
+  struct GScoreTestData {
+    explicit GScoreTestData(size_t n_topics)
       : counts(n_topics),
         transition_counts(n_topics, IntVector(n_topics)) {}
 
@@ -30,11 +52,11 @@ namespace tomer {
 
   };
 
-  void fill_g_test_data(const IntVector& topic_indicators,
-                        GTestData* data);
-  double compute_gscore(const IntVector& topic_indicators,
-                        size_t n_topics,
-                        double beta);
+  void fill_gscore_test_data(const IntVector& topic_indicators,
+                             GScoreTestData* data);
+  double compute_gscore_test(const IntVector& topic_indicators,
+                             size_t n_topics,
+                             double beta);
 
 } // namespace tomer
 

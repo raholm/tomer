@@ -5,7 +5,7 @@
 
 namespace tomer {
 
-    void fill_chunking_test_data(const IntMatrix& topic_indicators,
+  void fill_chunking_test_data(const IntMatrix& topic_indicators,
                                ChunkingTestData* data) {
     auto n_chunks = topic_indicators.size();
 
@@ -103,7 +103,7 @@ namespace tomer {
   }
 
   void fill_g_test_data(const IntVector& topic_indicators,
-                        GTestData* data) {
+                        GScoreTestData* data) {
     size_t n = topic_indicators.size();
     size_t cur_topic, prev_topic;
 
@@ -122,7 +122,7 @@ namespace tomer {
   double compute_gscore(const IntVector& topic_indicators,
                         size_t n_topics,
                         double beta) {
-    GTestData data(n_topics);
+    GScoreTestData data(n_topics);
     fill_g_test_data(topic_indicators, &data);
 
     const auto& counts = data.counts;
