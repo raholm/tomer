@@ -17,11 +17,11 @@ namespace tomer {
       Word left_word, right_word;
       auto n = topic_words.size();
 
-      for (unsigned i = 0; i < (n - 1); ++i) {
-        left_word = topic_words.at(i);
+      for (unsigned j = 1; j < n; ++j) {
+        right_word = topic_words.at(j);
 
-        for (unsigned j = i + 1; j < n; ++j) {
-          right_word = topic_words.at(j);
+        for (unsigned i = 0; i < j; ++i) {
+          left_word = topic_words.at(i);
 
           if (left_word != right_word)
             val += compute_association(left_word, right_word);
@@ -47,10 +47,10 @@ namespace tomer {
 
   protected:
     inline double compute_association(const Word& left, const Word& right) const override {
-      auto right_count = word_counts_.get_count(right);
+      auto left_count = word_counts_.get_count(left);
       auto combined_count = word_counts_.get_count(left, right);
-      if (missing_count(right_count)) return 0.0;
-      return log((double) (combined_count + 1) / right_count);
+      if (missing_count(left_count)) return 0.0;
+      return log((double) (combined_count + 1) / left_count);
     }
 
   private:

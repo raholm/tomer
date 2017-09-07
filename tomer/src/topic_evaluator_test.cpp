@@ -160,62 +160,61 @@ namespace tomer {
           count(foo) = 2
           count(batman) = 3
           count(foo, batman) = 0
-          val = log((0 + 1) / 3) = log(1 / 3)
+          val = log((0 + 1) / 2) = log(1 / 2)
 
           (foo, superman)
           count(foo) = 2
           count(superman) = 1
           count(foo, superman) = 1
-          val log((1 + 1) / 1) = log(2)
+          val log((1 + 1) / 2) = log(2 / 2) = log(1) = 0
 
           (foo, spiderman)
           count(foo) = 2
           count(spiderman) = 0
           count(foo, spiderman) = 0
-          val = 0
+          val = log(1 / 2)
 
           (bar, batman)
           count(foo) = 2
           count(spiderman) = 0
           count(foo, spiderman) = 0
-          val = 0
+          val = log(1 / 2)
 
           (bar, superman)
           count(bar) = 2
           count(superman) = 1
           count(bar, superman) = 0
-          val = log(1 / 1) = 0
+          val = log(1 / 2)
 
           (bar, spiderman)
           count(bar) = 2
           count(spiderman) = 0
           count(bar, spiderman) = 0
-          val = 0
+          val = log(1 / 2)
 
           (batman, superman)
           count(batman) = 3
           count(superman) = 1
           count(batman, superman) = 2
-          val = log((2 + 1) / 1) = log(3)
+          val = log((2 + 1) / 3) = log(1) = 0
 
           (batman, spiderman)
           count(batman) = 3
           count(spiderman) = 0
           count(batman, spiderman) = 0
-          val = 0
+          val = log(1 / 3)
 
           (superman, spiderman)
           count(superman) = 1
           count(spiderman) = 0
           count(superman, spiderman) = 0
-          val = 0
+          val = log(1 / 1) = 0
         */
 
         TopicCoherenceEvaluator evaluator{word_counts};
 
         double actual = evaluator.evaluate({"foo", "bar", "batman", "superman", "spiderman"});
-        double expected = log((double) 3 / 2) + log((double) 1 / 3) + log(2) + log(3);
-        expect_true(actual == expected);
+        double expected = log((double) 3 / 2) + 5 * log((double) 1 / 2) + log((double) 1 / 3);
         expect_true(is_equal(actual, expected));
       }
     }
