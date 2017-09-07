@@ -31,8 +31,8 @@ namespace tomer {
       return val;
     }
 
-    protected:
-      virtual double compute_association(const Word& left, const Word& right) const = 0;
+  protected:
+    virtual double compute_association(const Word& left, const Word& right) const = 0;
 
   };
 
