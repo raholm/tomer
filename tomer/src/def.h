@@ -35,10 +35,12 @@ namespace tomer {
   using DoubleVector = Vector<double>;
   using StringVector = Document;
   using TypeVector = Vector<Type>;
+  using TopicVector = Vector<Topic>;
 
   using IntMatrix = Vector<IntVector>;
   using DoubleMatrix = Vector<DoubleVector>;
   using TypeMatrix = Vector<TypeVector>;
+  using TopicMatrix = Vector<TopicVector>;
 
   // NPMI
   using WordIndex = int;
