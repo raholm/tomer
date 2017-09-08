@@ -5,17 +5,54 @@
 
 namespace tomer {
 
-  Pair<TypeMatrix, TopicMatrix> sample_corpus(const Vector<size_t>& length,
-                                              const DoubleMatrix& doc_topic_probs,
-                                              const DoubleMatrix& topic_type_probs);
+  struct SampledCorpus {
+    explicit SampledCorpus(size_t size)
+      : doc_ids(size),
+        types(size),
+        topics(size) {}
 
-  Pair<TypeMatrix, TopicMatrix> sample_corpus(const Vector<size_t>& length,
-                                              const DoubleVector& topic_probs,
-                                              const DoubleMatrix& topic_type_probs);
+    IntVector doc_ids;
+    TypeVector types;
+    TopicVector topics;
 
-  Pair<TypeVector, TopicVector> sample_document(size_t length,
-                                                const DoubleVector& topic_probs,
-                                                const DoubleMatrix& topic_type_probs);
+  };
+
+  struct SampledDocument {
+    explicit SampledDocument(size_t size)
+      : id(0),
+        types(size),
+        topics(size) {}
+    explicit SampledDocument(size_t size, size_t id)
+      : id(id),
+        types(size),
+        topics(size) {}
+
+
+    size_t id;
+    TypeVector types;
+    TopicVector topics;
+
+  };
+
+  SampledCorpus sample_corpus(const Vector<size_t>& length,
+                              const DoubleMatrix& doc_topic_probs,
+                              const DoubleMatrix& topic_type_probs);
+
+  SampledDocument sample_document(size_t length,
+                                  const DoubleVector& topic_probs,
+                                  const DoubleMatrix& topic_type_probs);
+
+  // Pair<TypeMatrix, TopicMatrix> sample_corpus(const Vector<size_t>& length,
+  //                                             const DoubleMatrix& doc_topic_probs,
+  //                                             const DoubleMatrix& topic_type_probs);
+
+  // Pair<TypeMatrix, TopicMatrix> sample_corpus(const Vector<size_t>& length,
+  //                                             const DoubleVector& topic_probs,
+  //                                             const DoubleMatrix& topic_type_probs);
+
+  // Pair<TypeVector, TopicVector> sample_document(size_t length,
+  //                                               const DoubleVector& topic_probs,
+  //                                               const DoubleMatrix& topic_type_probs);
 
 } // namespace tomer
 

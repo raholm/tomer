@@ -5,6 +5,14 @@ compute_log_bayes_factor_cpp <- function(topic_indicators, n_topics, beta) {
     .Call('_tomer_compute_log_bayes_factor_cpp', PACKAGE = 'tomer', topic_indicators, n_topics, beta)
 }
 
+sample_document_cpp <- function(length, topic_probs, topic_type_probs) {
+    .Call('_tomer_sample_document_cpp', PACKAGE = 'tomer', length, topic_probs, topic_type_probs)
+}
+
+sample_corpus_cpp <- function(length, topic_probs, topic_type_probs) {
+    .Call('_tomer_sample_corpus_cpp', PACKAGE = 'tomer', length, topic_probs, topic_type_probs)
+}
+
 evaluate_left_to_right_cpp <- function(corpus, n_docs, alphabet, n_topics, topic_counts, type_topic_counts, alpha, beta, n_particles, resampling) {
     .Call('_tomer_evaluate_left_to_right_cpp', PACKAGE = 'tomer', corpus, n_docs, alphabet, n_topics, topic_counts, type_topic_counts, alpha, beta, n_particles, resampling)
 }
