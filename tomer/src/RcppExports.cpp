@@ -18,32 +18,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// sample_document_cpp
-Rcpp::DataFrame sample_document_cpp(size_t length, const Rcpp::NumericVector& topic_probs, const Rcpp::NumericMatrix& topic_type_probs);
-RcppExport SEXP _tomer_sample_document_cpp(SEXP lengthSEXP, SEXP topic_probsSEXP, SEXP topic_type_probsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< size_t >::type length(lengthSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type topic_probs(topic_probsSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type topic_type_probs(topic_type_probsSEXP);
-    rcpp_result_gen = Rcpp::wrap(sample_document_cpp(length, topic_probs, topic_type_probs));
-    return rcpp_result_gen;
-END_RCPP
-}
-// sample_corpus_cpp
-Rcpp::DataFrame sample_corpus_cpp(const Rcpp::IntegerVector length, const Rcpp::NumericMatrix& topic_probs, const Rcpp::NumericMatrix& topic_type_probs);
-RcppExport SEXP _tomer_sample_corpus_cpp(SEXP lengthSEXP, SEXP topic_probsSEXP, SEXP topic_type_probsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::IntegerVector >::type length(lengthSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type topic_probs(topic_probsSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type topic_type_probs(topic_type_probsSEXP);
-    rcpp_result_gen = Rcpp::wrap(sample_corpus_cpp(length, topic_probs, topic_type_probs));
-    return rcpp_result_gen;
-END_RCPP
-}
 // evaluate_left_to_right_cpp
 Rcpp::NumericVector evaluate_left_to_right_cpp(const Rcpp::DataFrame& corpus, size_t n_docs, const Rcpp::DataFrame& alphabet, size_t n_topics, const Rcpp::DataFrame& topic_counts, const Rcpp::DataFrame& type_topic_counts, const Rcpp::NumericVector& alpha, double beta, size_t n_particles, bool resampling);
 RcppExport SEXP _tomer_evaluate_left_to_right_cpp(SEXP corpusSEXP, SEXP n_docsSEXP, SEXP alphabetSEXP, SEXP n_topicsSEXP, SEXP topic_countsSEXP, SEXP type_topic_countsSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP n_particlesSEXP, SEXP resamplingSEXP) {
@@ -104,8 +78,6 @@ RcppExport SEXP _rcpp_module_boot_mod_bayes_factor();
 
 static const R_CallMethodDef CallEntries[] = {
     {"_tomer_compute_log_bayes_factor_cpp", (DL_FUNC) &_tomer_compute_log_bayes_factor_cpp, 3},
-    {"_tomer_sample_document_cpp", (DL_FUNC) &_tomer_sample_document_cpp, 3},
-    {"_tomer_sample_corpus_cpp", (DL_FUNC) &_tomer_sample_corpus_cpp, 3},
     {"_tomer_evaluate_left_to_right_cpp", (DL_FUNC) &_tomer_evaluate_left_to_right_cpp, 10},
     {"_tomer_evaluate_npmi_cpp", (DL_FUNC) &_tomer_evaluate_npmi_cpp, 3},
     {"_tomer_evaluate_topic_coherence_cpp", (DL_FUNC) &_tomer_evaluate_topic_coherence_cpp, 2},
