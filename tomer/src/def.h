@@ -50,5 +50,4 @@ namespace tomer {
 
 } // namespace tomer
 
-
-#endif // DEF_H
+#endif // TOMER_DEF_H_

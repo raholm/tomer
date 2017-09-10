@@ -45,7 +45,7 @@ namespace tomer {
   }
 
   inline DoubleMatrix convert_from_R(const Rcpp::NumericMatrix& m) {
-    auto nrow = m.nrow();
+    unsigned nrow = m.nrow();
     DoubleMatrix mat(nrow);
     for (unsigned i = 0; i < nrow; ++i) {
       auto row = m(i, Rcpp::_);
