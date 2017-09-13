@@ -1,6 +1,7 @@
 #include <Rcpp.h>
 
 #include "def.h"
+#include "util.h"
 #include "topic_indicator_mode.h"
 #include "statistic.h"
 
@@ -27,8 +28,7 @@ void mode_update(TypeTopicIndicatorMode* const mode,
     types.at(i) = t;
   }
 
-  mode->update(types,
-               Rcpp::as<IntVector>(topic_indicators));
+  mode->update(types, convert_from_R(topic_indicators));
 }
 
 Rcpp::DataFrame mode_get_data(TypeTopicIndicatorMode* const mode) {
@@ -79,19 +79,32 @@ Rcpp::IntegerVector mode_types_to_topic_indicators(TypeTopicIndicatorMode* const
   return Rcpp::wrap(topic_indicators);
 }
 
-// [[Rcpp::export]]
-double compute_log_bayes_factor_cpp(const Rcpp::IntegerVector& topic_indicators,
-                                    size_t n_topics,
-                                    double beta) {
-  return compute_sequence_bf_test(Rcpp::as<IntVector>(topic_indicators), n_topics, beta);
-}
-
 RCPP_MODULE(mod_bayes_factor) {
   Rcpp::class_<TypeTopicIndicatorMode>("TypeTopicIndicatorMode")
     .default_constructor()
-
     .method("update", &mode_update)
     .method("types_to_topic_indicators", &mode_types_to_topic_indicators)
     .method("data", &mode_get_data)
     ;
+}
+
+// [[Rcpp::export]]
+double compute_markovian_bf_test_cpp(const Rcpp::IntegerVector& topic_indicators,
+                                     size_t n_topics,
+                                     double beta) {
+  return compute_sequence_bf_test(convert_from_R(topic_indicators), n_topics, beta);
+}
+
+// [[Rcpp::export]]
+double compute_chunking_bf_test_cpp(const Rcpp::IntegerMatrix& topic_indicators,
+                                    size_t n_topics,
+                                    double beta) {
+  return compute_chunking_bf_test(convert_from_R(topic_indicators), n_topics, beta);
+}
+
+// [[Rcpp::export]]
+double compute_chunking_lr_test_cpp(const Rcpp::IntegerVector& topic_indicators,
+                                    size_t n_topics,
+                                    double beta) {
+  return compute_chunking_lr_test(convert_from_R(topic_indicators), n_topics, beta);
 }

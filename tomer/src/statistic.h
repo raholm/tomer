@@ -33,6 +33,7 @@ namespace tomer {
 
     IntVector global_counts;
     IntMatrix local_counts;
+
   };
 
   void fill_chunking_bf_test_data(const IntMatrix& topic_indicators,

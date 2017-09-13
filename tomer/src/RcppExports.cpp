@@ -5,19 +5,6 @@
 
 using namespace Rcpp;
 
-// compute_log_bayes_factor_cpp
-double compute_log_bayes_factor_cpp(const Rcpp::IntegerVector& topic_indicators, size_t n_topics, double beta);
-RcppExport SEXP _tomer_compute_log_bayes_factor_cpp(SEXP topic_indicatorsSEXP, SEXP n_topicsSEXP, SEXP betaSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::IntegerVector& >::type topic_indicators(topic_indicatorsSEXP);
-    Rcpp::traits::input_parameter< size_t >::type n_topics(n_topicsSEXP);
-    Rcpp::traits::input_parameter< double >::type beta(betaSEXP);
-    rcpp_result_gen = Rcpp::wrap(compute_log_bayes_factor_cpp(topic_indicators, n_topics, beta));
-    return rcpp_result_gen;
-END_RCPP
-}
 // evaluate_left_to_right_cpp
 Rcpp::NumericVector evaluate_left_to_right_cpp(const Rcpp::DataFrame& corpus, size_t n_docs, const Rcpp::DataFrame& alphabet, size_t n_topics, const Rcpp::DataFrame& topic_counts, const Rcpp::DataFrame& type_topic_counts, const Rcpp::NumericVector& alpha, double beta, size_t n_particles, bool resampling);
 RcppExport SEXP _tomer_evaluate_left_to_right_cpp(SEXP corpusSEXP, SEXP n_docsSEXP, SEXP alphabetSEXP, SEXP n_topicsSEXP, SEXP topic_countsSEXP, SEXP type_topic_countsSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP n_particlesSEXP, SEXP resamplingSEXP) {
@@ -51,6 +38,45 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// compute_markovian_bf_test_cpp
+double compute_markovian_bf_test_cpp(const Rcpp::IntegerVector& topic_indicators, size_t n_topics, double beta);
+RcppExport SEXP _tomer_compute_markovian_bf_test_cpp(SEXP topic_indicatorsSEXP, SEXP n_topicsSEXP, SEXP betaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::IntegerVector& >::type topic_indicators(topic_indicatorsSEXP);
+    Rcpp::traits::input_parameter< size_t >::type n_topics(n_topicsSEXP);
+    Rcpp::traits::input_parameter< double >::type beta(betaSEXP);
+    rcpp_result_gen = Rcpp::wrap(compute_markovian_bf_test_cpp(topic_indicators, n_topics, beta));
+    return rcpp_result_gen;
+END_RCPP
+}
+// compute_chunking_bf_test_cpp
+double compute_chunking_bf_test_cpp(const Rcpp::IntegerMatrix& topic_indicators, size_t n_topics, double beta);
+RcppExport SEXP _tomer_compute_chunking_bf_test_cpp(SEXP topic_indicatorsSEXP, SEXP n_topicsSEXP, SEXP betaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::IntegerMatrix& >::type topic_indicators(topic_indicatorsSEXP);
+    Rcpp::traits::input_parameter< size_t >::type n_topics(n_topicsSEXP);
+    Rcpp::traits::input_parameter< double >::type beta(betaSEXP);
+    rcpp_result_gen = Rcpp::wrap(compute_chunking_bf_test_cpp(topic_indicators, n_topics, beta));
+    return rcpp_result_gen;
+END_RCPP
+}
+// compute_chunking_lr_test_cpp
+double compute_chunking_lr_test_cpp(const Rcpp::IntegerVector& topic_indicators, size_t n_topics, double beta);
+RcppExport SEXP _tomer_compute_chunking_lr_test_cpp(SEXP topic_indicatorsSEXP, SEXP n_topicsSEXP, SEXP betaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::IntegerVector& >::type topic_indicators(topic_indicatorsSEXP);
+    Rcpp::traits::input_parameter< size_t >::type n_topics(n_topicsSEXP);
+    Rcpp::traits::input_parameter< double >::type beta(betaSEXP);
+    rcpp_result_gen = Rcpp::wrap(compute_chunking_lr_test_cpp(topic_indicators, n_topics, beta));
+    return rcpp_result_gen;
+END_RCPP
+}
 // evaluate_topic_coherence_cpp
 Rcpp::NumericVector evaluate_topic_coherence_cpp(const Rcpp::List& topics, const Rcpp::List& documents);
 RcppExport SEXP _tomer_evaluate_topic_coherence_cpp(SEXP topicsSEXP, SEXP documentsSEXP) {
@@ -77,9 +103,11 @@ END_RCPP
 RcppExport SEXP _rcpp_module_boot_mod_bayes_factor();
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_tomer_compute_log_bayes_factor_cpp", (DL_FUNC) &_tomer_compute_log_bayes_factor_cpp, 3},
     {"_tomer_evaluate_left_to_right_cpp", (DL_FUNC) &_tomer_evaluate_left_to_right_cpp, 10},
     {"_tomer_evaluate_npmi_cpp", (DL_FUNC) &_tomer_evaluate_npmi_cpp, 3},
+    {"_tomer_compute_markovian_bf_test_cpp", (DL_FUNC) &_tomer_compute_markovian_bf_test_cpp, 3},
+    {"_tomer_compute_chunking_bf_test_cpp", (DL_FUNC) &_tomer_compute_chunking_bf_test_cpp, 3},
+    {"_tomer_compute_chunking_lr_test_cpp", (DL_FUNC) &_tomer_compute_chunking_lr_test_cpp, 3},
     {"_tomer_evaluate_topic_coherence_cpp", (DL_FUNC) &_tomer_evaluate_topic_coherence_cpp, 2},
     {"_tomer_run_testthat_tests", (DL_FUNC) &_tomer_run_testthat_tests, 0},
     {"_rcpp_module_boot_mod_bayes_factor", (DL_FUNC) &_rcpp_module_boot_mod_bayes_factor, 0},

@@ -54,6 +54,16 @@ namespace tomer {
     return mat;
   }
 
+  inline IntMatrix convert_from_R(const Rcpp::IntegerMatrix& m) {
+    unsigned nrow = m.nrow();
+    IntMatrix mat(nrow);
+    for (unsigned i = 0; i < nrow; ++i) {
+      auto row = m(i, Rcpp::_);
+      mat.at(i) = IntVector{row.begin(), row.end()};
+    }
+    return mat;
+  }
+
 } // namespace tomer
 
 #endif // TOMER_UTIL_H_
