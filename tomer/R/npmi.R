@@ -8,6 +8,7 @@ npmi <- function(topics, documents, window_size) {
     evaluate_npmi_cpp(topics, documents, window_size)
 }
 
+#' @export
 npmi2 <- function(topics, documents, window_size) {
     stopifnot(is.list(topics) & is.character(documents))
     stopifnot(all(sapply(topics, is.character)))
