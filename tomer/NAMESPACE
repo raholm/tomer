@@ -2,7 +2,6 @@
 
 export(chunking_bf_test)
 export(chunking_lr_test)
-export(entropy)
 export(evaluate_left_to_right)
 export(get_bayes_factor_mode)
 export(get_bayes_factor_mode_from_data)
