@@ -29,7 +29,8 @@ namespace tomer {
       char* current_token = strtok(t, delimiter_.c_str());
 
       while (current_token != NULL) {
-        document.push_back(String(current_token));
+        if (*current_token != ' ')
+          document.push_back(String(current_token));
         current_token = strtok(NULL, delimiter_.c_str());
       }
 
