@@ -28,14 +28,14 @@ namespace tomer {
     TopicWordIndexRelation(TopicWordIndexRelation&& other) = default;
 
     inline void update(WordIndex word) {
-      if (word == word_ || word == UNOBSERVED_WORDINDEX) return;
+      if (word == word_ || word == WordToIndexTransformer::unobserved_word_index) return;
       related_words_.insert(word);
     }
 
     inline void update(const Vector<WordIndex>& words) {
       std::copy_if(words.cbegin(), words.cend(), std::inserter(related_words_, related_words_.end()),
                    [&](WordIndex const& word) {
-                     return word != word_ && word != UNOBSERVED_WORDINDEX;
+                     return word != word_ && word != WordToIndexTransformer::unobserved_word_index;
                    });
     }
 
@@ -55,7 +55,7 @@ namespace tomer {
     explicit TopicWordIndexRelationMap(const Vector<WordIndex>& words,
                                        const Vector<TopicWordIndexRelation> relations) {
       for (unsigned i = 0; i < words.size(); ++i)
-        if (words.at(i) != UNOBSERVED_WORDINDEX)
+        if (words.at(i) != WordToIndexTransformer::unobserved_word_index)
           relations_.insert(std::make_pair(words.at(i), relations.at(i)));
     }
 
@@ -65,7 +65,7 @@ namespace tomer {
     ~TopicWordIndexRelationMap() = default;
 
     void update(const WordIndex& word, const WordIndex related_word) {
-      if (word == UNOBSERVED_WORDINDEX) return;
+      if (word == WordToIndexTransformer::unobserved_word_index) return;
       auto it = relations_.find(word);
       if (it == relations_.end())
         relations_.insert(std::make_pair(word, TopicWordIndexRelation(word, related_word)));
@@ -74,7 +74,7 @@ namespace tomer {
     }
 
     void update(const WordIndex& word, const Vector<WordIndex>& related_words) {
-      if (word == UNOBSERVED_WORDINDEX) return;
+      if (word == WordToIndexTransformer::unobserved_word_index) return;
       auto it = relations_.find(word);
       if (it == relations_.end())
         relations_.insert(std::make_pair(word, TopicWordIndexRelation(word, related_words)));

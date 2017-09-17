@@ -5,10 +5,11 @@
 
 namespace tomer {
 
-  static const WordIndex UNOBSERVED_WORDINDEX = -1;
-  static const Word UNKNOWN_WORD = "<!!unknown!!>";
-
   class WordToIndexTransformer {
+  public:
+    static const WordIndex unobserved_word_index;
+    static const Word unobserved_word;
+
   public:
     WordToIndexTransformer()
       : next_index_{0},
@@ -24,9 +25,23 @@ namespace tomer {
       add_if_missing(word);
     }
 
+    inline WordIndex update_and_transform(const Word& word) {
+      return add_if_missing_and_transform(word);
+    }
+
     inline void update(const Vector<Word>& words) {
       for (auto const& word : words)
-        add_if_missing(word);
+        update(word);
+    }
+
+    inline Vector<WordIndex> update_and_transform(const Vector<Word>& words) {
+      Vector<WordIndex> indexes;
+      indexes.reserve(words.size());
+
+      for (auto const& word: words)
+        indexes.push_back(update_and_transform(word));
+
+      return indexes;
     }
 
     inline WordIndex transform(const Word& word) const {
@@ -70,14 +85,23 @@ namespace tomer {
       }
     }
 
+    inline WordIndex add_if_missing_and_transform(const Word& word) {
+      auto p = indexes_.insert(std::make_pair(word, next_index_));
+      if (p.second) {
+        words_.push_back(word);
+        return next_index_++;
+      }
+      return p.first->second;
+    }
+
     inline Word get_word_or_invalid_word(const WordIndex& index) const {
-      if (index < 0 || index >= next_index_) return UNKNOWN_WORD;
+      if (index < 0 || index >= next_index_) return unobserved_word;
       return words_.at(index);
     }
 
     inline WordIndex get_index_or_invalid_index(const Word& word) const {
       auto it = indexes_.find(word);
-      if (it == indexes_.end()) return UNOBSERVED_WORDINDEX;
+      if (it == indexes_.end()) return unobserved_word_index;
       return it->second;
     }
 

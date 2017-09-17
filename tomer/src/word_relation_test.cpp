@@ -11,12 +11,12 @@ namespace tomer {
         TopicWordIndexRelation relation(0);
 
         WordIndex idata = 1;
-        Vector<WordIndex> vdata{0, 1, UNOBSERVED_WORDINDEX, 2, 1};
+        Vector<WordIndex> vdata{0, 1, WordToIndexTransformer::unobserved_word_index, 2, 1};
 
         expect_false(relation.is_related_to(0));
         expect_false(relation.is_related_to(1));
         expect_false(relation.is_related_to(2));
-        expect_false(relation.is_related_to(UNOBSERVED_WORDINDEX));
+        expect_false(relation.is_related_to(WordToIndexTransformer::unobserved_word_index));
 
         relation.update(idata);
         relation.update(vdata);
@@ -24,7 +24,7 @@ namespace tomer {
         expect_false(relation.is_related_to(0));
         expect_true(relation.is_related_to(1));
         expect_true(relation.is_related_to(2));
-        expect_false(relation.is_related_to(UNOBSERVED_WORDINDEX));
+        expect_false(relation.is_related_to(WordToIndexTransformer::unobserved_word_index));
 
         TopicWordIndexRelation relation2(0, idata);
         expect_false(relation2.is_related_to(0));
@@ -34,7 +34,7 @@ namespace tomer {
         expect_false(relation3.is_related_to(0));
         expect_true(relation3.is_related_to(1));
         expect_true(relation3.is_related_to(2));
-        expect_false(relation3.is_related_to(UNOBSERVED_WORDINDEX));
+        expect_false(relation3.is_related_to(WordToIndexTransformer::unobserved_word_index));
       }
 
       test_that("TopicWordIndexRelationMap works properly") {

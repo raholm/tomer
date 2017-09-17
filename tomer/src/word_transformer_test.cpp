@@ -15,16 +15,17 @@ namespace tomer {
 
         // Check transformation
         check_equality(transformer.transform({"hello", "foo", "bar", "batman", "world", "hello"}),
-                       {0, 2, 3, UNOBSERVED_WORDINDEX, 1, 0});
+                       {0, 2, 3, WordToIndexTransformer::unobserved_word_index, 1, 0});
         expect_true(transformer.transform("hello") == 0);
-        expect_true(transformer.transform("batman") == UNOBSERVED_WORDINDEX);
+        expect_true(transformer.transform("batman") == WordToIndexTransformer::unobserved_word_index);
 
         // Check reversion
-        check_equality(transformer.revert({0, 2, 3, UNOBSERVED_WORDINDEX, 1, 0}),
-                       {"hello", "foo", "bar", UNKNOWN_WORD, "world", "hello"});
+        check_equality(transformer.revert({0, 2, 3, WordToIndexTransformer::unobserved_word_index, 1, 0}),
+                       {"hello", "foo", "bar", WordToIndexTransformer::unobserved_word, "world", "hello"});
         expect_true(transformer.revert(0) == "hello");
-        expect_true(transformer.revert(UNOBSERVED_WORDINDEX) == UNKNOWN_WORD);
-        expect_true(transformer.revert(4) == UNKNOWN_WORD);
+        expect_true(transformer.revert(WordToIndexTransformer::unobserved_word_index) ==
+                    WordToIndexTransformer::unobserved_word);
+        expect_true(transformer.revert(4) == WordToIndexTransformer::unobserved_word);
       }
     }
 
