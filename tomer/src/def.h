@@ -49,7 +49,8 @@ namespace tomer {
   using WordIndex = int;
   using Word = Token;
   using Count = size_t;
-  using WordWindow = Document;
+  using WordWindow = Vector<Word>;
+  using WordIndexWindow = Vector<WordIndex>;
 
 } // namespace tomer
 

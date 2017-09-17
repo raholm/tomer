@@ -2,7 +2,7 @@
 #define TOMER_TOPIC_EVALUATOR_H_
 
 #include "def.h"
-#include "word_count.h"
+#include "counter.h"
 
 namespace tomer {
 
@@ -40,7 +40,7 @@ namespace tomer {
   public:
     using BaseClass = TopicEvaluator;
 
-    TopicCoherenceEvaluator(const WordCount& word_counts)
+    TopicCoherenceEvaluator(const WordCounter& word_counts)
       : word_counts_{word_counts} {}
 
     ~TopicCoherenceEvaluator() = default;
@@ -54,7 +54,7 @@ namespace tomer {
     }
 
   private:
-    WordCount word_counts_;
+    WordCounter word_counts_;
 
     inline bool missing_count(size_t count) const {
       return count == 0;
@@ -66,12 +66,12 @@ namespace tomer {
   public:
     using BaseClass = TopicEvaluator;
 
-    explicit NormalisedPointwiseMutualInformationEvaluator(const WordCount& word_counts,
+    explicit NormalisedPointwiseMutualInformationEvaluator(const WordCounter& word_counts,
                                                            size_t window_count)
       : word_counts_{word_counts},
         window_count_{window_count} {}
 
-    explicit NormalisedPointwiseMutualInformationEvaluator(WordCount&& word_counts,
+    explicit NormalisedPointwiseMutualInformationEvaluator(WordCounter&& word_counts,
                                                            size_t window_count)
       : word_counts_{std::move(word_counts)},
         window_count_{window_count} {}
@@ -95,7 +95,7 @@ namespace tomer {
     }
 
   private:
-    WordCount word_counts_;
+    WordCounter word_counts_;
     size_t window_count_;
 
     inline bool missing_count(size_t count) const {

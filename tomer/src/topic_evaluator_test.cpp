@@ -17,7 +17,7 @@ namespace tomer {
         relations.update(transformer.transform("superman"),
                          transformer.transform(Vector<Word>{"foo", "bar"}));
 
-        WordCount word_counts{transformer, relations};
+        WordCounter word_counts{transformer, relations};
         word_counts.update(Vector<Word>{"foo", "foo", "bar", "bar", "batman",
               "batman", "batman", "superman"});
 
@@ -127,7 +127,7 @@ namespace tomer {
         relations.update(transformer.transform("superman"),
                          transformer.transform(Vector<Word>{"foo", "bar"}));
 
-        WordCount word_counts{transformer, relations};
+        WordCounter word_counts{transformer, relations};
         word_counts.update(Vector<Word>{"foo", "foo", "bar", "bar", "batman",
               "batman", "batman", "superman"});
 

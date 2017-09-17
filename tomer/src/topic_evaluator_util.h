@@ -3,7 +3,7 @@
 
 #include "def.h"
 #include "util.h"
-#include "word_count.h"
+#include "counter.h"
 #include "word_transformer.h"
 #include "word_relation.h"
 
@@ -11,24 +11,44 @@ namespace tomer {
 
   const size_t INF_WORD_WINDOW = 0;
 
-  struct TopicEvaluatorData {
-    explicit TopicEvaluatorData(const WordCount& word_counts)
+  struct WordTopicEvaluatorData {
+    explicit WordTopicEvaluatorData(const WordCounter& word_counts)
       : word_counts{word_counts},
         window_count{0} {}
 
-    explicit TopicEvaluatorData(WordCount&& word_counts)
+    explicit WordTopicEvaluatorData(WordCounter&& word_counts)
       : word_counts{std::move(word_counts)},
         window_count{0} {}
 
-    WordCount word_counts;
+    WordCounter word_counts;
     size_t window_count;
 
   };
 
-  WordCount create_word_counts(const Corpus& topics);
+  WordCounter create_word_counts(const Corpus& topics);
   void calculate_word_counts_and_window_count(const Corpus& documents,
                                               size_t window_size,
-                                              TopicEvaluatorData* data);
+                                              WordTopicEvaluatorData* data);
+
+  struct WordIndexTopicEvaluatorData {
+    explicit WordIndexTopicEvaluatorData(const WordIndexCounter& word_index_counts)
+      : word_index_counts{word_index_counts},
+        window_count{0} {}
+
+    explicit WordIndexTopicEvaluatorData(WordIndexCounter&& word_index_counts)
+      : word_index_counts{std::move(word_index_counts)},
+        window_count{0} {}
+
+    WordIndexCounter word_index_counts;
+    size_t window_count;
+
+  };
+
+  WordIndexCounter create_word_index_counts(const Matrix<WordIndex>& topics);
+  void calculate_word_index_counts_and_window_count(const Matrix<WordIndex>& documents,
+                                                    size_t window_size,
+                                                    WordIndexTopicEvaluatorData* data);
+
 
 } // namespace tomer
 
