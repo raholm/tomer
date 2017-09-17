@@ -24,6 +24,9 @@ namespace tomer {
   template<typename First, typename Second>
   using Pair = std::pair<First, Second>;
 
+  template<typename T>
+  using Matrix = std::vector<std::vector<T>>;
+
   using Token = String;
   using Type = size_t;
   using Topic = size_t;
@@ -33,14 +36,14 @@ namespace tomer {
 
   using IntVector = Vector<size_t>;
   using DoubleVector = Vector<double>;
-  using StringVector = Document;
+  using StringVector = Vector<String>;
   using TypeVector = Vector<Type>;
   using TopicVector = Vector<Topic>;
 
-  using IntMatrix = Vector<IntVector>;
-  using DoubleMatrix = Vector<DoubleVector>;
-  using TypeMatrix = Vector<TypeVector>;
-  using TopicMatrix = Vector<TopicVector>;
+  using IntMatrix = Matrix<size_t>;
+  using DoubleMatrix = Matrix<double>;
+  using TypeMatrix = Matrix<Type>;
+  using TopicMatrix = Matrix<Topic>;
 
   // NPMI
   using WordIndex = int;
