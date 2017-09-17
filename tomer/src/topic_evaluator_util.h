@@ -29,6 +29,7 @@ namespace tomer {
   void calculate_word_counts_and_window_count(const Corpus& documents,
                                               size_t window_size,
                                               TopicEvaluatorData* data);
+
 } // namespace tomer
 
 #endif // TOMER_TOPIC_EVALUATOR_UTIL_H_

@@ -71,6 +71,11 @@ namespace tomer {
       : word_counts_{word_counts},
         window_count_{window_count} {}
 
+    explicit NormalisedPointwiseMutualInformationEvaluator(WordCount&& word_counts,
+                                                           size_t window_count)
+      : word_counts_{std::move(word_counts)},
+        window_count_{window_count} {}
+
     ~NormalisedPointwiseMutualInformationEvaluator() = default;
 
   protected:
@@ -83,9 +88,9 @@ namespace tomer {
           missing_count(right_count) ||
           missing_count(combined_count)) return 0.0;
 
-      double numerator = log((double) (combined_count * window_count_) / (left_count * right_count));
       double denominator = -log((double) combined_count / window_count_);
       if (denominator == 0) return 0.0;
+      double numerator = log((double) (combined_count * window_count_) / (left_count * right_count));
       return numerator / denominator;
     }
 
