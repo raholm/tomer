@@ -1,13 +1,13 @@
 #include <testthat.h>
 
 #include "test_helper.h"
-#include "word_count.h"
+#include "counter.h"
 
 namespace tomer {
   namespace test {
 
-    context("word count") {
-      test_that("WordCount works properly") {
+    context("word counter") {
+      test_that("WordCounter works properly") {
         WordToIndexTransformer transformer;
         transformer.update({"foo", "bar", "batman", "superman"});
 
@@ -16,7 +16,7 @@ namespace tomer {
         relations.update(transformer.transform("batman"), transformer.transform("superman"));
         relations.update(transformer.transform("superman"), transformer.transform(Vector<Word>{"foo", "bar"}));
 
-        WordCount word_counts{transformer, relations};
+        WordCounter word_counts{transformer, relations};
 
         expect_true(word_counts.get_count("foo") == 0);
         word_counts.update("foo");
