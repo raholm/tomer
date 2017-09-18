@@ -5,6 +5,10 @@ evaluate_left_to_right_cpp <- function(corpus, n_docs, alphabet, n_topics, topic
     .Call('_tomer_evaluate_left_to_right_cpp', PACKAGE = 'tomer', corpus, n_docs, alphabet, n_topics, topic_counts, type_topic_counts, alpha, beta, n_particles, resampling)
 }
 
+evaluate_npmi3_cpp <- function(topics, documents, window_size) {
+    .Call('_tomer_evaluate_npmi3_cpp', PACKAGE = 'tomer', topics, documents, window_size)
+}
+
 evaluate_npmi2_cpp <- function(topics, documents, window_size) {
     .Call('_tomer_evaluate_npmi2_cpp', PACKAGE = 'tomer', topics, documents, window_size)
 }
@@ -23,6 +27,10 @@ compute_chunking_bf_test_cpp <- function(topic_indicators, n_topics, beta) {
 
 compute_chunking_lr_test_cpp <- function(topic_indicators, n_topics, beta) {
     .Call('_tomer_compute_chunking_lr_test_cpp', PACKAGE = 'tomer', topic_indicators, n_topics, beta)
+}
+
+evaluate_topic_coherence2_cpp <- function(topics, documents) {
+    .Call('_tomer_evaluate_topic_coherence2_cpp', PACKAGE = 'tomer', topics, documents)
 }
 
 evaluate_topic_coherence_cpp <- function(topics, documents) {
