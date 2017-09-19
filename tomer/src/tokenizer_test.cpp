@@ -8,7 +8,7 @@ namespace tomer {
   namespace test {
 
     context("word tokenizer") {
-      test_that("word tokenizer returns the correct tokens with default delimiter") {
+      test_that("WordTokenizer returns the correct tokens with default delimiter") {
         WordTokenizer tokenizer;
         String text = "Hello world! What are you doing today?";
         Vector<String> texts;
@@ -24,7 +24,7 @@ namespace tomer {
             {"Hello", "World"}, {"[" , "foo|bar", "]"}, {"superman", "batman", "superman"}});
       }
 
-      test_that("word tokenizer returns the correct tokens with specified delimiter") {
+      test_that("WordTokenizer returns the correct tokens with specified delimiter") {
         WordTokenizer tokenizer("_");
         String text = "Hello_world! What_are_you_doing_today?";
         Vector<String> texts;
@@ -42,7 +42,7 @@ namespace tomer {
     }
 
     context("word index tokenizer") {
-      test_that("word index tokenizer returns the correct tokens with default delimiter") {
+      test_that("WordIndexTokenizer returns the correct tokens with default delimiter") {
         WordIndexTokenizer tokenizer;
         String text = "Hello world! What are you doing world!";
         Vector<String> texts;
@@ -58,7 +58,7 @@ namespace tomer {
             {0, 6}, {7, 8, 9}, {10, 11, 10}});
       }
 
-      test_that("word index tokenizer returns the correct tokens with specified delimiter") {
+      test_that("WordIndexTokenizer returns the correct tokens with specified delimiter") {
         WordIndexTokenizer tokenizer("_");
         String text = "Hello_world!_What_are_you_doing_world!";
         Vector<String> texts;
