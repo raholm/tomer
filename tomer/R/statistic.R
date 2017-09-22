@@ -1,7 +1,7 @@
 #' @export
 markovian_bf_test <- function(topic_indicators, ntopics, beta) {
     .check_input_markovian_bf_test(topic_indicators, ntopics, beta)
-    compute_markovian_test_bf_cpp(topic_indicators, ntopics, beta)
+    compute_markovian_bf_test_cpp(topic_indicators, ntopics, beta)
 }
 
 .check_input_markovian_bf_test <- function(topic_indicators, ntopics, beta) {
