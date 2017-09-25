@@ -68,33 +68,33 @@ Rcpp::NumericVector evaluate_npmi_with_cache_cpp(const Rcpp::StringVector& topic
     tops = tokenizer.transform(tmp_tops);
     docs = tokenizer.transform(tmp_docs);
 
-    WordTokenizer word_tokenizer;
-    Matrix<WordTokenizer::Token> word_tops = word_tokenizer.transform(tmp_tops);
-    Matrix<WordTokenizer::Token> word_docs = word_tokenizer.transform(tmp_docs);
-
     WordToIndexTransformerCache  transformer_cache;
+    WordToIndexTransformer transformer = tokenizer.get_transformer();
+    Map<Word, WordIndex> index_map = transformer.get_index_map();
 
-    for (auto topic : word_tops)
-      for (auto word : topic)
-        transformer_cache.update(word, tokenizer.transform(word).at(0));
-
-    for (auto doc : word_docs)
-      for (auto word : doc)
-        transformer_cache.update(word, tokenizer.transform(word).at(0));
-
-    cache.transformer = std::move(transformer_cache);
+    for (auto const& word_wordindex : index_map)
+      transformer_cache.update(word_wordindex.first, word_wordindex.second);
 
     WordIndexTopicEvaluatorData data(std::move(create_word_index_counts(tops)));
-    calculate_word_index_counts_and_window_count_with_cache(docs, window_size, &data, &cache);
+    calculate_word_index_counts_and_window_count(docs, window_size, &data);
+
+    WordIndexCounterCache counter_cache;
+    Map<WordIndex, Count> count_map = data.word_index_counts.get_count_map();
+
+    for (auto const& wordindex_count : count_map)
+      counter_cache.update(wordindex_count.first, wordindex_count.second);
+
+    cache.transformer = std::move(transformer_cache);
+    cache.word_index_counts = std::move(counter_cache);
+    cache.window_count = data.window_count;
 
     bool status_ok = WordIndexTopicEvaluatorDataCacheWriter().write(cache, tmp_filename);
     if (!status_ok)
       throw std::runtime_error("Could not write out cache to disk.");
   }
-
-  CompressedAndCachedNpmiEvaluator evaluator(std::move(cache.word_index_counts), cache.window_count);
   // ----
 
+  CompressedAndCachedNpmiEvaluator evaluator(std::move(cache.word_index_counts), cache.window_count);
   auto ntopics = tops.size();
   Vector<double> vals;
   vals.reserve(ntopics);

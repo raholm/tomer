@@ -98,6 +98,10 @@ namespace tomer {
       return indexes;
     }
 
+    WordToIndexTransformer get_transformer() const {
+      return transformer_;
+    }
+
   private:
     size_t cache_size_;
     String delimiter_;

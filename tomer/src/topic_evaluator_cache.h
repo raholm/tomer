@@ -189,64 +189,6 @@ namespace tomer {
 
   };
 
-  void calculate_word_index_counts_and_window_count_with_cache(const Matrix<WordIndex>& documents,
-                                                               size_t window_size,
-                                                               WordIndexTopicEvaluatorData* data,
-                                                               WordIndexTopicEvaluatorDataCache* cache) {
-    auto ndocs = documents.size();
-    size_t nwindows, window_count =  0;
-    WordIndexWindow words_in_window(window_size);
-    WordIndexCounter& word_index_counts = data->word_index_counts;
-    size_t head_id, tail_id, nwords;
-
-    auto& cache_counter = cache->word_index_counts;
-
-    for (unsigned i = 0; i < ndocs; ++i) {
-      auto doc_words = documents.at(i);
-      auto doc_length = doc_words.size();
-
-      if (window_size == INF_WORD_WINDOW)
-        nwindows = 1;
-      else
-        nwindows = doc_length + window_size - 1;
-
-      window_count += nwindows;
-
-      for (unsigned j = 1; j < (nwindows + 1); ++j) {
-        if (window_size == INF_WORD_WINDOW) {
-          words_in_window = doc_words;
-          remove_duplicates(&words_in_window);
-          nwords = words_in_window.size();
-        } else {
-          head_id = (j > window_size) ? j - window_size : 0;
-          tail_id = std::min((size_t) j, (size_t) doc_words.size());
-          nwords = tail_id - head_id;
-
-          for (unsigned k = 0; k < nwords; ++k) {
-            words_in_window.at(k) = doc_words.at(head_id + k);
-          }
-
-          remove_duplicates_inplace(&words_in_window, &nwords);
-        }
-
-        for (unsigned left_idx = 0; left_idx < nwords; ++left_idx) {
-          auto left_word = words_in_window.at(left_idx);
-          word_index_counts.update(left_word);
-          cache_counter.update(left_word, word_index_counts.get_count(left_word));
-
-          for (unsigned right_idx = left_idx + 1; right_idx < nwords; ++right_idx) {
-            auto right_word = words_in_window.at(right_idx);
-            word_index_counts.update(left_word, right_word);
-            cache_counter.update(left_word, right_word, word_index_counts.get_count(left_word, right_word));
-          }
-        }
-      }
-    }
-
-    data->window_count = window_count;
-    cache->window_count = window_count;
-  }
-
   class CompressedAndCachedNormalisedPointwiseMutualInformationEvaluator : public CompressedTopicEvaluator {
   public:
     using BaseClass = CompressedTopicEvaluator;

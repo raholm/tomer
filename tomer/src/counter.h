@@ -145,6 +145,10 @@ namespace tomer {
       return get_count(get_combined_word_index(index1, index2));
     }
 
+    Map<WordIndex, Count> get_count_map() const {
+      return counts_;
+    }
+
   private:
     TopicWordIndexRelationMap word_relations_;
     Map<WordIndex, Count> counts_;

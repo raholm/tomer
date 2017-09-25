@@ -72,6 +72,10 @@ namespace tomer {
       return words;
     }
 
+    Map<Word, WordIndex> get_index_map() const {
+      return indexes_;
+    }
+
   private:
     WordIndex next_index_;
     Vector<Word> words_;
