@@ -56,12 +56,9 @@ Rcpp::NumericVector evaluate_npmi_with_cache_cpp(const Rcpp::StringVector& topic
     // Cache exists
     cache = WordIndexTopicEvaluatorDataCacheReader().read(tmp_filename);
 
-    WordTokenizer word_tokenizer;
-    Matrix<WordTokenizer::Token> word_tops = word_tokenizer.transform(tmp_tops);
-    Matrix<WordTokenizer::Token> word_docs = word_tokenizer.transform(tmp_docs);
-
-    tops = cache.transformer.transform(word_tops);
-    docs = cache.transformer.transform(word_docs);
+    WordIndexTokenizerCache tokenizer{cache.transformer};
+    tops = tokenizer.transform(tmp_tops);
+    docs = tokenizer.transform(tmp_docs);
   } else {
     // Create cache
     WordIndexTokenizer tokenizer;

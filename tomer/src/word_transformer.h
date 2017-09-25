@@ -5,6 +5,8 @@
 
 namespace tomer {
 
+  class WordIndexTopicEvaluatorDataCacheWriter;
+
   class WordToIndexTransformer {
   public:
     static const WordIndex unobserved_word_index;
@@ -108,6 +110,54 @@ namespace tomer {
       if (it == indexes_.end()) return unobserved_word_index;
       return it->second;
     }
+
+  };
+
+  class WordToIndexTransformerCache {
+  public:
+    inline void update(const Word& word, const WordIndex& index) {
+      indexes_.insert(std::make_pair(word, index));
+    }
+
+    inline void update(const Vector<Word>& words, const Vector<WordIndex>& indexes) {
+      for (unsigned i = 0; i < words.size(); ++i)
+        update(words.at(i), indexes.at(i));
+    }
+
+    inline WordIndex transform(const Word& word) const {
+      return get_index_or_invalid_index(word);
+    }
+
+    inline Vector<WordIndex> transform(const Vector<Word>& words) const {
+      Vector<WordIndex> indexes;
+      indexes.reserve(words.size());
+
+      for (auto const& word : words)
+        indexes.push_back(transform(word));
+
+      return indexes;
+    }
+
+    inline Matrix<WordIndex> transform(const Matrix<Word>& words) const {
+      Matrix<WordIndex> indexes;
+      indexes.reserve(words.size());
+
+      for (auto const& doc : words)
+        indexes.push_back(transform(doc));
+
+      return indexes;
+    }
+
+  private:
+    Map<Word, WordIndex> indexes_;
+
+    inline WordIndex get_index_or_invalid_index(const Word& word) const {
+      auto it = indexes_.find(word);
+      if (it == indexes_.end()) return WordToIndexTransformer::unobserved_word_index;
+      return it->second;
+    }
+
+    friend WordIndexTopicEvaluatorDataCacheWriter;
 
   };
 
