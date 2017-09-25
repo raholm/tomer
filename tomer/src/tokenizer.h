@@ -51,8 +51,7 @@ namespace tomer {
       char* current_token = strtok(t, delimiter_.c_str());
 
       while (current_token != NULL) {
-        if (*current_token != ' ')
-          words.push_back(String(current_token));
+        words.push_back(String(current_token));
         current_token = strtok(NULL, delimiter_.c_str());
       }
 
@@ -89,12 +88,9 @@ namespace tomer {
       char* current_token = strtok(t, delimiter_.c_str());
 
       while (current_token != NULL) {
-        if (*current_token != ' ') {
-          Word ct{current_token};
-          Token index = transformer_.update_and_transform(ct);
-          indexes.push_back(index);
-        }
-
+        Word ct{current_token};
+        Token index = transformer_.update_and_transform(ct);
+        indexes.push_back(index);
         current_token = strtok(NULL, delimiter_.c_str());
       }
 

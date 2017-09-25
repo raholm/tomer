@@ -141,6 +141,7 @@ namespace tomer {
     }
 
     Count get_count(const Type& index1, const Type& index2) const override {
+      if (index1 == index2) return 0;
       return get_count(get_combined_word_index(index1, index2));
     }
 

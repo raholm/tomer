@@ -46,5 +46,45 @@ namespace tomer {
       }
     }
 
+    context("word index counter") {
+      test_that("WordIndexCounter works properly") {
+        WordToIndexTransformer transformer;
+        transformer.update({"foo", "bar", "batman", "superman"});
+
+        TopicWordIndexRelationMap relations;
+        relations.update(transformer.transform("foo"), transformer.transform("bar"));
+        relations.update(transformer.transform("batman"), transformer.transform("superman"));
+        relations.update(transformer.transform("superman"), transformer.transform(Vector<Word>{"foo", "bar"}));
+
+        WordIndexCounter word_index_counts{relations};
+
+        expect_true(word_index_counts.get_count(transformer.transform("foo")) == 0);
+        word_index_counts.update(transformer.transform("foo"));
+        expect_true(word_index_counts.get_count(transformer.transform("foo")) == 1);
+
+        word_index_counts.update(transformer.transform("foo"), transformer.transform("foo"));
+        expect_true(word_index_counts.get_count(transformer.transform("foo"), transformer.transform("foo")) == 0);
+
+        word_index_counts.update(transformer.transform("superman"), transformer.transform("batman"));
+        expect_true(word_index_counts.get_count(transformer.transform("superman")) == 0);
+        expect_true(word_index_counts.get_count(transformer.transform("superman"), transformer.transform("batman")) == 1);
+
+        word_index_counts.update(transformer.transform("batman"), transformer.transform("superman"));
+        expect_true(word_index_counts.get_count(transformer.transform("batman")) == 0);
+        expect_true(word_index_counts.get_count(transformer.transform("batman"), transformer.transform("superman")) == 2);
+
+        word_index_counts.update(transformer.transform("foo"));
+        word_index_counts.update(transformer.transform("foo"));
+        expect_true(word_index_counts.get_count(transformer.transform("foo")) == 3);
+
+        word_index_counts.update(transformer.transform("bar"), transformer.transform("batman"));
+        expect_true(word_index_counts.get_count(transformer.transform("bar"), transformer.transform("batman")) == 0);
+
+        expect_true(word_index_counts.get_count(transformer.transform("spiderman")) == 0);
+        word_index_counts.update(transformer.transform("spiderman"));
+        expect_true(word_index_counts.get_count(transformer.transform("spiderman")) == 0);
+      }
+    }
+
   } // namespace test
 } // namespace tomer
