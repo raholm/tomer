@@ -3,6 +3,7 @@
 
 #include <Rcpp.h>
 #include <iostream>
+#include <fstream>
 
 #include "def.h"
 
@@ -30,6 +31,11 @@ namespace tomer {
     for (auto const& e : v)
       std::cout << e << " ";
     std::cout << std::endl;
+  }
+
+  inline bool file_exists(const String& filename) {
+    std::ifstream f{filename};
+    return f.good();
   }
 
   inline Corpus convert_from_R(const Rcpp::List& l) {

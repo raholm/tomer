@@ -17,6 +17,10 @@ evaluate_npmi_cpp <- function(topics, documents, window_size) {
     .Call('_tomer_evaluate_npmi_cpp', PACKAGE = 'tomer', topics, documents, window_size)
 }
 
+evaluate_npmi_with_cache_cpp <- function(topics, documents, window_size, filename) {
+    .Call('_tomer_evaluate_npmi_with_cache_cpp', PACKAGE = 'tomer', topics, documents, window_size, filename)
+}
+
 compute_markovian_bf_test_cpp <- function(topic_indicators, n_topics, beta) {
     .Call('_tomer_compute_markovian_bf_test_cpp', PACKAGE = 'tomer', topic_indicators, n_topics, beta)
 }
