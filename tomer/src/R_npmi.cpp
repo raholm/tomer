@@ -10,7 +10,6 @@
 
 using namespace tomer;
 
-
 // [[Rcpp::export]]
 Rcpp::NumericVector evaluate_npmi3_cpp(const Rcpp::StringVector& topics,
                                        const Rcpp::StringVector& documents,

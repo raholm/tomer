@@ -161,7 +161,9 @@ namespace tomer {
         we can use this simple solution.
       */
       const size_t max_unique_indexes = 100000;
-      return (index1 > index2) ? index1 * max_unique_indexes + index2 : index2 * max_unique_indexes + index1;
+      return (index1 > index2) ?
+        index1 * max_unique_indexes + index2 :
+        index2 * max_unique_indexes + index1;
     }
 
   };
