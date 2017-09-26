@@ -5,9 +5,9 @@
 
 namespace tomer {
 
-  // Sequence Test (Bayes Factor)
-  void fill_sequence_bf_test_data(const IntVector& topic_indicators,
-                                  SequenceBFTestData* counts) {
+  // Markovian Test (Bayes Factor)
+  void fill_markovian_bf_test_data(const IntVector& topic_indicators,
+                                   MarkovianBFTestData* counts) {
     size_t n = topic_indicators.size();
     size_t cur_topic, prev_topic;
 
@@ -20,9 +20,9 @@ namespace tomer {
     }
   }
 
-  double compute_sequence_bf_test_slow(const IntVector& topic_indicators,
-                                       size_t n_topics,
-                                       double beta) {
+  double compute_markovian_bf_test_slow(const IntVector& topic_indicators,
+                                        size_t n_topics,
+                                        double beta) {
     /*
       term1: sum(lgamma(beta - counts / K))
       term2: -sum(lgamma(beta + transition_counts.at(topic)))
@@ -30,8 +30,8 @@ namespace tomer {
       term4: lgamma(sum(beta + transition_counts.at(topic)))
     */
 
-    SequenceBFTestData topic_counts(n_topics);
-    fill_sequence_bf_test_data(topic_indicators, &topic_counts);
+    MarkovianBFTestData topic_counts(n_topics);
+    fill_markovian_bf_test_data(topic_indicators, &topic_counts);
 
     const auto& counts = topic_counts.counts;
     const auto& transition_counts = topic_counts.transition_counts;
@@ -73,17 +73,17 @@ namespace tomer {
     return log_bayes_factor;
   }
 
-  double compute_sequence_bf_test(const IntVector& topic_indicators,
-                                  size_t n_topics,
-                                  double beta) {
+  double compute_markovian_bf_test(const IntVector& topic_indicators,
+                                   size_t n_topics,
+                                   double beta) {
     /*
       term1: sum(lgamma(beta - counts / K) - lgamma(beta + transition_counts.at(topic)))
       term2: -lgamma(sum(beta + counts / K))
       term3: lgamma(sum(beta + transition_counts.at(topic)))
     */
 
-    SequenceBFTestData topic_counts(n_topics);
-    fill_sequence_bf_test_data(topic_indicators, &topic_counts);
+    MarkovianBFTestData topic_counts(n_topics);
+    fill_markovian_bf_test_data(topic_indicators, &topic_counts);
 
     const auto& counts = topic_counts.counts;
     const auto& transition_counts = topic_counts.transition_counts;
@@ -118,6 +118,48 @@ namespace tomer {
 
     double log_bayes_factor = term1 + term2 + term3;
     return log_bayes_factor;
+  }
+
+  // Markovian Test (Likelihood Ratio)
+  void fill_markovian_lr_test_data(const IntVector& topic_indicators,
+                                  MarkovianLRTestData* data) {
+    MarkovianBFTestData tmp_data(data->counts.size());
+    fill_markovian_bf_test_data(topic_indicators, &tmp_data);
+    data->counts = std::move(tmp_data.counts);
+    data->transition_counts = std::move(tmp_data.transition_counts);
+  }
+
+  double compute_markovian_lr_test(const IntVector& topic_indicators,
+                                   size_t n_topics,
+                                   double beta) {
+    MarkovianLRTestData data(n_topics);
+    fill_markovian_lr_test_data(topic_indicators, &data);
+
+    const auto& counts = data.counts;
+    const auto& transition_counts = data.transition_counts;
+
+    double score = 0;
+    double beta_mul = beta * n_topics;
+    size_t n = topic_indicators.size();
+    size_t n1 = n - 1;
+    double denom = n + beta_mul;
+
+    for (unsigned i = 0; i < n_topics; ++i) {
+      if (counts.at(i) == 0) continue;
+      double ni = counts.at(i);
+      double a = (ni + beta) / denom;
+
+      for (unsigned j = 0; j < n_topics; ++j) {
+        if (transition_counts.at(i).at(j) == 0) continue;
+        double nij = transition_counts.at(i).at(j);
+        double nj = counts.at(j);
+        double b = (nj + beta) / denom;
+
+        score += nij * log(nij / (n1 * a * b));
+      }
+    }
+
+    return 2 * score;
   }
 
   // Chunking Test (Bayes Factor)
@@ -208,48 +250,6 @@ namespace tomer {
 
     double score = term1 + term2 + term3 + term4 + term5;
     return score;
-  }
-
-  // Chunking Test (Likelihood Ratio)
-  void fill_chunking_lr_test_data(const IntVector& topic_indicators,
-                                  ChunkingLRTestData* data) {
-    SequenceBFTestData tmp_data(data->counts.size());
-    fill_sequence_bf_test_data(topic_indicators, &tmp_data);
-    data->counts = std::move(tmp_data.counts);
-    data->transition_counts = std::move(tmp_data.transition_counts);
-  }
-
-  double compute_chunking_lr_test(const IntVector& topic_indicators,
-                        size_t n_topics,
-                        double beta) {
-    ChunkingLRTestData data(n_topics);
-    fill_chunking_lr_test_data(topic_indicators, &data);
-
-    const auto& counts = data.counts;
-    const auto& transition_counts = data.transition_counts;
-
-    double score = 0;
-    double beta_mul = beta * n_topics;
-    size_t n = topic_indicators.size();
-    size_t n1 = n - 1;
-    double denom = n + beta_mul;
-
-    for (unsigned i = 0; i < n_topics; ++i) {
-      if (counts.at(i) == 0) continue;
-      double ni = counts.at(i);
-      double a = (ni + beta) / denom;
-
-      for (unsigned j = 0; j < n_topics; ++j) {
-        if (transition_counts.at(i).at(j) == 0) continue;
-        double nij = transition_counts.at(i).at(j);
-        double nj = counts.at(j);
-        double b = (nj + beta) / denom;
-
-        score += nij * log(nij / (n1 * a * b));
-      }
-    }
-
-    return 2 * score;
   }
 
 } // namespace tomer

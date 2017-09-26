@@ -44,13 +44,13 @@ namespace tomer {
       return dist(generator);
     }
 
-    context("Sequence Bayes Factor") {
-      test_that("fill_sequence_bf_test_data fills in the correct counts") {
+    context("Markovian Bayes Factor") {
+      test_that("fill_markovian_bf_test_data fills in the correct counts") {
         size_t n_topics = 2;
-        SequenceBFTestData topic_counts{n_topics};
+        MarkovianBFTestData topic_counts{n_topics};
         IntVector topic_indicators{0, 1, 0, 0, 1, 1, 1, 0, 0};
 
-        fill_sequence_bf_test_data(topic_indicators, &topic_counts);
+        fill_markovian_bf_test_data(topic_indicators, &topic_counts);
 
         const IntVector& counts = topic_counts.counts;
         const IntMatrix& transition_counts = topic_counts.transition_counts;
@@ -64,7 +64,7 @@ namespace tomer {
         expect_true(transition_counts.at(1).at(1) == 2);
       }
 
-      test_that("compute_sequence_bf_test is correct") {
+      test_that("compute_markovian_bf_test is correct") {
         size_t n_topics = 2;
         double beta = 0;
         IntVector topic_indicators{0, 1, 0, 0, 1, 1, 1, 0, 0};
@@ -73,17 +73,17 @@ namespace tomer {
           log(3 * 2 * 1) - log(3 * 2 * 1) -
           log(1) - log(1) - log(1) - log(1) +
           log(3 * 2 * 1) + log(3 * 2 * 1);
-        double actual = compute_sequence_bf_test(topic_indicators, n_topics, beta);
+        double actual = compute_markovian_bf_test(topic_indicators, n_topics, beta);
 
         expect_true(is_equal(actual, expected));
 
         topic_indicators = {1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1};
-        actual = compute_sequence_bf_test(topic_indicators, n_topics, 1);
+        actual = compute_markovian_bf_test(topic_indicators, n_topics, 1);
         expected = log((double) 8 / 7);
         expect_true(is_equal(actual, expected));
       }
 
-      test_that("compute_sequence_bf_test is equal to compute_sequence_bf_test_slow") {
+      test_that("compute_markovian_bf_test is equal to compute_markovian_bf_test_slow") {
         size_t n_topics, min_n_topics=2, max_n_topics=1000;
         size_t size, min_size = 10, max_size = 100000;
         IntVector topic_indicators;
@@ -95,8 +95,8 @@ namespace tomer {
           topic_indicators = generate_topic_indicators(n_topics, size);
           beta = generate_beta();
 
-          expect_true(equal(compute_sequence_bf_test(topic_indicators, n_topics, beta),
-                            compute_sequence_bf_test_slow(topic_indicators, n_topics, beta)));
+          expect_true(equal(compute_markovian_bf_test(topic_indicators, n_topics, beta),
+                            compute_markovian_bf_test_slow(topic_indicators, n_topics, beta)));
         }
       }
     }
@@ -150,13 +150,13 @@ namespace tomer {
       }
     }
 
-    context("Chunking Likelihood Ratio") {
-      test_that("fill_chunking_lr_test_data fills in the correct counts") {
+    context("Markovian Likelihood Ratio") {
+      test_that("fill_markovian_lr_test_data fills in the correct counts") {
         size_t n_topics = 2;
-        ChunkingLRTestData topic_counts{n_topics};
+        MarkovianLRTestData topic_counts{n_topics};
         IntVector topic_indicators{0, 1, 0, 0, 1, 1, 1, 0, 0};
 
-        fill_chunking_lr_test_data(topic_indicators, &topic_counts);
+        fill_markovian_lr_test_data(topic_indicators, &topic_counts);
 
         const IntVector& counts = topic_counts.counts;
         const IntMatrix& transition_counts = topic_counts.transition_counts;
@@ -170,7 +170,7 @@ namespace tomer {
         expect_true(transition_counts.at(1).at(1) == 2);
       }
 
-      test_that("compute_chunking_lr_test is correct") {
+      test_that("compute_markovian_lr_test is correct") {
         size_t n_topics = 2;
         double beta = 1;
         IntVector topic_indicators{0, 1, 0, 0, 1, 1, 1, 0, 0};
@@ -185,7 +185,7 @@ namespace tomer {
            2 * log(2 / (nd1 * (4 + beta) * (4 + beta) / denom)) + // (1 -> 0)
            2 * log(2 / (nd1 * (4 + beta) * (4 + beta) / denom)) // (1 -> 1)
            );
-        double actual = compute_chunking_lr_test(topic_indicators, n_topics, beta);
+        double actual = compute_markovian_lr_test(topic_indicators, n_topics, beta);
         expect_true(is_equal(actual, expected));
 
         topic_indicators = {1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1};
@@ -200,7 +200,7 @@ namespace tomer {
            2 * log(2 / (nd1 * (6 + beta) * (4 + beta) / denom)) + // (1 -> 0)
            4 * log(4 / (nd1 * (6 + beta) * (6 + beta) / denom)) // (1 -> 1)
            );
-        actual = compute_chunking_lr_test(topic_indicators, n_topics, beta);
+        actual = compute_markovian_lr_test(topic_indicators, n_topics, beta);
         expect_true(is_equal(actual, expected));
       }
     }

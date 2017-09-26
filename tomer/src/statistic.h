@@ -5,9 +5,9 @@
 
 namespace tomer {
 
-  // Sequence Test (Bayes Factor)
-  struct SequenceBFTestData {
-    explicit SequenceBFTestData(size_t n_topics)
+  // Markovian Test (Bayes Factor)
+  struct MarkovianBFTestData {
+    explicit MarkovianBFTestData(size_t n_topics)
       : counts(n_topics),
         transition_counts(n_topics, IntVector(n_topics)) {}
 
@@ -16,14 +16,31 @@ namespace tomer {
 
   };
 
-  void fill_sequence_bf_test_data(const IntVector& topic_indicators,
-                                  SequenceBFTestData* counts);
-  double compute_sequence_bf_test_slow(const IntVector& topic_indicators,
-                                       size_t n_topics,
-                                       double beta);
-  double compute_sequence_bf_test(const IntVector& topic_indicators,
-                                  size_t n_topics,
-                                  double beta);
+  void fill_markovian_bf_test_data(const IntVector& topic_indicators,
+                                   MarkovianBFTestData* counts);
+  double compute_markovian_bf_test_slow(const IntVector& topic_indicators,
+                                        size_t n_topics,
+                                        double beta);
+  double compute_markovian_bf_test(const IntVector& topic_indicators,
+                                   size_t n_topics,
+                                   double beta);
+
+  // Markovian Test (Likelihood Ratio)
+  struct MarkovianLRTestData {
+    explicit MarkovianLRTestData(size_t n_topics)
+      : counts(n_topics),
+        transition_counts(n_topics, IntVector(n_topics)) {}
+
+    IntVector counts;
+    IntMatrix transition_counts;
+
+  };
+
+  void fill_markovian_lr_test_data(const IntVector& topic_indicators,
+                                   MarkovianLRTestData* data);
+  double compute_markovian_lr_test(const IntVector& topic_indicators,
+                                   size_t n_topics,
+                                   double beta);
 
   // Chunking Test (Bayes Factor)
   struct ChunkingBFTestData {
@@ -43,21 +60,6 @@ namespace tomer {
                                   double beta);
 
   // Chunking Test (Likelihood Ratio)
-  struct ChunkingLRTestData {
-    explicit ChunkingLRTestData(size_t n_topics)
-      : counts(n_topics),
-        transition_counts(n_topics, IntVector(n_topics)) {}
-
-    IntVector counts;
-    IntMatrix transition_counts;
-
-  };
-
-  void fill_chunking_lr_test_data(const IntVector& topic_indicators,
-                                  ChunkingLRTestData* data);
-  double compute_chunking_lr_test(const IntVector& topic_indicators,
-                                  size_t n_topics,
-                                  double beta);
 
 } // namespace tomer
 

@@ -65,6 +65,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// compute_markovian_lr_test_cpp
+double compute_markovian_lr_test_cpp(const Rcpp::IntegerVector& topic_indicators, size_t n_topics, double beta);
+RcppExport SEXP _tomer_compute_markovian_lr_test_cpp(SEXP topic_indicatorsSEXP, SEXP n_topicsSEXP, SEXP betaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::IntegerVector& >::type topic_indicators(topic_indicatorsSEXP);
+    Rcpp::traits::input_parameter< size_t >::type n_topics(n_topicsSEXP);
+    Rcpp::traits::input_parameter< double >::type beta(betaSEXP);
+    rcpp_result_gen = Rcpp::wrap(compute_markovian_lr_test_cpp(topic_indicators, n_topics, beta));
+    return rcpp_result_gen;
+END_RCPP
+}
 // compute_chunking_bf_test_cpp
 double compute_chunking_bf_test_cpp(const Rcpp::IntegerMatrix& topic_indicators, size_t n_topics, double beta);
 RcppExport SEXP _tomer_compute_chunking_bf_test_cpp(SEXP topic_indicatorsSEXP, SEXP n_topicsSEXP, SEXP betaSEXP) {
@@ -75,19 +88,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< size_t >::type n_topics(n_topicsSEXP);
     Rcpp::traits::input_parameter< double >::type beta(betaSEXP);
     rcpp_result_gen = Rcpp::wrap(compute_chunking_bf_test_cpp(topic_indicators, n_topics, beta));
-    return rcpp_result_gen;
-END_RCPP
-}
-// compute_chunking_lr_test_cpp
-double compute_chunking_lr_test_cpp(const Rcpp::IntegerVector& topic_indicators, size_t n_topics, double beta);
-RcppExport SEXP _tomer_compute_chunking_lr_test_cpp(SEXP topic_indicatorsSEXP, SEXP n_topicsSEXP, SEXP betaSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::IntegerVector& >::type topic_indicators(topic_indicatorsSEXP);
-    Rcpp::traits::input_parameter< size_t >::type n_topics(n_topicsSEXP);
-    Rcpp::traits::input_parameter< double >::type beta(betaSEXP);
-    rcpp_result_gen = Rcpp::wrap(compute_chunking_lr_test_cpp(topic_indicators, n_topics, beta));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -133,8 +133,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_tomer_evaluate_npmi_cpp", (DL_FUNC) &_tomer_evaluate_npmi_cpp, 3},
     {"_tomer_evaluate_npmi_with_cache_cpp", (DL_FUNC) &_tomer_evaluate_npmi_with_cache_cpp, 4},
     {"_tomer_compute_markovian_bf_test_cpp", (DL_FUNC) &_tomer_compute_markovian_bf_test_cpp, 3},
+    {"_tomer_compute_markovian_lr_test_cpp", (DL_FUNC) &_tomer_compute_markovian_lr_test_cpp, 3},
     {"_tomer_compute_chunking_bf_test_cpp", (DL_FUNC) &_tomer_compute_chunking_bf_test_cpp, 3},
-    {"_tomer_compute_chunking_lr_test_cpp", (DL_FUNC) &_tomer_compute_chunking_lr_test_cpp, 3},
     {"_tomer_evaluate_topic_coherence2_cpp", (DL_FUNC) &_tomer_evaluate_topic_coherence2_cpp, 2},
     {"_tomer_evaluate_topic_coherence_cpp", (DL_FUNC) &_tomer_evaluate_topic_coherence_cpp, 2},
     {"_tomer_run_testthat_tests", (DL_FUNC) &_tomer_run_testthat_tests, 0},

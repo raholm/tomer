@@ -17,12 +17,12 @@ compute_markovian_bf_test_cpp <- function(topic_indicators, n_topics, beta) {
     .Call('_tomer_compute_markovian_bf_test_cpp', PACKAGE = 'tomer', topic_indicators, n_topics, beta)
 }
 
-compute_chunking_bf_test_cpp <- function(topic_indicators, n_topics, beta) {
-    .Call('_tomer_compute_chunking_bf_test_cpp', PACKAGE = 'tomer', topic_indicators, n_topics, beta)
+compute_markovian_lr_test_cpp <- function(topic_indicators, n_topics, beta) {
+    .Call('_tomer_compute_markovian_lr_test_cpp', PACKAGE = 'tomer', topic_indicators, n_topics, beta)
 }
 
-compute_chunking_lr_test_cpp <- function(topic_indicators, n_topics, beta) {
-    .Call('_tomer_compute_chunking_lr_test_cpp', PACKAGE = 'tomer', topic_indicators, n_topics, beta)
+compute_chunking_bf_test_cpp <- function(topic_indicators, n_topics, beta) {
+    .Call('_tomer_compute_chunking_bf_test_cpp', PACKAGE = 'tomer', topic_indicators, n_topics, beta)
 }
 
 evaluate_topic_coherence2_cpp <- function(topics, documents) {

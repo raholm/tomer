@@ -92,7 +92,14 @@ RCPP_MODULE(mod_bayes_factor) {
 double compute_markovian_bf_test_cpp(const Rcpp::IntegerVector& topic_indicators,
                                      size_t n_topics,
                                      double beta) {
-  return compute_sequence_bf_test(convert_from_R(topic_indicators), n_topics, beta);
+  return compute_markovian_bf_test(convert_from_R(topic_indicators), n_topics, beta);
+}
+
+// [[Rcpp::export]]
+double compute_markovian_lr_test_cpp(const Rcpp::IntegerVector& topic_indicators,
+                                     size_t n_topics,
+                                     double beta) {
+  return compute_markovian_lr_test(convert_from_R(topic_indicators), n_topics, beta);
 }
 
 // [[Rcpp::export]]
@@ -100,11 +107,4 @@ double compute_chunking_bf_test_cpp(const Rcpp::IntegerMatrix& topic_indicators,
                                     size_t n_topics,
                                     double beta) {
   return compute_chunking_bf_test(convert_from_R(topic_indicators), n_topics, beta);
-}
-
-// [[Rcpp::export]]
-double compute_chunking_lr_test_cpp(const Rcpp::IntegerVector& topic_indicators,
-                                    size_t n_topics,
-                                    double beta) {
-  return compute_chunking_lr_test(convert_from_R(topic_indicators), n_topics, beta);
 }
