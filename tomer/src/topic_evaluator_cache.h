@@ -76,7 +76,7 @@ namespace tomer {
   public:
     bool write(const WordIndexTopicEvaluatorDataCache& cache,
                const String& filename) const {
-      std::ofstream outfile;
+      std::ofstream outfile{filename};
 
       if (outfile.fail()) return false;
 
@@ -84,15 +84,18 @@ namespace tomer {
               << cache.transformer.indexes_.size() << " "
               << cache.word_index_counts.counts_.size() << std::endl;
 
-      for (const auto& word_wordindex : cache.transformer.indexes_) {
+      for (auto const& word_wordindex : cache.transformer.indexes_) {
         outfile << word_wordindex.first << " "
                 << word_wordindex.second << std::endl;
       }
 
-      for (const auto& wordindex_count : cache.word_index_counts.counts_) {
+      for (auto const& wordindex_count : cache.word_index_counts.counts_) {
         outfile << wordindex_count.first << " "
                 << wordindex_count.second << std::endl;
       }
+
+      outfile.flush();
+      outfile.close();
 
       return true;
     }
