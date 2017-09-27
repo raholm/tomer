@@ -25,12 +25,12 @@ compute_chunking_bf_test_cpp <- function(topic_indicators, n_topics, beta) {
     .Call('_tomer_compute_chunking_bf_test_cpp', PACKAGE = 'tomer', topic_indicators, n_topics, beta)
 }
 
-evaluate_topic_coherence2_cpp <- function(topics, documents) {
-    .Call('_tomer_evaluate_topic_coherence2_cpp', PACKAGE = 'tomer', topics, documents)
-}
-
 evaluate_topic_coherence_cpp <- function(topics, documents) {
     .Call('_tomer_evaluate_topic_coherence_cpp', PACKAGE = 'tomer', topics, documents)
+}
+
+evaluate_topic_coherence_with_cache_cpp <- function(topics, documents, filename) {
+    .Call('_tomer_evaluate_topic_coherence_with_cache_cpp', PACKAGE = 'tomer', topics, documents, filename)
 }
 
 run_testthat_tests <- function() {

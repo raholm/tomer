@@ -156,6 +156,33 @@ namespace tomer {
 
   };
 
+  class CompressedAndCachedTopicCoherenceEvaluator : public CompressedTopicEvaluator {
+  public:
+    using BaseClass = CompressedTopicEvaluator;
+
+    explicit CompressedAndCachedTopicCoherenceEvaluator(const WordIndexCounterCache& word_index_counts)
+      : word_index_counts_{word_index_counts} {}
+
+    explicit CompressedAndCachedTopicCoherenceEvaluator(WordIndexCounterCache&& word_index_counts)
+      : word_index_counts_{std::move(word_index_counts)} {}
+
+  protected:
+    inline double compute_association(const WordIndex& left, const WordIndex& right) const override {
+      auto left_count = word_index_counts_.get_count(left);
+      auto combined_count = word_index_counts_.get_count(left, right);
+      if (missing_count(left_count)) return 0.0;
+      return log((double) (combined_count + 1) / left_count);
+    }
+
+  private:
+    WordIndexCounterCache word_index_counts_;
+
+    inline bool missing_count(size_t count) const {
+      return count == 0;
+    }
+
+  };
+
   class CompressedNormalisedPointwiseMutualInformationEvaluator : public CompressedTopicEvaluator {
   public:
     using BaseClass = CompressedTopicEvaluator;
@@ -197,6 +224,48 @@ namespace tomer {
   };
 
   using CompressedNpmiEvaluator = CompressedNormalisedPointwiseMutualInformationEvaluator;
+
+  class CompressedAndCachedNormalisedPointwiseMutualInformationEvaluator : public CompressedTopicEvaluator {
+  public:
+    using BaseClass = CompressedTopicEvaluator;
+
+    explicit CompressedAndCachedNormalisedPointwiseMutualInformationEvaluator(const WordIndexCounterCache& word_index_counts,
+                                                                              size_t window_count)
+      : word_index_counts_{word_index_counts},
+        window_count_{window_count} {}
+
+    explicit CompressedAndCachedNormalisedPointwiseMutualInformationEvaluator(WordIndexCounterCache&& word_index_counts,
+                                                                              size_t window_count)
+      : word_index_counts_{std::move(word_index_counts)},
+        window_count_{window_count} {}
+
+  protected:
+    double compute_association(const WordIndex& left, const WordIndex& right) const override {
+      auto left_count = word_index_counts_.get_count(left);
+      auto right_count = word_index_counts_.get_count(right);
+      auto combined_count = word_index_counts_.get_count(left, right);
+
+      if (missing_count(left_count) ||
+          missing_count(right_count) ||
+          missing_count(combined_count)) return 0.0;
+
+      double denominator = -log((double) combined_count / window_count_);
+      if (denominator == 0) return 0.0;
+      double numerator = log((double) (combined_count * window_count_) / (left_count * right_count));
+      return numerator / denominator;
+    }
+
+  private:
+    WordIndexCounterCache word_index_counts_;
+    size_t window_count_;
+
+    inline bool missing_count(size_t count) const {
+      return count == 0;
+    }
+
+  };
+
+  using CompressedAndCachedNpmiEvaluator = CompressedAndCachedNormalisedPointwiseMutualInformationEvaluator;
 
 } // namespace tomer
 
