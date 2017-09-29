@@ -2,7 +2,7 @@
 topic_coherence <- function(topics, documents, cache=FALSE, cache_dst=NULL) {
     stopifnot(is.character(topics))
 
-    if (!cache || (cache && !file.exists(cache_dist)))
+    if (!cache || (cache && !file.exists(cache_dst)))
         stopifnot(is.character(documents))
 
     if (cache) {

@@ -4,7 +4,7 @@ npmi <- function(topics, documents, window_size, cache=FALSE, cache_dst=NULL) {
     checkr::assert_integer(window_size, len=1, lower=0)
     checkr::assert_logical(cache, len=1)
 
-    if (!cache || (cache && !file.exists(cache_dist)))
+    if (!cache || (cache && !file.exists(cache_dst)))
         stopifnot(is.character(documents))
 
     if (cache) {
