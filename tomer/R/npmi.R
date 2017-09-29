@@ -9,6 +9,10 @@ npmi <- function(topics, documents, window_size, cache=FALSE, cache_dst=NULL) {
 
     if (cache) {
         checkr::assert_string(cache_dst)
+
+        if (is.null(documents))
+            documents <- character(length=0)
+
         evaluate_npmi_with_cache_cpp(topics, documents, window_size, cache_dst)
     } else {
         evaluate_npmi_cpp(topics, documents, window_size)
