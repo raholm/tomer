@@ -12,12 +12,9 @@ using namespace tomer;
 // [[Rcpp::export]]
 Rcpp::NumericVector evaluate_topic_coherence_cpp(const Rcpp::StringVector& topics,
                                                  const Rcpp::StringVector& documents) {
-  StringVector tmp_tops = Rcpp::as<StringVector>(topics);
-  StringVector tmp_docs = Rcpp::as<StringVector>(documents);
-
   WordIndexTokenizer tokenizer;
-  Matrix<WordIndexTokenizer::Token> tops = tokenizer.transform(tmp_tops);
-  Matrix<WordIndexTokenizer::Token> docs = tokenizer.transform(tmp_docs);
+  Matrix<WordIndexTokenizer::Token> tops = tokenizer.transform(topics);
+  Matrix<WordIndexTokenizer::Token> docs = tokenizer.transform(documents);
 
   WordIndexTopicEvaluatorData data(std::move(create_word_index_counts(tops)));
   calculate_word_index_counts_and_window_count(docs, INF_WORD_WINDOW, &data);
@@ -37,8 +34,6 @@ Rcpp::NumericVector evaluate_topic_coherence_cpp(const Rcpp::StringVector& topic
 Rcpp::NumericVector evaluate_topic_coherence_with_cache_cpp(const Rcpp::StringVector& topics,
                                                             const Rcpp::StringVector& documents,
                                                             const Rcpp::CharacterVector& filename) {
-  StringVector tmp_tops = Rcpp::as<StringVector>(topics);
-  StringVector tmp_docs = Rcpp::as<StringVector>(documents);
   String tmp_filename = Rcpp::as<String>(filename);
 
   WordIndexTopicEvaluatorDataCache cache;
@@ -50,16 +45,16 @@ Rcpp::NumericVector evaluate_topic_coherence_with_cache_cpp(const Rcpp::StringVe
     // Cache exists
     cache = WordIndexTopicEvaluatorDataCacheReader().read(tmp_filename);
 
-    WordIndexTokenizerCache tokenizer{cache.transformer};
-    tops = tokenizer.transform(tmp_tops);
-    docs = tokenizer.transform(tmp_docs);
+    WordIndexTokenizerCache tokenizer{std::move(cache.transformer)};
+    tops = tokenizer.transform(topics);
+    docs = tokenizer.transform(documents);
   } else {
     // Create cache
     WordIndexTokenizer tokenizer;
-    tops = tokenizer.transform(tmp_tops);
-    docs = tokenizer.transform(tmp_docs);
+    tops = tokenizer.transform(topics);
+    docs = tokenizer.transform(documents);
 
-    WordToIndexTransformerCache  transformer_cache{tokenizer.get_transformer()};
+    WordToIndexTransformerCache transformer_cache{std::move(tokenizer.get_transformer())};
 
     WordIndexTopicEvaluatorData data(std::move(create_word_index_counts(tops)));
     calculate_word_index_counts_and_window_count(docs, INF_WORD_WINDOW, &data);

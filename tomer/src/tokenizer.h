@@ -2,6 +2,7 @@
 #define TOMER_TOKENIZER_H_
 
 #include <cstring>
+#include <Rcpp.h>
 
 #include "def.h"
 #include "word_transformer.h"
@@ -42,6 +43,16 @@ namespace tomer {
       }
 
       tokens.shrink_to_fit();
+      return tokens;
+    }
+
+    Matrix<Token> transform(const Rcpp::StringVector& texts) const {
+      Matrix<Token> tokens;
+      tokens.reserve(texts.size());
+
+      for (auto const& text : texts)
+        tokens.push_back(transform(Rcpp::as<String>(text)));
+
       return tokens;
     }
 

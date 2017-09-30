@@ -17,12 +17,9 @@ using namespace tomer;
 Rcpp::NumericVector evaluate_npmi_cpp(const Rcpp::StringVector& topics,
                                       const Rcpp::StringVector& documents,
                                       size_t window_size) {
-  StringVector tmp_tops = Rcpp::as<StringVector>(topics);
-  StringVector tmp_docs = Rcpp::as<StringVector>(documents);
-
   WordIndexTokenizer tokenizer;
-  Matrix<WordIndexTokenizer::Token> tops = tokenizer.transform(tmp_tops);
-  Matrix<WordIndexTokenizer::Token> docs = tokenizer.transform(tmp_docs);
+  Matrix<WordIndexTokenizer::Token> tops = tokenizer.transform(topics);
+  Matrix<WordIndexTokenizer::Token> docs = tokenizer.transform(documents);
 
   WordIndexTopicEvaluatorData data(std::move(create_word_index_counts(tops)));
   calculate_word_index_counts_and_window_count(docs, window_size, &data);
@@ -43,8 +40,6 @@ Rcpp::NumericVector evaluate_npmi_with_cache_cpp(const Rcpp::StringVector& topic
                                                  const Rcpp::StringVector& documents,
                                                  size_t window_size,
                                                  const Rcpp::CharacterVector& filename) {
-  StringVector tmp_tops = Rcpp::as<StringVector>(topics);
-  StringVector tmp_docs = Rcpp::as<StringVector>(documents);
   String tmp_filename = Rcpp::as<String>(filename);
 
   WordIndexTopicEvaluatorDataCache cache;
@@ -57,13 +52,13 @@ Rcpp::NumericVector evaluate_npmi_with_cache_cpp(const Rcpp::StringVector& topic
     cache = WordIndexTopicEvaluatorDataCacheReader().read(tmp_filename);
 
     WordIndexTokenizerCache tokenizer{std::move(cache.transformer)};
-    tops = tokenizer.transform(tmp_tops);
-    docs = tokenizer.transform(tmp_docs);
+    tops = tokenizer.transform(topics);
+    docs = tokenizer.transform(documents);
   } else {
     // Create cache
     WordIndexTokenizer tokenizer;
-    tops = tokenizer.transform(tmp_tops);
-    docs = tokenizer.transform(tmp_docs);
+    tops = tokenizer.transform(topics);
+    docs = tokenizer.transform(documents);
 
     WordToIndexTransformerCache  transformer_cache{std::move(tokenizer.get_transformer())};
 
@@ -101,7 +96,7 @@ void create_word_count_cache_cpp(const Rcpp::StringVector& documents,
     throw std::runtime_error("File already exists.");
 
   WordIndexTokenizer tokenizer;
-  Matrix<WordIndexTokenizer::Token> docs = tokenizer.transform(Rcpp::as<StringVector>(documents));
+  Matrix<WordIndexTokenizer::Token> docs = tokenizer.transform(documents);
   WordToIndexTransformerCache  transformer_cache{std::move(tokenizer.get_transformer())};
 
   if (window_size == INF_WORD_WINDOW) {
