@@ -158,7 +158,7 @@ namespace tomer {
       return get_count(get_combined_word_index(index1, index2));
     }
 
-    Map<WordIndex, Count> get_counts() const {
+    const Map<WordIndex, Count>& get_counts() const {
       return counts_;
     }
 
@@ -179,6 +179,8 @@ namespace tomer {
     explicit WordIndexCounterCache() = default;
     explicit WordIndexCounterCache(const WordIndexCounter& counter)
       : counts_{counter.get_counts()} {}
+    explicit WordIndexCounterCache(WordIndexCounter&& counter)
+      : counts_{std::move(counter.get_counts())} {}
 
     void update(const WordIndex& index) {
       add_or_incr(index);
@@ -198,7 +200,7 @@ namespace tomer {
       return get_count(get_combined_word_index(index1, index2));
     }
 
-    Map<WordIndex, Count> get_counts() const {
+    const Map<WordIndex, Count>& get_counts() const {
       return counts_;
     }
 

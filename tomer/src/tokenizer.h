@@ -78,7 +78,7 @@ namespace tomer {
       : BaseClass{delimiter, cache_size},
         transformer_{} {}
 
-    WordToIndexTransformer get_transformer() const {
+    const WordToIndexTransformer& get_transformer() const {
       return transformer_;
     }
 
@@ -101,8 +101,12 @@ namespace tomer {
                             const String& delimiter=" ", size_t cache_size=4096)
       : BaseClass{delimiter, cache_size},
         transformer_{transformer} {}
+    WordIndexTokenizerCache(WordToIndexTransformerCache&& transformer,
+                            const String& delimiter=" ", size_t cache_size=4096)
+      : BaseClass{delimiter, cache_size},
+        transformer_{std::move(transformer)} {}
 
-    WordToIndexTransformerCache get_transformer() const {
+    const WordToIndexTransformerCache& get_transformer() const {
       return transformer_;
     }
 

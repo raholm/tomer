@@ -56,7 +56,7 @@ Rcpp::NumericVector evaluate_npmi_with_cache_cpp(const Rcpp::StringVector& topic
     // Cache exists
     cache = WordIndexTopicEvaluatorDataCacheReader().read(tmp_filename);
 
-    WordIndexTokenizerCache tokenizer{cache.transformer};
+    WordIndexTokenizerCache tokenizer{std::move(cache.transformer)};
     tops = tokenizer.transform(tmp_tops);
     docs = tokenizer.transform(tmp_docs);
   } else {
@@ -65,7 +65,7 @@ Rcpp::NumericVector evaluate_npmi_with_cache_cpp(const Rcpp::StringVector& topic
     tops = tokenizer.transform(tmp_tops);
     docs = tokenizer.transform(tmp_docs);
 
-    WordToIndexTransformerCache  transformer_cache{tokenizer.get_transformer()};
+    WordToIndexTransformerCache  transformer_cache{std::move(tokenizer.get_transformer())};
 
     WordIndexTopicEvaluatorData data(std::move(create_word_index_counts(tops)));
     calculate_word_index_counts_and_window_count(docs, window_size, &data);
@@ -102,7 +102,13 @@ void create_word_count_cache_cpp(const Rcpp::StringVector& documents,
 
   WordIndexTokenizer tokenizer;
   Matrix<WordIndexTokenizer::Token> docs = tokenizer.transform(Rcpp::as<StringVector>(documents));
-  WordToIndexTransformerCache  transformer_cache{tokenizer.get_transformer()};
+  WordToIndexTransformerCache  transformer_cache{std::move(tokenizer.get_transformer())};
+
+  if (window_size == INF_WORD_WINDOW) {
+    for (auto const doc : docs) {
+      window_size = std::max(window_size, doc.size());
+    }
+  }
 
   auto ndocs = documents.size();
   size_t nwindows, window_count = 0;
@@ -124,9 +130,13 @@ void create_word_count_cache_cpp(const Rcpp::StringVector& documents,
 
     for (unsigned j = 1; j < (nwindows + 1); ++j) {
       if (window_size == INF_WORD_WINDOW) {
-        words_in_window = doc_words;
-        remove_duplicates(&words_in_window);
-        nwords = words_in_window.size();
+        nwords = doc_words.size();
+
+        for (unsigned k = 0; k < nwords; ++k) {
+          words_in_window.at(k) = doc_words.at(k);
+        }
+
+        remove_duplicates_inplace(&words_in_window, &nwords);
       } else {
         head_id = (j > window_size) ? j - window_size : 0;
         tail_id = std::min((size_t) j, (size_t) doc_words.size());

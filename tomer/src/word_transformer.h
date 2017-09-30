@@ -72,7 +72,7 @@ namespace tomer {
       return words;
     }
 
-    Map<Word, WordIndex> get_indexes() const {
+    const Map<Word, WordIndex>& get_indexes() const {
       return indexes_;
     }
 
@@ -116,6 +116,8 @@ namespace tomer {
     explicit WordToIndexTransformerCache() = default;
     explicit WordToIndexTransformerCache(const WordToIndexTransformer& transformer)
       : indexes_{transformer.get_indexes()} {}
+    explicit WordToIndexTransformerCache(WordToIndexTransformer&& transformer)
+      : indexes_{std::move(transformer.get_indexes())} {}
 
     void set(const Word& word, const WordIndex& index) {
       indexes_.insert(std::make_pair(word, index));
@@ -150,7 +152,7 @@ namespace tomer {
       return indexes;
     }
 
-    Map<Word, WordIndex> get_indexes() const {
+    const Map<Word, WordIndex>& get_indexes() const {
       return indexes_;
     }
 
