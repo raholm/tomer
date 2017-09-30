@@ -67,7 +67,9 @@ namespace tomer {
 
       infile.close();
 
-      return WordIndexTopicEvaluatorDataCache(std::move(transformer), std::move(counter), window_count);
+      return WordIndexTopicEvaluatorDataCache(std::move(transformer),
+                                              std::move(counter),
+                                              window_count);
     }
 
   };
@@ -80,16 +82,20 @@ namespace tomer {
 
       if (outfile.fail()) return false;
 
-      outfile << cache.window_count << " "
-              << cache.transformer.indexes_.size() << " "
-              << cache.word_index_counts.counts_.size() << std::endl;
+      auto window_count = cache.window_count;
+      auto indexes = cache.transformer.get_indexes();
+      auto counts = cache.word_index_counts.get_counts();
 
-      for (auto const& word_wordindex : cache.transformer.indexes_) {
+      outfile << window_count << " "
+              << indexes.size() << " "
+              << counts.size() << std::endl;
+
+      for (auto const& word_wordindex : indexes) {
         outfile << word_wordindex.first << " "
                 << word_wordindex.second << std::endl;
       }
 
-      for (auto const& wordindex_count : cache.word_index_counts.counts_) {
+      for (auto const& wordindex_count : counts) {
         outfile << wordindex_count.first << " "
                 << wordindex_count.second << std::endl;
       }

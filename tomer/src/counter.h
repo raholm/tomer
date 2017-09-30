@@ -7,8 +7,6 @@
 
 namespace tomer {
 
-  class WordIndexTopicEvaluatorDataCacheWriter;
-
   template<typename T>
   class Counter {
   public:
@@ -98,6 +96,19 @@ namespace tomer {
 
   };
 
+  static WordIndex get_combined_word_index(const WordIndex& index1, const WordIndex& index2) {
+    /*
+      To combine two indexes we require that it result in a unique index.
+      By assuming there a no more than 500000 unique tokens (or word indexes),
+      we can use this simple solution.
+    */
+    const size_t max_unique_indexes = 500000;
+    return (index1 > index2) ?
+      index1 * max_unique_indexes + index2 :
+      index2 * max_unique_indexes + index1;
+  }
+
+
   class WordIndexCounter : public Counter<WordIndex> {
   public:
     using BaseClass = Counter<WordIndex>;
@@ -147,7 +158,7 @@ namespace tomer {
       return get_count(get_combined_word_index(index1, index2));
     }
 
-    Map<WordIndex, Count> get_count_map() const {
+    Map<WordIndex, Count> get_counts() const {
       return counts_;
     }
 
@@ -161,37 +172,20 @@ namespace tomer {
       if (!p.second) counts_[index] += 1;
     }
 
-    WordIndex get_combined_word_index(const Type& index1, const Type& index2) const {
-      /*
-        To combine two indexes we require that it result in a unique index.
-        By assuming there a no more than 500000 unique tokens (or word indexes),
-        we can use this simple solution.
-      */
-      const size_t max_unique_indexes = 500000;
-      return (index1 > index2) ?
-        index1 * max_unique_indexes + index2 :
-        index2 * max_unique_indexes + index1;
-    }
-
   };
 
   class WordIndexCounterCache {
   public:
+    explicit WordIndexCounterCache() = default;
+    explicit WordIndexCounterCache(const WordIndexCounter& counter)
+      : counts_{counter.get_counts()} {}
+
     void update(const WordIndex& index) {
       add_or_incr(index);
     }
 
     void update(const WordIndex& index1, const WordIndex& index2) {
       update(get_combined_word_index(index1, index2));
-    }
-
-    void set(const WordIndex& index, const Count& count) {
-      auto it = counts_.insert(std::make_pair(index, count));
-      if (!it.second) counts_[index] = count;
-    }
-
-    void set(const WordIndex& index1, const WordIndex& index2, const Count& count) {
-      update(get_combined_word_index(index1, index2), count);
     }
 
     Count get_count(const WordIndex& index) const {
@@ -204,6 +198,19 @@ namespace tomer {
       return get_count(get_combined_word_index(index1, index2));
     }
 
+    Map<WordIndex, Count> get_counts() const {
+      return counts_;
+    }
+
+    void set(const WordIndex& index, const Count& count) {
+      auto it = counts_.insert(std::make_pair(index, count));
+      if (!it.second) counts_[index] = count;
+    }
+
+    void set(const WordIndex& index1, const WordIndex& index2, const Count& count) {
+      update(get_combined_word_index(index1, index2), count);
+    }
+
   private:
     Map<WordIndex, Count> counts_;
 
@@ -212,20 +219,6 @@ namespace tomer {
       auto p = counts_.insert(std::make_pair(index, 1));
       if (!p.second) counts_[index] += 1;
     }
-
-    WordIndex get_combined_word_index(const Type& index1, const Type& index2) const {
-      /*
-        To combine two indexes we require that it result in a unique index.
-        By assuming there a no more than 500000 unique tokens (or word indexes),
-        we can use this simple solution.
-      */
-      const size_t max_unique_indexes = 500000;
-      return (index1 > index2) ?
-        index1 * max_unique_indexes + index2 :
-        index2 * max_unique_indexes + index1;
-    }
-
-    friend WordIndexTopicEvaluatorDataCacheWriter;
 
   };
 

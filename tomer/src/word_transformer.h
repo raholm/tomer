@@ -5,8 +5,6 @@
 
 namespace tomer {
 
-  class WordIndexTopicEvaluatorDataCacheWriter;
-
   class WordToIndexTransformer {
   public:
     static const WordIndex unobserved_word_index;
@@ -23,20 +21,20 @@ namespace tomer {
 
     ~WordToIndexTransformer() = default;
 
-    inline void update(const Word& word) {
+    void update(const Word& word) {
       add_if_missing(word);
     }
 
-    inline WordIndex update_and_transform(const Word& word) {
+    WordIndex update_and_transform(const Word& word) {
       return add_if_missing_and_transform(word);
     }
 
-    inline void update(const Vector<Word>& words) {
+    void update(const Vector<Word>& words) {
       for (auto const& word : words)
         update(word);
     }
 
-    inline Vector<WordIndex> update_and_transform(const Vector<Word>& words) {
+    Vector<WordIndex> update_and_transform(const Vector<Word>& words) {
       Vector<WordIndex> indexes;
       indexes.reserve(words.size());
 
@@ -46,11 +44,11 @@ namespace tomer {
       return indexes;
     }
 
-    inline WordIndex transform(const Word& word) const {
+    WordIndex transform(const Word& word) const {
       return get_index_or_invalid_index(word);
     }
 
-    inline Vector<WordIndex> transform(const Vector<Word>& words) const {
+    Vector<WordIndex> transform(const Vector<Word>& words) const {
       Vector<WordIndex> indexes;
       indexes.reserve(words.size());
 
@@ -60,11 +58,11 @@ namespace tomer {
       return indexes;
     }
 
-    inline Word revert(const WordIndex& index) {
+    Word revert(const WordIndex& index) {
       return get_word_or_invalid_word(index);
     }
 
-    inline Vector<Word> revert(const Vector<WordIndex>& indexes) {
+    Vector<Word> revert(const Vector<WordIndex>& indexes) {
       Vector<Word> words;
       words.reserve(indexes.size());
 
@@ -74,7 +72,7 @@ namespace tomer {
       return words;
     }
 
-    Map<Word, WordIndex> get_index_map() const {
+    Map<Word, WordIndex> get_indexes() const {
       return indexes_;
     }
 
@@ -83,7 +81,7 @@ namespace tomer {
     Vector<Word> words_;
     Map<Word, WordIndex> indexes_;
 
-    inline void add_if_missing(const Word& word) {
+    void add_if_missing(const Word& word) {
       auto p = indexes_.insert(std::make_pair(word, next_index_));
       if (p.second) {
         words_.push_back(word);
@@ -91,7 +89,7 @@ namespace tomer {
       }
     }
 
-    inline WordIndex add_if_missing_and_transform(const Word& word) {
+    WordIndex add_if_missing_and_transform(const Word& word) {
       auto p = indexes_.insert(std::make_pair(word, next_index_));
       if (p.second) {
         words_.push_back(word);
@@ -100,12 +98,12 @@ namespace tomer {
       return p.first->second;
     }
 
-    inline Word get_word_or_invalid_word(const WordIndex& index) const {
+    Word get_word_or_invalid_word(const WordIndex& index) const {
       if (index < 0 || index >= next_index_) return unobserved_word;
       return words_.at(index);
     }
 
-    inline WordIndex get_index_or_invalid_index(const Word& word) const {
+    WordIndex get_index_or_invalid_index(const Word& word) const {
       auto it = indexes_.find(word);
       if (it == indexes_.end()) return unobserved_word_index;
       return it->second;
@@ -117,27 +115,22 @@ namespace tomer {
   public:
     explicit WordToIndexTransformerCache() = default;
     explicit WordToIndexTransformerCache(const WordToIndexTransformer& transformer)
-      : indexes_{}
-    {
-      Map<Word, WordIndex> index_map = transformer.get_index_map();
-      for (auto const& word_wordindex : index_map)
-        set(word_wordindex.first, word_wordindex.second);
-    }
+      : indexes_{transformer.get_indexes()} {}
 
-    inline void set(const Word& word, const WordIndex& index) {
+    void set(const Word& word, const WordIndex& index) {
       indexes_.insert(std::make_pair(word, index));
     }
 
-    inline void set(const Vector<Word>& words, const Vector<WordIndex>& indexes) {
+    void set(const Vector<Word>& words, const Vector<WordIndex>& indexes) {
       for (unsigned i = 0; i < words.size(); ++i)
         set(words.at(i), indexes.at(i));
     }
 
-    inline WordIndex transform(const Word& word) const {
+    WordIndex transform(const Word& word) const {
       return get_index_or_invalid_index(word);
     }
 
-    inline Vector<WordIndex> transform(const Vector<Word>& words) const {
+    Vector<WordIndex> transform(const Vector<Word>& words) const {
       Vector<WordIndex> indexes;
       indexes.reserve(words.size());
 
@@ -147,7 +140,7 @@ namespace tomer {
       return indexes;
     }
 
-    inline Matrix<WordIndex> transform(const Matrix<Word>& words) const {
+    Matrix<WordIndex> transform(const Matrix<Word>& words) const {
       Matrix<WordIndex> indexes;
       indexes.reserve(words.size());
 
@@ -155,6 +148,10 @@ namespace tomer {
         indexes.push_back(transform(doc));
 
       return indexes;
+    }
+
+    Map<Word, WordIndex> get_indexes() const {
+      return indexes_;
     }
 
   private:
@@ -165,8 +162,6 @@ namespace tomer {
       if (it == indexes_.end()) return WordToIndexTransformer::unobserved_word_index;
       return it->second;
     }
-
-    friend WordIndexTopicEvaluatorDataCacheWriter;
 
   };
 

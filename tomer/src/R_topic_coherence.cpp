@@ -64,11 +64,7 @@ Rcpp::NumericVector evaluate_topic_coherence_with_cache_cpp(const Rcpp::StringVe
     WordIndexTopicEvaluatorData data(std::move(create_word_index_counts(tops)));
     calculate_word_index_counts_and_window_count(docs, INF_WORD_WINDOW, &data);
 
-    WordIndexCounterCache counter_cache;
-    Map<WordIndex, Count> count_map = data.word_index_counts.get_count_map();
-
-    for (auto const& wordindex_count : count_map)
-      counter_cache.set(wordindex_count.first, wordindex_count.second);
+    WordIndexCounterCache counter_cache{data.word_index_counts};
 
     cache.transformer = std::move(transformer_cache);
     cache.word_index_counts = std::move(counter_cache);
