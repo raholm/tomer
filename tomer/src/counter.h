@@ -96,19 +96,6 @@ namespace tomer {
 
   };
 
-  static WordIndex get_combined_word_index(const WordIndex& index1, const WordIndex& index2) {
-    /*
-      To combine two indexes we require that it result in a unique index.
-      By assuming there a no more than 500000 unique tokens (or word indexes),
-      we can use this simple solution.
-    */
-    const size_t max_unique_indexes = 500000;
-    return (index1 > index2) ?
-      index1 * max_unique_indexes + index2 :
-      index2 * max_unique_indexes + index1;
-  }
-
-
   class WordIndexCounter : public Counter<WordIndex> {
   public:
     using BaseClass = Counter<WordIndex>;
@@ -142,8 +129,7 @@ namespace tomer {
            word_relations_.is_related_to(index1, index2)) ||
           (word_relations_.contains(index2) &&
            word_relations_.is_related_to(index2, index1))) {
-        Type combined = get_combined_word_index(index1, index2);
-        add_or_incr(combined);
+        add_or_incr(index1, index2);
       }
     }
 
@@ -153,41 +139,73 @@ namespace tomer {
       return it->second;
     }
 
-    Count get_count(const Type& index1, const Type& index2) const override {
-      if (index1 == index2) return 0;
-      return get_count(get_combined_word_index(index1, index2));
+    Count get_count(const WordIndex& index1, const WordIndex& index2) const override {
+      if (index1 == WordToIndexTransformer::unobserved_word_index ||
+          index2 == WordToIndexTransformer::unobserved_word_index ||
+          index1 == index2) return 0;
+      auto it = pair_counts_.find(combine(index1, index2));
+      if (it == pair_counts_.end()) return 0;
+      return it->second;
     }
 
     const Map<WordIndex, Count>& get_counts() const {
       return counts_;
     }
 
+    const Map<Pair<WordIndex, WordIndex>, Count>& get_pair_counts() const {
+      return pair_counts_;
+    }
+
   private:
     TopicWordIndexRelationMap word_relations_;
-    Map<WordIndex, Count> counts_;
+    Map<Type, Count> counts_;
+    Map<Pair<Type, Type>, Count> pair_counts_;
 
     void add_or_incr(const Type& index) {
       if (index == WordToIndexTransformer::unobserved_word_index) return;
       auto p = counts_.insert(std::make_pair(index, 1));
-      if (!p.second) counts_[index] += 1;
+      if (!p.second) ++counts_[index];
+    }
+
+    void add_or_incr(const Type& index1, const Type& index2) {
+      if (index1 == WordToIndexTransformer::unobserved_word_index ||
+          index2 == WordToIndexTransformer::unobserved_word_index) return;
+      auto index = combine(index1, index2);
+      auto p = pair_counts_.insert(std::make_pair(index, 1));
+      if (!p.second) ++pair_counts_[index];
+    }
+
+    Pair<WordIndex, WordIndex> combine(const WordIndex& index1, const WordIndex& index2) const {
+      return (index1 < index2) ? std::make_pair(index1, index2) : std::make_pair(index2, index1);
     }
 
   };
 
-  class WordIndexCounterCache {
+  class WordIndexCounterCache : public Counter<WordIndex> {
   public:
     explicit WordIndexCounterCache() = default;
     explicit WordIndexCounterCache(const WordIndexCounter& counter)
-      : counts_{counter.get_counts()} {}
+      : counts_{counter.get_counts()},
+        pair_counts_{counter.get_pair_counts()} {}
     explicit WordIndexCounterCache(WordIndexCounter&& counter)
-      : counts_{std::move(counter.get_counts())} {}
+      : counts_{std::move(counter.get_counts())},
+        pair_counts_{std::move(counter.get_pair_counts())} {}
 
-    void update(const WordIndex& index) {
+    void update(const Vector<Type>& indexes) override {
+      for (auto const& index : indexes) update(index);
+    }
+
+    void update(const WordIndex& index) override {
       add_or_incr(index);
     }
 
-    void update(const WordIndex& index1, const WordIndex& index2) {
-      update(get_combined_word_index(index1, index2));
+    void update(const WordIndex& index1, const WordIndex& index2) override {
+      add_or_incr(index1, index2);
+    }
+
+    void update(const Vector<Type>& indexes1, const Vector<Type>& indexes2) override {
+      auto n = std::min(indexes1.size(), indexes2.size());
+      for (unsigned i = 0; i < n; ++i) update(indexes1.at(i), indexes2.at(i));
     }
 
     Count get_count(const WordIndex& index) const {
@@ -196,12 +214,21 @@ namespace tomer {
       return it->second;
     }
 
-    Count get_count(const WordIndex& index1, const WordIndex& index2) const {
-      return get_count(get_combined_word_index(index1, index2));
+    Count get_count(const WordIndex& index1, const WordIndex& index2) const override {
+      if (index1 == WordToIndexTransformer::unobserved_word_index ||
+          index2 == WordToIndexTransformer::unobserved_word_index ||
+          index1 == index2) return 0;
+      auto it = pair_counts_.find(combine(index1, index2));
+      if (it == pair_counts_.end()) return 0;
+      return it->second;
     }
 
     const Map<WordIndex, Count>& get_counts() const {
       return counts_;
+    }
+
+    const Map<Pair<WordIndex, WordIndex>, Count>& get_pair_counts() const {
+      return pair_counts_;
     }
 
     void set(const WordIndex& index, const Count& count) {
@@ -210,16 +237,31 @@ namespace tomer {
     }
 
     void set(const WordIndex& index1, const WordIndex& index2, const Count& count) {
-      update(get_combined_word_index(index1, index2), count);
+      auto index = combine(index1, index2);
+      auto it = pair_counts_.insert(std::make_pair(index, count));
+      if (!it.second) pair_counts_[index] = count;
     }
 
   private:
     Map<WordIndex, Count> counts_;
+    Map<Pair<WordIndex, WordIndex>, Count> pair_counts_;
 
     void add_or_incr(const WordIndex& index) {
       if (index == WordToIndexTransformer::unobserved_word_index) return;
       auto p = counts_.insert(std::make_pair(index, 1));
-      if (!p.second) counts_[index] += 1;
+      if (!p.second) ++counts_[index];
+    }
+
+    void add_or_incr(const Type& index1, const Type& index2) {
+      if (index1 == WordToIndexTransformer::unobserved_word_index ||
+          index2 == WordToIndexTransformer::unobserved_word_index) return;
+      auto index = combine(index1, index2);
+      auto p = pair_counts_.insert(std::make_pair(index, 1));
+      if (!p.second) ++pair_counts_[index];
+    }
+
+    Pair<WordIndex, WordIndex> combine(const WordIndex& index1, const WordIndex& index2) const {
+      return (index1 < index2) ? std::make_pair(index1, index2) : std::make_pair(index2, index1);
     }
 
   };

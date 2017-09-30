@@ -33,7 +33,7 @@ namespace tomer {
 
       if (infile.fail()) return WordIndexTopicEvaluatorDataCache();
 
-      size_t window_count, transformer_rows, counter_rows;
+      size_t window_count, transformer_rows, single_counter_rows, pair_counter_rows;
       String line;
       WordToIndexTransformerCache transformer;
       WordIndexCounterCache counter;
@@ -42,12 +42,12 @@ namespace tomer {
 
       std::istringstream iss{line};
 
-      iss >> window_count >> transformer_rows >> counter_rows;
+      iss >> window_count >> transformer_rows >> single_counter_rows >> pair_counter_rows;
 
       size_t row_counter = 0;
 
       Word word;
-      WordIndex word_index;
+      WordIndex word_index, word_index1, word_index2;
       Count count;
 
       while(getline(infile, line)) {
@@ -57,9 +57,12 @@ namespace tomer {
         if (row_counter < transformer_rows) {
           iss >> word >> word_index;
           transformer.set(word, word_index);
-        } else {
+        } else if (row_counter < single_counter_rows) {
           iss >> word_index >> count;
           counter.set(word_index, count);
+        } else {
+          iss >> word_index1 >> word_index2 >> count;
+          counter.set(word_index1, word_index2, count);
         }
 
         ++row_counter;
@@ -85,10 +88,12 @@ namespace tomer {
       auto window_count = cache.window_count;
       auto indexes = cache.transformer.get_indexes();
       auto counts = cache.word_index_counts.get_counts();
+      auto pair_counts = cache.word_index_counts.get_pair_counts();
 
       outfile << window_count << " "
               << indexes.size() << " "
-              << counts.size() << std::endl;
+              << counts.size() <<  " "
+              << pair_counts.size() << std::endl;
 
       for (auto const& word_wordindex : indexes) {
         outfile << word_wordindex.first << " "
@@ -98,6 +103,12 @@ namespace tomer {
       for (auto const& wordindex_count : counts) {
         outfile << wordindex_count.first << " "
                 << wordindex_count.second << std::endl;
+      }
+
+      for (auto const& wordindex_wordindex_count : pair_counts) {
+        outfile << wordindex_wordindex_count.first.first << " "
+                << wordindex_wordindex_count.first.second << " "
+                << wordindex_wordindex_count.second << std::endl;
       }
 
       outfile.flush();
