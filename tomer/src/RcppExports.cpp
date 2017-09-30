@@ -52,6 +52,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// create_word_count_cache_cpp
+void create_word_count_cache_cpp(const Rcpp::StringVector& documents, size_t window_size, const Rcpp::CharacterVector& filename);
+RcppExport SEXP _tomer_create_word_count_cache_cpp(SEXP documentsSEXP, SEXP window_sizeSEXP, SEXP filenameSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::StringVector& >::type documents(documentsSEXP);
+    Rcpp::traits::input_parameter< size_t >::type window_size(window_sizeSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::CharacterVector& >::type filename(filenameSEXP);
+    create_word_count_cache_cpp(documents, window_size, filename);
+    return R_NilValue;
+END_RCPP
+}
 // compute_markovian_bf_test_cpp
 double compute_markovian_bf_test_cpp(const Rcpp::IntegerVector& topic_indicators, size_t n_topics, double beta);
 RcppExport SEXP _tomer_compute_markovian_bf_test_cpp(SEXP topic_indicatorsSEXP, SEXP n_topicsSEXP, SEXP betaSEXP) {
@@ -133,6 +145,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_tomer_evaluate_left_to_right_cpp", (DL_FUNC) &_tomer_evaluate_left_to_right_cpp, 10},
     {"_tomer_evaluate_npmi_cpp", (DL_FUNC) &_tomer_evaluate_npmi_cpp, 3},
     {"_tomer_evaluate_npmi_with_cache_cpp", (DL_FUNC) &_tomer_evaluate_npmi_with_cache_cpp, 4},
+    {"_tomer_create_word_count_cache_cpp", (DL_FUNC) &_tomer_create_word_count_cache_cpp, 3},
     {"_tomer_compute_markovian_bf_test_cpp", (DL_FUNC) &_tomer_compute_markovian_bf_test_cpp, 3},
     {"_tomer_compute_markovian_lr_test_cpp", (DL_FUNC) &_tomer_compute_markovian_lr_test_cpp, 3},
     {"_tomer_compute_chunking_bf_test_cpp", (DL_FUNC) &_tomer_compute_chunking_bf_test_cpp, 3},

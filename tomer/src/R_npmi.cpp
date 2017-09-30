@@ -65,12 +65,7 @@ Rcpp::NumericVector evaluate_npmi_with_cache_cpp(const Rcpp::StringVector& topic
     tops = tokenizer.transform(tmp_tops);
     docs = tokenizer.transform(tmp_docs);
 
-    WordToIndexTransformerCache  transformer_cache;
-    WordToIndexTransformer transformer = tokenizer.get_transformer();
-    Map<Word, WordIndex> index_map = transformer.get_index_map();
-
-    for (auto const& word_wordindex : index_map)
-      transformer_cache.update(word_wordindex.first, word_wordindex.second);
+    WordToIndexTransformerCache  transformer_cache{tokenizer.get_transformer()};
 
     WordIndexTopicEvaluatorData data(std::move(create_word_index_counts(tops)));
     calculate_word_index_counts_and_window_count(docs, window_size, &data);
@@ -79,7 +74,7 @@ Rcpp::NumericVector evaluate_npmi_with_cache_cpp(const Rcpp::StringVector& topic
     Map<WordIndex, Count> count_map = data.word_index_counts.get_count_map();
 
     for (auto const& wordindex_count : count_map)
-      counter_cache.update(wordindex_count.first, wordindex_count.second);
+      counter_cache.set(wordindex_count.first, wordindex_count.second);
 
     cache.transformer = std::move(transformer_cache);
     cache.word_index_counts = std::move(counter_cache);
@@ -100,4 +95,68 @@ Rcpp::NumericVector evaluate_npmi_with_cache_cpp(const Rcpp::StringVector& topic
     vals.push_back(evaluator.evaluate(topic));
 
   return Rcpp::wrap(vals);
+}
+
+// [[Rcpp::export]]
+void create_word_count_cache_cpp(const Rcpp::StringVector& documents,
+                                 size_t window_size,
+                                 const Rcpp::CharacterVector& filename) {
+  if (file_exists(Rcpp::as<String>(filename)))
+    throw std::runtime_error("File already exists.");
+
+  WordIndexTokenizer tokenizer;
+  Matrix<WordIndexTokenizer::Token> docs = tokenizer.transform(Rcpp::as<StringVector>(documents));
+  WordToIndexTransformerCache  transformer_cache{tokenizer.get_transformer()};
+
+  auto ndocs = documents.size();
+  size_t nwindows, window_count = 0;
+  WordIndexWindow words_in_window(window_size);
+  WordIndexCounterCache word_index_counts;
+
+  size_t head_id, tail_id, nwords;
+
+  for (unsigned i = 0; i < ndocs; ++i) {
+    auto doc_words = docs.at(i);
+    auto doc_length = doc_words.size();
+
+    if (window_size == INF_WORD_WINDOW)
+      nwindows = 1;
+    else
+      nwindows = doc_length + window_size - 1;
+
+    window_count += nwindows;
+
+    for (unsigned j = 1; j < (nwindows + 1); ++j) {
+      if (window_size == INF_WORD_WINDOW) {
+        words_in_window = doc_words;
+        remove_duplicates(&words_in_window);
+        nwords = words_in_window.size();
+      } else {
+        head_id = (j > window_size) ? j - window_size : 0;
+        tail_id = std::min((size_t) j, (size_t) doc_words.size());
+        nwords = tail_id - head_id;
+
+        for (unsigned k = 0; k < nwords; ++k) {
+          words_in_window.at(k) = doc_words.at(head_id + k);
+        }
+
+        remove_duplicates_inplace(&words_in_window, &nwords);
+      }
+
+      for (unsigned left_idx = 0; left_idx < nwords; ++left_idx) {
+        auto left_word = words_in_window.at(left_idx);
+        word_index_counts.update(left_word);
+
+        for (unsigned right_idx = left_idx + 1; right_idx < nwords; ++right_idx) {
+          auto right_word = words_in_window.at(right_idx);
+          word_index_counts.update(left_word, right_word);
+        }
+      }
+    }
+  }
+
+  WordIndexTopicEvaluatorDataCache cache{std::move(transformer_cache), std::move(word_index_counts), window_size};
+  bool status_ok = WordIndexTopicEvaluatorDataCacheWriter().write(cache, Rcpp::as<String>(filename));
+  if (!status_ok)
+    throw std::runtime_error("Could not write out cache to disk.");
 }

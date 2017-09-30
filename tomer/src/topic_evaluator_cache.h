@@ -56,10 +56,10 @@ namespace tomer {
 
         if (row_counter < transformer_rows) {
           iss >> word >> word_index;
-          transformer.update(word, word_index);
+          transformer.set(word, word_index);
         } else {
           iss >> word_index >> count;
-          counter.update(word_index, count);
+          counter.set(word_index, count);
         }
 
         ++row_counter;

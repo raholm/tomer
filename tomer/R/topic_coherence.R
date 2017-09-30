@@ -16,3 +16,10 @@ topic_coherence <- function(topics, documents, cache=FALSE, cache_dst=NULL) {
         evaluate_topic_coherence_cpp(topics, documents)
     }
 }
+
+#' @export
+topic_coherence_create_cache <- function(documents, dst) {
+    stopifnot(!file.exists(dst))
+    stopifnot(is.character(documents))
+    create_word_count_cache_cpp(documents, 0, dst)
+}

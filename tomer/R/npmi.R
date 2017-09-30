@@ -18,3 +18,11 @@ npmi <- function(topics, documents, window_size, cache=FALSE, cache_dst=NULL) {
         evaluate_npmi_cpp(topics, documents, window_size)
     }
 }
+
+#' @export
+npmi_create_cache <- function(documents, window_size, dst) {
+    stopifnot(!file.exists(dst))
+    stopifnot(is.character(documents))
+    checkr::assert_integer(window_size, len=1, lower=0)
+    create_word_count_cache_cpp(documents, window_size, dst)
+}

@@ -13,6 +13,10 @@ evaluate_npmi_with_cache_cpp <- function(topics, documents, window_size, filenam
     .Call('_tomer_evaluate_npmi_with_cache_cpp', PACKAGE = 'tomer', topics, documents, window_size, filename)
 }
 
+create_word_count_cache_cpp <- function(documents, window_size, filename) {
+    invisible(.Call('_tomer_create_word_count_cache_cpp', PACKAGE = 'tomer', documents, window_size, filename))
+}
+
 compute_markovian_bf_test_cpp <- function(topic_indicators, n_topics, beta) {
     .Call('_tomer_compute_markovian_bf_test_cpp', PACKAGE = 'tomer', topic_indicators, n_topics, beta)
 }

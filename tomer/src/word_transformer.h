@@ -115,13 +115,22 @@ namespace tomer {
 
   class WordToIndexTransformerCache {
   public:
-    inline void update(const Word& word, const WordIndex& index) {
+    explicit WordToIndexTransformerCache() = default;
+    explicit WordToIndexTransformerCache(const WordToIndexTransformer& transformer)
+      : indexes_{}
+    {
+      Map<Word, WordIndex> index_map = transformer.get_index_map();
+      for (auto const& word_wordindex : index_map)
+        set(word_wordindex.first, word_wordindex.second);
+    }
+
+    inline void set(const Word& word, const WordIndex& index) {
       indexes_.insert(std::make_pair(word, index));
     }
 
-    inline void update(const Vector<Word>& words, const Vector<WordIndex>& indexes) {
+    inline void set(const Vector<Word>& words, const Vector<WordIndex>& indexes) {
       for (unsigned i = 0; i < words.size(); ++i)
-        update(words.at(i), indexes.at(i));
+        set(words.at(i), indexes.at(i));
     }
 
     inline WordIndex transform(const Word& word) const {

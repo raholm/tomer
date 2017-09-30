@@ -164,10 +164,10 @@ namespace tomer {
     WordIndex get_combined_word_index(const Type& index1, const Type& index2) const {
       /*
         To combine two indexes we require that it result in a unique index.
-        By assuming there a no more than 100000 unique tokens (or word indexes),
+        By assuming there a no more than 500000 unique tokens (or word indexes),
         we can use this simple solution.
       */
-      const size_t max_unique_indexes = 100000;
+      const size_t max_unique_indexes = 500000;
       return (index1 > index2) ?
         index1 * max_unique_indexes + index2 :
         index2 * max_unique_indexes + index1;
@@ -177,12 +177,20 @@ namespace tomer {
 
   class WordIndexCounterCache {
   public:
-    void update(const WordIndex& index, const Count& count) {
+    void update(const WordIndex& index) {
+      add_or_incr(index);
+    }
+
+    void update(const WordIndex& index1, const WordIndex& index2) {
+      update(get_combined_word_index(index1, index2));
+    }
+
+    void set(const WordIndex& index, const Count& count) {
       auto it = counts_.insert(std::make_pair(index, count));
       if (!it.second) counts_[index] = count;
     }
 
-    void update(const WordIndex& index1, const WordIndex& index2, const Count& count) {
+    void set(const WordIndex& index1, const WordIndex& index2, const Count& count) {
       update(get_combined_word_index(index1, index2), count);
     }
 
@@ -199,13 +207,19 @@ namespace tomer {
   private:
     Map<WordIndex, Count> counts_;
 
+    void add_or_incr(const WordIndex& index) {
+      if (index == WordToIndexTransformer::unobserved_word_index) return;
+      auto p = counts_.insert(std::make_pair(index, 1));
+      if (!p.second) counts_[index] += 1;
+    }
+
     WordIndex get_combined_word_index(const Type& index1, const Type& index2) const {
       /*
         To combine two indexes we require that it result in a unique index.
-        By assuming there a no more than 100000 unique tokens (or word indexes),
+        By assuming there a no more than 500000 unique tokens (or word indexes),
         we can use this simple solution.
       */
-      const size_t max_unique_indexes = 100000;
+      const size_t max_unique_indexes = 500000;
       return (index1 > index2) ?
         index1 * max_unique_indexes + index2 :
         index2 * max_unique_indexes + index1;

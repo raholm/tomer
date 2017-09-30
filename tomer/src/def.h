@@ -46,7 +46,7 @@ namespace tomer {
   using TopicMatrix = Matrix<Topic>;
 
   // NPMI
-  using WordIndex = int;
+  using WordIndex = long long int;
   using Word = Token;
   using Count = size_t;
   using WordWindow = Vector<Word>;
