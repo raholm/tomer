@@ -103,7 +103,7 @@ IntMatrix create_type_topic_counts_from_R(const Rcpp::DataFrame& type_topic_coun
 }
 
 // [[Rcpp::export]]
-Rcpp::NumericVector evaluate_left_to_right_cpp(const Rcpp::DataFrame& corpus,
+double evaluate_left_to_right_cpp(const Rcpp::DataFrame& corpus,
                                                size_t n_docs,
                                                const Rcpp::DataFrame& alphabet,
                                                size_t n_topics,
@@ -128,16 +128,10 @@ Rcpp::NumericVector evaluate_left_to_right_cpp(const Rcpp::DataFrame& corpus,
                                                                  n_topics);
   DoubleVector _alpha = Rcpp::as<DoubleVector>(alpha);
 
-  std::unique_ptr<MarginalProbEsimator> estimator1 = std::unique_ptr<MarginalProbEsimator>(new LDATokenMarginalProbEstimator());
-  std::unique_ptr<TopicSampler> sampler1 = std::unique_ptr<TopicSampler>(new LDATopicSampler());
-  LeftToRightEvaluator evaluator1{n_topics, _alpha, beta, _topic_counts,
-      _type_topic_counts, std::move(estimator1), std::move(sampler1)};
+  std::unique_ptr<MarginalProbEsimator> estimator = std::unique_ptr<MarginalProbEsimator>(new SparseLDATokenMarginalProbEstimator());
+  std::unique_ptr<TopicSampler> sampler = std::unique_ptr<TopicSampler>(new SparseLDATopicSampler());
+  LeftToRightEvaluator evaluator{n_topics, _alpha, beta, _topic_counts,
+      _type_topic_counts, std::move(estimator), std::move(sampler)};
 
-  std::unique_ptr<MarginalProbEsimator> estimator2 = std::unique_ptr<MarginalProbEsimator>(new SparseLDATokenMarginalProbEstimator());
-  std::unique_ptr<TopicSampler> sampler2 = std::unique_ptr<TopicSampler>(new SparseLDATopicSampler());
-  LeftToRightEvaluator evaluator2{n_topics, _alpha, beta, _topic_counts,
-      _type_topic_counts, std::move(estimator2), std::move(sampler2)};
-
-  return Rcpp::NumericVector::create(evaluator1.evaluate(type_sequences, n_particles, resampling),
-                                     evaluator2.evaluate(type_sequences, n_particles, resampling));
+  return evaluator.evaluate(type_sequences, n_particles, resampling);
 }
