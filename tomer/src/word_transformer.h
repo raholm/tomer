@@ -19,6 +19,9 @@ namespace tomer {
     WordToIndexTransformer(const WordToIndexTransformer& other) = default;
     WordToIndexTransformer(WordToIndexTransformer&& other) = default;
 
+    WordToIndexTransformer& operator=(const WordToIndexTransformer& other) = default;
+    WordToIndexTransformer& operator=(WordToIndexTransformer&& other) = default;
+
     ~WordToIndexTransformer() = default;
 
     void update(const Word& word) {

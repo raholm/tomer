@@ -128,6 +128,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// evaluate_topic_coherence_from_file_cpp
+Rcpp::NumericVector evaluate_topic_coherence_from_file_cpp(const Rcpp::StringVector& topics, const Rcpp::CharacterVector& filename);
+RcppExport SEXP _tomer_evaluate_topic_coherence_from_file_cpp(SEXP topicsSEXP, SEXP filenameSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::StringVector& >::type topics(topicsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::CharacterVector& >::type filename(filenameSEXP);
+    rcpp_result_gen = Rcpp::wrap(evaluate_topic_coherence_from_file_cpp(topics, filename));
+    return rcpp_result_gen;
+END_RCPP
+}
 // run_testthat_tests
 bool run_testthat_tests();
 RcppExport SEXP _tomer_run_testthat_tests() {
@@ -151,6 +163,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_tomer_compute_chunking_bf_test_cpp", (DL_FUNC) &_tomer_compute_chunking_bf_test_cpp, 3},
     {"_tomer_evaluate_topic_coherence_cpp", (DL_FUNC) &_tomer_evaluate_topic_coherence_cpp, 2},
     {"_tomer_evaluate_topic_coherence_with_cache_cpp", (DL_FUNC) &_tomer_evaluate_topic_coherence_with_cache_cpp, 3},
+    {"_tomer_evaluate_topic_coherence_from_file_cpp", (DL_FUNC) &_tomer_evaluate_topic_coherence_from_file_cpp, 2},
     {"_tomer_run_testthat_tests", (DL_FUNC) &_tomer_run_testthat_tests, 0},
     {"_rcpp_module_boot_mod_bayes_factor", (DL_FUNC) &_rcpp_module_boot_mod_bayes_factor, 0},
     {NULL, NULL, 0}

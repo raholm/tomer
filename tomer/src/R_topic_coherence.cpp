@@ -6,6 +6,7 @@
 #include "topic_evaluator.h"
 #include "topic_evaluator_util.h"
 #include "topic_evaluator_cache.h"
+#include "TCEvaluator.h"
 
 using namespace tomer;
 
@@ -79,5 +80,13 @@ Rcpp::NumericVector evaluate_topic_coherence_with_cache_cpp(const Rcpp::StringVe
   for (auto const& topic : tops)
     vals.push_back(evaluator.evaluate(topic));
 
+  return Rcpp::wrap(vals);
+}
+
+// [[Rcpp::export]]
+Rcpp::NumericVector evaluate_topic_coherence_from_file_cpp(const Rcpp::StringVector& topics,
+                                                           const Rcpp::CharacterVector& filename) {
+  TCEvaluator evaluator(Rcpp::as<String>(filename));
+  Vector<double> vals{evaluator.evaluate(Rcpp::as<StringVector>(topics))};
   return Rcpp::wrap(vals);
 }

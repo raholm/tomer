@@ -89,6 +89,9 @@ namespace tomer {
       : BaseClass{delimiter, cache_size},
         transformer_{} {}
 
+    WordIndexTokenizer& operator=(const WordIndexTokenizer& other) = default;
+    WordIndexTokenizer& operator=(WordIndexTokenizer&& other) = default;
+
     const WordToIndexTransformer& get_transformer() const {
       return transformer_;
     }

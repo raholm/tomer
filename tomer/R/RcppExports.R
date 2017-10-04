@@ -37,6 +37,10 @@ evaluate_topic_coherence_with_cache_cpp <- function(topics, documents, filename)
     .Call('_tomer_evaluate_topic_coherence_with_cache_cpp', PACKAGE = 'tomer', topics, documents, filename)
 }
 
+evaluate_topic_coherence_from_file_cpp <- function(topics, filename) {
+    .Call('_tomer_evaluate_topic_coherence_from_file_cpp', PACKAGE = 'tomer', topics, filename)
+}
+
 run_testthat_tests <- function() {
     .Call('_tomer_run_testthat_tests', PACKAGE = 'tomer')
 }
