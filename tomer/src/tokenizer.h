@@ -165,7 +165,6 @@ namespace tomer {
 
   };
 
-
 } // namespace tomer
 
 #endif // TOMER_TOKENIZER_H_

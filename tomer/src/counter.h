@@ -224,7 +224,9 @@ namespace tomer {
 
     Count get_count(const Type& index1, const Type& index2) const override {
       if (!is_valid(index1) || !is_valid(index2)) return 0;
-      return counts_.at((size_t) index1, (size_t) index2);
+      return index1 >= index2 ?
+        counts_.at((size_t) index1, (size_t) index2) :
+        counts_.at((size_t) index2, (size_t) index1);
     }
 
   private:
@@ -237,7 +239,10 @@ namespace tomer {
 
     void incr(const Type& index1, const Type& index2) {
       if (!is_valid(index1) || !is_valid(index2)) return;
-      ++counts_.at(index1, index2);
+      if (index1 >= index2)
+        ++counts_.at(index1, index2);
+      else
+        ++counts_.at(index2, index1);
     }
 
   };

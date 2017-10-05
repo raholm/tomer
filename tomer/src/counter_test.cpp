@@ -86,5 +86,41 @@ namespace tomer {
       }
     }
 
+    context("sparse word index counter") {
+      test_that("SparseWordIndexCounter works properly") {
+        SparseWordIndexCounter counter(2);
+
+        expect_true(counter.get_count(-1) == 0);
+        expect_true(counter.get_count(0) == 0);
+        expect_true(counter.get_count(1) == 0);
+        expect_true(counter.get_count(2) == 0);
+
+        counter.update(0);
+        counter.update({1, 1, 0, 0, 0, 2, 2});
+
+        expect_true(counter.get_count(0) == 4);
+        expect_true(counter.get_count(1) == 2);
+        expect_true(counter.get_count(2) == 0);
+
+        counter.update(0, 0);
+        counter.update(0, 1);
+        counter.update(1, 1);
+        counter.update(1, 2);
+        counter.update({1, 1, 0, 0, 0, 2, 2},
+                       {2, 0, 0, 1, 1, 1, 0});
+
+        expect_true(counter.get_count(0) == 6);
+        expect_true(counter.get_count(0, 0) == 6);
+        expect_true(counter.get_count(1, 0) == 4);
+        expect_true(counter.get_count(0, 1) == 4);
+        expect_true(counter.get_count(1, 1) == 3);
+        expect_true(counter.get_count(0, 2) == 0);
+        expect_true(counter.get_count(2, 0) == 0);
+        expect_true(counter.get_count(1, 2) == 0);
+        expect_true(counter.get_count(2, 1) == 0);
+        expect_true(counter.get_count(2, 2) == 0);
+      }
+    }
+
   } // namespace test
 } // namespace tomer
