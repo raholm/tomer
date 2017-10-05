@@ -11,7 +11,7 @@ namespace tomer {
     static const Word unobserved_word;
 
   public:
-    WordToIndexTransformer()
+    explicit WordToIndexTransformer()
       : next_index_{0},
         words_{},
         indexes_{} {}
@@ -111,6 +111,45 @@ namespace tomer {
       if (it == indexes_.end()) return unobserved_word_index;
       return it->second;
     }
+
+  };
+
+  class FixedWordToIndexTransformer : public WordToIndexTransformer {
+  public:
+    static const WordIndex unobserved_word_index;
+    static const Word unobserved_word;
+
+  public:
+    using BaseClass = WordToIndexTransformer;
+
+    explicit FixedWordToIndexTransformer()
+      : BaseClass{},
+        is_full_{false} {}
+
+    FixedWordToIndexTransformer(const FixedWordToIndexTransformer& other) = default;
+    FixedWordToIndexTransformer(FixedWordToIndexTransformer&& other) = default;
+
+    FixedWordToIndexTransformer& operator=(const FixedWordToIndexTransformer& other) = default;
+    FixedWordToIndexTransformer& operator=(FixedWordToIndexTransformer&& other) = default;
+
+    ~FixedWordToIndexTransformer() = default;
+
+    void update(const Word& word) {
+      if (is_full_) return;
+      BaseClass::update(word);
+    }
+
+    WordIndex update_and_transform(const Word& word) {
+      if (is_full_) return BaseClass::transform(word);
+      return BaseClass::update_and_transform(word);
+    }
+
+    void set_full() {
+      is_full_ = true;
+    }
+
+  private:
+    bool is_full_;
 
   };
 

@@ -106,6 +106,37 @@ namespace tomer {
 
   };
 
+  class FixedWordIndexTokenizer : public Tokenizer<WordIndex> {
+  public:
+    using BaseClass = Tokenizer<WordIndex>;
+    using Token = BaseClass::Token;
+
+    FixedWordIndexTokenizer(const String& delimiter=" ",
+                            size_t cache_size=4096)
+      : BaseClass{delimiter, cache_size},
+        transformer_{} {}
+
+    FixedWordIndexTokenizer& operator=(const FixedWordIndexTokenizer& other) = default;
+    FixedWordIndexTokenizer& operator=(FixedWordIndexTokenizer&& other) = default;
+
+    const FixedWordToIndexTransformer& get_transformer() const {
+      return transformer_;
+    }
+
+    void set_full() {
+      transformer_.set_full();
+    }
+
+  protected:
+    Token transform_token(char* token) const override {
+      return transformer_.update_and_transform(Word{token});
+    }
+
+  private:
+    mutable FixedWordToIndexTransformer transformer_;
+
+  };
+
   class WordIndexTokenizerCache : public Tokenizer<WordIndex> {
   public:
     using BaseClass = Tokenizer<WordIndex>;

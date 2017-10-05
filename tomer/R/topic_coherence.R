@@ -37,6 +37,6 @@ test_topic_coherence_file <- function() {
     corpus_filename <- "/home/textanalysis/data/corpus/nyt_complete.txt"
 
     timer <- Sys.time()
-    topic_coherence_file(topics, corpus_filename)
+    print(topic_coherence_file(topics, corpus_filename))
     Sys.time() - timer
 }

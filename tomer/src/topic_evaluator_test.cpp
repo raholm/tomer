@@ -108,7 +108,7 @@ namespace tomer {
         */
 
         size_t window_count = 5;
-        NormalisedPointwiseMutualInformationEvaluator evaluator{word_counts, window_count};
+        NpmiEvaluator evaluator{word_counts, window_count};
 
         double actual = evaluator.evaluate({"foo", "bar", "batman", "superman", "spiderman"});
         double expected = log((double) 5 / 2) / -log((double) 2 / 5) +

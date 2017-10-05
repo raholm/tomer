@@ -6,7 +6,6 @@
 #include "topic_evaluator.h"
 #include "topic_evaluator_util.h"
 #include "topic_evaluator_cache.h"
-#include "TCEvaluator.h"
 
 using namespace tomer;
 
@@ -86,7 +85,26 @@ Rcpp::NumericVector evaluate_topic_coherence_with_cache_cpp(const Rcpp::StringVe
 // [[Rcpp::export]]
 Rcpp::NumericVector evaluate_topic_coherence_from_file_cpp(const Rcpp::StringVector& topics,
                                                            const Rcpp::CharacterVector& filename) {
-  TCEvaluator evaluator(Rcpp::as<String>(filename));
-  Vector<double> vals{evaluator.evaluate(Rcpp::as<StringVector>(topics))};
+
+  FixedWordIndexTokenizer tokenizer;
+  Matrix<WordIndex> topic_word_indexes = tokenizer.transform(Rcpp::as<StringVector>(topics));
+  tokenizer.set_full();
+  size_t n_tokens = tokenizer.get_transformer().get_indexes().size();
+
+  SparseWordIndexTopicEvaluatorData data{std::move(SparseWordIndexCounter(n_tokens))};
+  calculate_word_counts_and_window_count(Rcpp::as<String>(filename),
+                                         INF_WORD_WINDOW,
+                                         tokenizer,
+                                         &data);
+
+  SparseCompressedTopicCoherenceEvaluator evaluator(std::move(data.word_index_counts));
+
+  auto ntopics = topic_word_indexes.size();
+  Vector<double> vals;
+  vals.reserve(ntopics);
+
+  for (auto const& topic : topic_word_indexes)
+    vals.push_back(evaluator.evaluate(topic));
+
   return Rcpp::wrap(vals);
 }

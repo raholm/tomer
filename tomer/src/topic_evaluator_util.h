@@ -6,6 +6,7 @@
 #include "counter.h"
 #include "word_transformer.h"
 #include "word_relation.h"
+#include "tokenizer.h"
 
 namespace tomer {
 
@@ -49,6 +50,20 @@ namespace tomer {
                                                     size_t window_size,
                                                     WordIndexTopicEvaluatorData* data);
 
+  struct SparseWordIndexTopicEvaluatorData {
+    explicit SparseWordIndexTopicEvaluatorData(SparseWordIndexCounter&& word_index_counts)
+      : word_index_counts{std::move(word_index_counts)},
+        window_count{0} {}
+
+    SparseWordIndexCounter word_index_counts;
+    size_t window_count;
+
+  };
+
+  void calculate_word_counts_and_window_count(const String& filename,
+                                              size_t window_size,
+                                              const FixedWordIndexTokenizer& tokenizer,
+                                              SparseWordIndexTopicEvaluatorData* data);
 
 } // namespace tomer
 
