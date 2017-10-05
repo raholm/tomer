@@ -1,6 +1,8 @@
 #ifndef TOMER_MATRIX_H_
 #define TOMER_MATRIX_H_
 
+#include <exception>
+
 namespace tomer {
 
   template <typename T>
@@ -8,33 +10,41 @@ namespace tomer {
   public:
     explicit LowerTriangularMatrix(size_t n, T val=0)
       : size_{n},
+        default_val_{val},
         values_(n + n * (n - 1) / 2, val) {}
 
-    T at(size_t row, size_t col) const {
-      check(row, col);
-      return values_.at(get_index(row, col));
+    const T& at(size_t row, size_t col) const {
+      if (is_out_of_range(row, col))
+        throw std::out_of_range("Out of range.");
+      auto index = get_index(row, col);
+      if (index == -1) return default_val_;
+      return values_.at(index);
     }
 
     T& at(size_t row, size_t col) {
-      check(row, col);
-      return values_.at(get_index(row, col));
+      if (is_out_of_range(row, col))
+        throw std::out_of_range("Out of range.");
+      auto index = get_index(row, col);
+      if (index == -1)
+        throw std::out_of_range("Cannot access upper triangular part.");
+      return values_.at(index);
     }
 
-    size_t get_size() const {
+    size_t size() const {
       return size_;
     }
 
-    private:
+  private:
     size_t size_;
+    T default_val_;
     Vector<T> values_;
 
-    void check(size_t row, size_t col) const {
-      if (row >= size_ || col >= size_)
-        throw new std::out_of_range("Out of range.");
+    bool is_out_of_range(size_t row, size_t col) const {
+      return row >= size_ || col >= size_;
     }
 
-    size_t get_index(size_t row, size_t col) const {
-      return row > col ? calculate_index(row, col) : calculate_index(col, row);
+    int get_index(size_t row, size_t col) const {
+      return row >= col ? calculate_index(row, col) : -1;
     }
 
     size_t calculate_index(size_t row, size_t col) const {

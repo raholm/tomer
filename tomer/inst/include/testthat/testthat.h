@@ -152,6 +152,7 @@ extern "C" SEXP run_testthat_tests() {
 # define expect_false CATCH_CHECK_FALSE
 # define expect_error CATCH_CHECK_THROWS
 # define expect_error_as CATCH_CHECK_THROWS_AS
+# define expect_no_error CATCH_CHECK_NOTHROW
 
 #else // TESTTHAT_DISABLED
 
