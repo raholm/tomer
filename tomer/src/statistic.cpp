@@ -142,7 +142,7 @@ namespace tomer {
     double beta_mul = beta * n_topics;
     size_t n = topic_indicators.size();
     size_t n1 = n - 1;
-    double denom = n + beta_mul;
+    double denom = n1 + beta_mul;
 
     for (unsigned i = 0; i < n_topics; ++i) {
       if (counts.at(i) == 0) continue;

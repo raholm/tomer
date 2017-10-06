@@ -176,7 +176,7 @@ namespace tomer {
         IntVector topic_indicators{0, 1, 0, 0, 1, 1, 1, 0, 0};
         int nd = topic_indicators.size();
         int nd1 = nd - 1;
-        double denom = nd + n_topics * beta;
+        double denom = nd1 + n_topics * beta;
         denom *= denom;
 
         double expected = 2 *
@@ -191,7 +191,7 @@ namespace tomer {
         topic_indicators = {1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1};
         nd = topic_indicators.size();
         nd1 = nd - 1;
-        denom = nd + n_topics * beta;
+        denom = nd1 + n_topics * beta;
         denom *= denom;
 
         expected = 2 *
