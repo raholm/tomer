@@ -39,8 +39,7 @@ namespace tomer {
   void fill_markovian_lr_test_data(const IntVector& topic_indicators,
                                    MarkovianLRTestData* data);
   double compute_markovian_lr_test(const IntVector& topic_indicators,
-                                   size_t n_topics,
-                                   double beta);
+                                   size_t n_topics);
 
   // Chunking Test (Bayes Factor)
   struct ChunkingBFTestData {

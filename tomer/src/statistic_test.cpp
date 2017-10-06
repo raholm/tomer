@@ -172,35 +172,34 @@ namespace tomer {
 
       test_that("compute_markovian_lr_test is correct") {
         size_t n_topics = 2;
-        double beta = 1;
         IntVector topic_indicators{0, 1, 0, 0, 1, 1, 1, 0, 0};
         int nd = topic_indicators.size();
         int nd1 = nd - 1;
-        double denom = nd1 + n_topics * beta;
+        double denom = nd1;
         denom *= denom;
 
         double expected = 2 *
-          (2 * log(2 / (nd1 * (4 + beta) * (4 + beta) / denom)) + // (0 -> 0)
-           2 * log(2 / (nd1 * (4 + beta) * (4 + beta) / denom)) + // (0 -> 1)
-           2 * log(2 / (nd1 * (4 + beta) * (4 + beta) / denom)) + // (1 -> 0)
-           2 * log(2 / (nd1 * (4 + beta) * (4 + beta) / denom)) // (1 -> 1)
+          (2 * log(2 / (nd1 * 4 * 4 / denom)) + // (0 -> 0)
+           2 * log(2 / (nd1 * 4 * 4 / denom)) + // (0 -> 1)
+           2 * log(2 / (nd1 * 4 * 4 / denom)) + // (1 -> 0)
+           2 * log(2 / (nd1 * 4 * 4 / denom)) // (1 -> 1)
            );
-        double actual = compute_markovian_lr_test(topic_indicators, n_topics, beta);
+        double actual = compute_markovian_lr_test(topic_indicators, n_topics);
         expect_true(is_equal(actual, expected));
 
         topic_indicators = {1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1};
         nd = topic_indicators.size();
         nd1 = nd - 1;
-        denom = nd1 + n_topics * beta;
+        denom = nd1;
         denom *= denom;
 
         expected = 2 *
-          (2 * log(2 / (nd1 * (4 + beta) * (4 + beta) / denom)) + // (0 -> 0)
-           2 * log(2 / (nd1 * (4 + beta) * (6 + beta) / denom)) + // (0 -> 1)
-           2 * log(2 / (nd1 * (6 + beta) * (4 + beta) / denom)) + // (1 -> 0)
-           4 * log(4 / (nd1 * (6 + beta) * (6 + beta) / denom)) // (1 -> 1)
+          (2 * log(2 / (nd1 * 4 * 4 / denom)) + // (0 -> 0)
+           2 * log(2 / (nd1 * 4 * 6 / denom)) + // (0 -> 1)
+           2 * log(2 / (nd1 * 6 * 4 / denom)) + // (1 -> 0)
+           4 * log(4 / (nd1 * 6 * 6 / denom)) // (1 -> 1)
            );
-        actual = compute_markovian_lr_test(topic_indicators, n_topics, beta);
+        actual = compute_markovian_lr_test(topic_indicators, n_topics);
         expect_true(is_equal(actual, expected));
       }
     }

@@ -130,8 +130,7 @@ namespace tomer {
   }
 
   double compute_markovian_lr_test(const IntVector& topic_indicators,
-                                   size_t n_topics,
-                                   double beta) {
+                                   size_t n_topics) {
     MarkovianLRTestData data(n_topics);
     fill_markovian_lr_test_data(topic_indicators, &data);
 
@@ -139,23 +138,19 @@ namespace tomer {
     const auto& transition_counts = data.transition_counts;
 
     double score = 0;
-    double beta_mul = beta * n_topics;
     size_t n = topic_indicators.size();
     size_t n1 = n - 1;
-    double denom = n1 + beta_mul;
 
     for (unsigned i = 0; i < n_topics; ++i) {
       if (counts.at(i) == 0) continue;
       double ni = counts.at(i);
-      double a = (ni + beta) / denom;
 
       for (unsigned j = 0; j < n_topics; ++j) {
         if (transition_counts.at(i).at(j) == 0) continue;
         double nij = transition_counts.at(i).at(j);
         double nj = counts.at(j);
-        double b = (nj + beta) / denom;
 
-        score += nij * log(nij / (n1 * a * b));
+        score += nij * log((n1 * nij) / (ni * nj));
       }
     }
 

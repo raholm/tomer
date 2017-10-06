@@ -97,9 +97,8 @@ double compute_markovian_bf_test_cpp(const Rcpp::IntegerVector& topic_indicators
 
 // [[Rcpp::export]]
 double compute_markovian_lr_test_cpp(const Rcpp::IntegerVector& topic_indicators,
-                                     size_t n_topics,
-                                     double beta) {
-  return compute_markovian_lr_test(convert_from_R(topic_indicators), n_topics, beta);
+                                     size_t n_topics) {
+  return compute_markovian_lr_test(convert_from_R(topic_indicators), n_topics);
 }
 
 // [[Rcpp::export]]
