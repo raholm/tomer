@@ -24,11 +24,11 @@ namespace tomer {
     virtual void update(const Type&) = 0;
     virtual void update(const Type&, const Type&) = 0;
 
-    virtual void update(const Vector<Type>& types) {
+    void update(const Vector<Type>& types) {
       for (auto const& type : types) update(type);
     }
 
-    virtual void update(const Vector<Type>& types1, const Vector<Type>& types2) {
+    void update(const Vector<Type>& types1, const Vector<Type>& types2) {
       auto n = std::min(types1.size(), types2.size());
       for (unsigned i = 0; i < n; ++i) update(types1.at(i), types2.at(i));
     }
@@ -55,11 +55,11 @@ namespace tomer {
 
     ~WordCounter() = default;
 
-    void update(const Vector<Type>& words) override {
+    void update(const Vector<Type>& words) {
       BaseClass::update(words);
     }
 
-    void update(const Vector<Type>& words1, const Vector<Type>& words2) override {
+    void update(const Vector<Type>& words1, const Vector<Type>& words2) {
       BaseClass::update(words1, words2);
     }
 
@@ -123,11 +123,11 @@ namespace tomer {
     WordIndexCounter(const WordIndexCounter& other) = default;
     WordIndexCounter(WordIndexCounter&& other) = default;
 
-    void update(const Vector<Type>& indexes) override {
+    void update(const Vector<Type>& indexes) {
       BaseClass::update(indexes);
     }
 
-    void update(const Vector<Type>& indexes1, const Vector<Type>& indexes2) override {
+    void update(const Vector<Type>& indexes1, const Vector<Type>& indexes2) {
       BaseClass::update(indexes1, indexes2);
     }
 
@@ -202,11 +202,11 @@ namespace tomer {
       : size_{n},
         counts_(n, 0) {}
 
-    void update(const Vector<Type>& indexes) override {
+    void update(const Vector<Type>& indexes) {
       BaseClass::update(indexes);
     }
 
-    void update(const Vector<Type>& indexes1, const Vector<Type>& indexes2) override {
+    void update(const Vector<Type>& indexes1, const Vector<Type>& indexes2) {
       BaseClass::update(indexes1, indexes2);
     }
 
@@ -260,11 +260,11 @@ namespace tomer {
       : counts_{std::move(counter.get_counts())},
         pair_counts_{std::move(counter.get_pair_counts())} {}
 
-    void update(const Vector<Type>& indexes) override {
+    void update(const Vector<Type>& indexes) {
       BaseClass::update(indexes);
     }
 
-    void update(const Vector<Type>& indexes1, const Vector<Type>& indexes2) override {
+    void update(const Vector<Type>& indexes1, const Vector<Type>& indexes2) {
       BaseClass::update(indexes1, indexes2);
     }
 
