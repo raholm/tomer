@@ -143,14 +143,14 @@ namespace tomer {
 
     for (unsigned i = 0; i < n_topics; ++i) {
       if (counts.at(i) == 0) continue;
-      double ni = counts.at(i);
+      size_t ni = counts.at(i);
 
       for (unsigned j = 0; j < n_topics; ++j) {
         if (transition_counts.at(i).at(j) == 0) continue;
-        double nij = transition_counts.at(i).at(j);
-        double nj = counts.at(j);
+        size_t nij = transition_counts.at(i).at(j);
+        size_t nj = counts.at(j);
 
-        score += nij * log((n1 * nij) / (ni * nj));
+        score += nij * log((n1 * nij) / (double) (ni * nj));
       }
     }
 
