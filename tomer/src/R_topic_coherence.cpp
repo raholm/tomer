@@ -17,9 +17,9 @@ Rcpp::NumericVector evaluate_topic_coherence_cpp(const Rcpp::StringVector& topic
   Matrix<WordIndexTokenizer::Token> docs = tokenizer.transform(documents);
 
   WordIndexTopicEvaluatorData data(std::move(create_word_index_counts(tops)));
-  calculate_word_index_counts_and_window_count(docs, INF_WORD_WINDOW, &data);
+  calculate_word_counts_and_window_count(docs, INF_WORD_WINDOW, &data);
 
-  CompressedTopicCoherenceEvaluator evaluator(std::move(data.word_index_counts));
+  CompressedTopicCoherenceEvaluator evaluator(std::move(data.word_counts));
   auto ntopics = tops.size();
   Vector<double> vals;
   vals.reserve(ntopics);
@@ -57,9 +57,9 @@ Rcpp::NumericVector evaluate_topic_coherence_with_cache_cpp(const Rcpp::StringVe
     WordToIndexTransformerCache transformer_cache{std::move(tokenizer.get_transformer())};
 
     WordIndexTopicEvaluatorData data(std::move(create_word_index_counts(tops)));
-    calculate_word_index_counts_and_window_count(docs, INF_WORD_WINDOW, &data);
+    calculate_word_counts_and_window_count(docs, INF_WORD_WINDOW, &data);
 
-    WordIndexCounterCache counter_cache{data.word_index_counts};
+    WordIndexCounterCache counter_cache{data.word_counts};
 
     cache.transformer = std::move(transformer_cache);
     cache.word_index_counts = std::move(counter_cache);
