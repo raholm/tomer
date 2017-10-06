@@ -104,15 +104,15 @@ IntMatrix create_type_topic_counts_from_R(const Rcpp::DataFrame& type_topic_coun
 
 // [[Rcpp::export]]
 double evaluate_left_to_right_cpp(const Rcpp::DataFrame& corpus,
-                                               size_t n_docs,
-                                               const Rcpp::DataFrame& alphabet,
-                                               size_t n_topics,
-                                               const Rcpp::DataFrame& topic_counts,
-                                               const Rcpp::DataFrame& type_topic_counts,
-                                               const Rcpp::NumericVector& alpha,
-                                               double beta,
-                                               size_t n_particles,
-                                               bool resampling) {
+                                  size_t n_docs,
+                                  const Rcpp::DataFrame& alphabet,
+                                  size_t n_topics,
+                                  const Rcpp::DataFrame& topic_counts,
+                                  const Rcpp::DataFrame& type_topic_counts,
+                                  const Rcpp::NumericVector& alpha,
+                                  double beta,
+                                  size_t n_particles,
+                                  bool resampling) {
   Corpus _corpus = create_corpus_from_R(corpus, n_docs);
   Alphabet _alphabet = create_alphabet_from_R(alphabet);
   size_t n_types = _alphabet.size();
@@ -130,8 +130,12 @@ double evaluate_left_to_right_cpp(const Rcpp::DataFrame& corpus,
 
   std::unique_ptr<MarginalProbEsimator> estimator = std::unique_ptr<MarginalProbEsimator>(new SparseLDATokenMarginalProbEstimator());
   std::unique_ptr<TopicSampler> sampler = std::unique_ptr<TopicSampler>(new SparseLDATopicSampler());
-  LeftToRightEvaluator evaluator{n_topics, _alpha, beta, _topic_counts,
-      _type_topic_counts, std::move(estimator), std::move(sampler)};
-
+  LeftToRightEvaluator evaluator(n_topics,
+                                 _alpha,
+                                 beta,
+                                 _topic_counts,
+                                 _type_topic_counts,
+                                 std::move(estimator),
+                                 std::move(sampler));
   return evaluator.evaluate(type_sequences, n_particles, resampling);
 }

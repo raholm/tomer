@@ -219,6 +219,31 @@ namespace tomer {
 
   };
 
+  class SparseCompressedNpmiEvaluator : public CompressedTopicEvaluator {
+  public:
+    using BaseClass = CompressedTopicEvaluator;
+
+    explicit SparseCompressedNpmiEvaluator(const SparseWordIndexCounter& word_index_counts,
+                                           size_t window_count)
+      : word_index_counts_{word_index_counts},
+        window_count_{window_count} {}
+
+    explicit SparseCompressedNpmiEvaluator(SparseWordIndexCounter&& word_index_counts,
+                                           size_t window_count)
+      : word_index_counts_{std::move(word_index_counts)},
+        window_count_{window_count} {}
+
+  protected:
+    double compute_association(const WordIndex& left, const WordIndex& right) const override {
+      return compute_npmi_association(left, right, word_index_counts_, window_count_);
+    }
+
+  private:
+    SparseWordIndexCounter word_index_counts_;
+    size_t window_count_;
+
+  };
+
   class CompressedAndCachedNpmiEvaluator : public CompressedTopicEvaluator {
   public:
     using BaseClass = CompressedTopicEvaluator;
