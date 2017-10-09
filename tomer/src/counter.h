@@ -276,7 +276,7 @@ namespace tomer {
       add_or_incr(index1, index2);
     }
 
-    Count get_count(const Type& index) const {
+    Count get_count(const Type& index) const override {
       auto it = counts_.find(index);
       if (it == counts_.end()) return 0;
       return it->second;
