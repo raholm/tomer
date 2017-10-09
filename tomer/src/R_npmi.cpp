@@ -21,7 +21,7 @@ Rcpp::NumericVector evaluate_npmi_cpp(const Rcpp::StringVector& topics,
   Matrix<WordIndexTokenizer::Token> tops = tokenizer.transform(topics);
   Matrix<WordIndexTokenizer::Token> docs = tokenizer.transform(documents);
 
-  WordIndexTopicEvaluatorData data(std::move(create_word_index_counts(tops)));
+  WordIndexTopicEvaluatorData data(create_word_index_counts(tops));
   calculate_word_counts_and_window_count(docs, window_size, &data);
 
   CompressedNpmiEvaluator evaluator(std::move(data.word_counts), data.window_count);
@@ -62,7 +62,7 @@ Rcpp::NumericVector evaluate_npmi_with_cache_cpp(const Rcpp::StringVector& topic
 
     WordToIndexTransformerCache  transformer_cache{std::move(tokenizer.get_transformer())};
 
-    WordIndexTopicEvaluatorData data(std::move(create_word_index_counts(tops)));
+    WordIndexTopicEvaluatorData data(create_word_index_counts(tops));
     calculate_word_counts_and_window_count(docs, window_size, &data);
 
     WordIndexCounterCache counter_cache{data.word_counts};
@@ -98,7 +98,7 @@ Rcpp::NumericVector evaluate_npmi_from_file_cpp(const Rcpp::StringVector& topics
   tokenizer.set_full();
   size_t n_tokens = tokenizer.get_transformer().get_indexes().size();
 
-  SparseWordIndexTopicEvaluatorData data{std::move(SparseWordIndexCounter(n_tokens))};
+  SparseWordIndexTopicEvaluatorData data{SparseWordIndexCounter(n_tokens)};
   calculate_word_counts_and_window_count(Rcpp::as<String>(filename),
                                          window_size,
                                          tokenizer,
