@@ -19,8 +19,15 @@ namespace tomer {
         auto tokens1 = tokenizer.transform(text);
         check_equality(tokens1, {"Hello", "world!", "What", "are", "you", "doing", "today?"});
 
-        auto tokens2 = tokenizer.transform(texts);
-        check_equality(tokens2,  {
+        auto tokens2 = tokenizer.transform(text);
+        check_equality(tokens2, {"Hello", "world!", "What", "are", "you", "doing", "today?"});
+
+        auto tokens3 = tokenizer.transform(texts);
+        check_equality(tokens3,  {
+            {"Hello", "World"}, {"[" , "foo|bar", "]"}, {"superman", "batman", "superman"}});
+
+        auto tokens4 = tokenizer.transform(texts);
+        check_equality(tokens4,  {
             {"Hello", "World"}, {"[" , "foo|bar", "]"}, {"superman", "batman", "superman"}});
       }
 
@@ -53,8 +60,15 @@ namespace tomer {
         auto tokens1 = tokenizer.transform(text);
         check_equality(tokens1, {0, 1, 2, 3, 4, 5, 1});
 
-        auto tokens2 = tokenizer.transform(texts);
-        check_equality(tokens2,  {
+        auto tokens2 = tokenizer.transform(text);
+        check_equality(tokens2, {0, 1, 2, 3, 4, 5, 1});
+
+        auto tokens3 = tokenizer.transform(texts);
+        check_equality(tokens3,  {
+            {0, 6}, {7, 8, 9}, {10, 11, 10}});
+
+        auto tokens4 = tokenizer.transform(texts);
+        check_equality(tokens4,  {
             {0, 6}, {7, 8, 9}, {10, 11, 10}});
       }
 

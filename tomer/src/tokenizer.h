@@ -34,13 +34,17 @@ namespace tomer {
       Vector<Token> tokens;
       tokens.reserve(cache_size_);
 
-      char* t = const_cast<char*>(text.c_str());
+      char* t = new char[text.length() + 1];
+      std::strcpy(t, text.c_str());
+
       char* current_token = strtok(t, delimiter_.c_str());
 
       while (current_token != NULL) {
         tokens.push_back(transform_token(current_token));
         current_token = strtok(NULL, delimiter_.c_str());
       }
+
+      delete [] t;
 
       tokens.shrink_to_fit();
       return tokens;
