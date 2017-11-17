@@ -112,7 +112,8 @@ double evaluate_left_to_right_cpp(const Rcpp::DataFrame& corpus,
                                   const Rcpp::NumericVector& alpha,
                                   double beta,
                                   size_t n_particles,
-                                  bool resampling) {
+                                  bool resampling,
+                                  unsigned seed) {
   Corpus _corpus = create_corpus_from_R(corpus, n_docs);
   Alphabet _alphabet = create_alphabet_from_R(alphabet);
   size_t n_types = _alphabet.size();
@@ -130,6 +131,10 @@ double evaluate_left_to_right_cpp(const Rcpp::DataFrame& corpus,
 
   std::unique_ptr<MarginalProbEsimator> estimator = std::unique_ptr<MarginalProbEsimator>(new SparseLDATokenMarginalProbEstimator());
   std::unique_ptr<TopicSampler> sampler = std::unique_ptr<TopicSampler>(new SparseLDATopicSampler());
+
+  if (seed > 0)
+    sampler->set_seed(seed);
+
   LeftToRightEvaluator evaluator(n_topics,
                                  _alpha,
                                  beta,

@@ -5,7 +5,7 @@
 \title{Left-to-right evaluation algorithm}
 \usage{
 evaluate_left_to_right(test_documents, model, ntopics, alpha, beta, nparticles,
-  resampling)
+  resampling, seed = 0)
 }
 \description{
 This is an algorithm for approximating p(w | ...) blabla

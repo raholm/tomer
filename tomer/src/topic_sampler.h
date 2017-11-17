@@ -24,6 +24,8 @@ namespace tomer {
 
     virtual Topic next_topic(const LeftToRightState& state) const = 0;
 
+    virtual void set_seed(unsigned seed) = 0;
+
   };
 
   class LDATopicSampler : public TopicSampler {
@@ -33,6 +35,8 @@ namespace tomer {
     ~LDATopicSampler() = default;
 
     Topic next_topic(const LeftToRightState& state) const override;
+
+    void set_seed(unsigned seed) override;
 
   private:
     std::random_device rand_dev_;
@@ -58,6 +62,8 @@ namespace tomer {
     void update_elimination(const LeftToRightState& state) override;
 
     Topic next_topic(const LeftToRightState& state) const override;
+
+    void set_seed(unsigned seed) override;
 
   private:
     std::random_device rand_dev_;

@@ -6,8 +6,8 @@
 using namespace Rcpp;
 
 // evaluate_left_to_right_cpp
-double evaluate_left_to_right_cpp(const Rcpp::DataFrame& corpus, size_t n_docs, const Rcpp::DataFrame& alphabet, size_t n_topics, const Rcpp::DataFrame& topic_counts, const Rcpp::DataFrame& type_topic_counts, const Rcpp::NumericVector& alpha, double beta, size_t n_particles, bool resampling);
-RcppExport SEXP _tomer_evaluate_left_to_right_cpp(SEXP corpusSEXP, SEXP n_docsSEXP, SEXP alphabetSEXP, SEXP n_topicsSEXP, SEXP topic_countsSEXP, SEXP type_topic_countsSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP n_particlesSEXP, SEXP resamplingSEXP) {
+double evaluate_left_to_right_cpp(const Rcpp::DataFrame& corpus, size_t n_docs, const Rcpp::DataFrame& alphabet, size_t n_topics, const Rcpp::DataFrame& topic_counts, const Rcpp::DataFrame& type_topic_counts, const Rcpp::NumericVector& alpha, double beta, size_t n_particles, bool resampling, unsigned seed);
+RcppExport SEXP _tomer_evaluate_left_to_right_cpp(SEXP corpusSEXP, SEXP n_docsSEXP, SEXP alphabetSEXP, SEXP n_topicsSEXP, SEXP topic_countsSEXP, SEXP type_topic_countsSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP n_particlesSEXP, SEXP resamplingSEXP, SEXP seedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -21,7 +21,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type beta(betaSEXP);
     Rcpp::traits::input_parameter< size_t >::type n_particles(n_particlesSEXP);
     Rcpp::traits::input_parameter< bool >::type resampling(resamplingSEXP);
-    rcpp_result_gen = Rcpp::wrap(evaluate_left_to_right_cpp(corpus, n_docs, alphabet, n_topics, topic_counts, type_topic_counts, alpha, beta, n_particles, resampling));
+    Rcpp::traits::input_parameter< unsigned >::type seed(seedSEXP);
+    rcpp_result_gen = Rcpp::wrap(evaluate_left_to_right_cpp(corpus, n_docs, alphabet, n_topics, topic_counts, type_topic_counts, alpha, beta, n_particles, resampling, seed));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -166,7 +167,7 @@ END_RCPP
 RcppExport SEXP _rcpp_module_boot_mod_bayes_factor();
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_tomer_evaluate_left_to_right_cpp", (DL_FUNC) &_tomer_evaluate_left_to_right_cpp, 10},
+    {"_tomer_evaluate_left_to_right_cpp", (DL_FUNC) &_tomer_evaluate_left_to_right_cpp, 11},
     {"_tomer_evaluate_npmi_cpp", (DL_FUNC) &_tomer_evaluate_npmi_cpp, 3},
     {"_tomer_evaluate_npmi_with_cache_cpp", (DL_FUNC) &_tomer_evaluate_npmi_with_cache_cpp, 4},
     {"_tomer_evaluate_npmi_from_file_cpp", (DL_FUNC) &_tomer_evaluate_npmi_from_file_cpp, 3},

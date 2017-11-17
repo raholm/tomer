@@ -23,11 +23,11 @@ get_bayes_factor_mode <- function() {
 #'
 #' @export
 get_bayes_factor_mode_from_data <- function(data) {
-    checkr::assert_subset(c("doc", "pos", "type", "topic"), names(data))
-    checkr::assert_integer(data$doc, lower=0)
-    checkr::assert_integer(data$pos, lower=0)
-    checkr::assert_integer(data$type, lower=0)
-    checkr::assert_integer(data$topic, lower=0)
+    checkmate::assert_subset(c("doc", "pos", "type", "topic"), names(data))
+    checkmate::assert_integer(data$doc, lower=0)
+    checkmate::assert_integer(data$pos, lower=0)
+    checkmate::assert_integer(data$type, lower=0)
+    checkmate::assert_integer(data$topic, lower=0)
 
     mode <- get_bayes_factor_mode()
     mode$update(data)
@@ -46,7 +46,7 @@ get_bayes_factor_mode_from_data <- function(data) {
 #'
 #' @export
 get_bayes_factor_mode_from_model <- function(model, gibbs_iters, dst) {
-    checkr::assert_integer(gibbs_iters, len=1, lower=1)
+    checkmate::assert_numeric(gibbs_iters, len=1, lower=1)
 
     mode <- get_bayes_factor_mode()
 
@@ -71,6 +71,8 @@ get_bayes_factor_mode_from_model <- function(model, gibbs_iters, dst) {
 #'
 #' @export
 write_bayes_factor_mode_to_file <- function(mode, dst) {
+    checkmate::assert_path_for_output(dst)
+
     data <- mode$data()
     write.table(x=data, file=dst, row.names=FALSE)
 }
@@ -87,7 +89,7 @@ write_bayes_factor_mode_to_file <- function(mode, dst) {
 #'
 #' @export
 read_bayes_factor_mode_from_file <- function(src) {
-    checkr::assert_file_type(src, ".mode")
+    checkmate::assert_true(endsWith(src, ".mode"))
 
     data <- read.table(src, header=T)
     get_bayes_factor_mode_from_data(data)

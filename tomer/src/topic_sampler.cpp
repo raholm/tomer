@@ -41,6 +41,10 @@ namespace tomer {
     return probs;
   }
 
+  void LDATopicSampler::set_seed(unsigned seed) {
+    gen_.seed(seed);
+  }
+
   SparseLDATopicSampler::SparseLDATopicSampler()
     : rand_dev_{},
       gen_{rand_dev_()},
@@ -247,6 +251,10 @@ namespace tomer {
     }
 
     return new_topic;
+  }
+
+  void SparseLDATopicSampler::set_seed(unsigned seed) {
+    gen_.seed(seed);
   }
 
 } // namespace tomer

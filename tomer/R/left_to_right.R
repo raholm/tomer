@@ -4,21 +4,15 @@
 #'
 #' @export
 evaluate_left_to_right <- function(test_documents, model, ntopics,
-                                   alpha, beta, nparticles, resampling) {
-    checkr::assert_tidy_table(model, c("type", "token", "topic"))
-    checkr::assert_integer(model$type)
-    checkr::assert_integer(model$topic)
-    checkr::assert_factor(model$token)
-
-    checkr::assert_tidy_table(test_documents, c("id", "token"))
-    checkr::assert_factor(test_documents$id)
-    checkr::assert_factor(test_documents$token)
-
-    checkr::assert_integer(ntopics, len=1, lower=1)
-    checkr::assert_integer(nparticles, len=1, lower=1)
-    checkr::assert_numeric(beta, len=1, lower=0)
-    checkr::assert_numeric(alpha, len=ntopics, lower=0)
-    checkr::assert_logical(resampling, len=1)
+                                   alpha, beta, nparticles, resampling, seed=0) {
+    checkmate::assert_class(model, "data.frame")
+    checkmate::assert_subset(c("type", "token", "topic"), names(model))
+    checkmate::assert_numeric(ntopics, len=1, lower=1)
+    checkmate::assert_numreic(nparticles, len=1, lower=1)
+    checkmate::assert_numeric(beta, len=1, lower=0)
+    checkmate::assert_numeric(alpha, len=ntopics, lower=0)
+    checkmate::assert_logical(resampling, len=1)
+    checkmate::assert_numeric(seed, len=1)
 
     ndocs <- length(unique(test_documents$id))
 
@@ -52,5 +46,6 @@ evaluate_left_to_right <- function(test_documents, model, ntopics,
                                alpha,
                                beta,
                                nparticles,
-                               resampling)
+                               resampling,
+                               seed)
 }

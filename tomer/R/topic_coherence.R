@@ -28,16 +28,3 @@ topic_coherence_create_cache <- function(documents, dst) {
 topic_coherence_file <- function(topics, filename) {
     evaluate_topic_coherence_from_file_cpp(topics, filename)
 }
-
-
-test_topic_coherence_file <- function() {
-    topics <- read.table("/home/textanalysis/git/topic_corpus_curation/experiments/sotu/topic/segmentation/100/topics_sotu_segmentation_none_20_0.1_0.01_50_100.txt", fill=TRUE, stringsAsFactors=FALSE)
-    topics <- sapply(as.list(topics), paste, collapse=" ")
-    corpus_filename <- "/home/textanalysis/data/corpus/nyt_complete.txt"
-
-    timer <- Sys.time()
-    print(topic_coherence_file(topics, corpus_filename))
-    Sys.time() - timer
-}
-
-## test_topic_coherence_file()
