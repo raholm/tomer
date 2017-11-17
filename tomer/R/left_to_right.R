@@ -8,7 +8,7 @@ evaluate_left_to_right <- function(test_documents, model, ntopics,
     checkmate::assert_class(model, "data.frame")
     checkmate::assert_subset(c("type", "token", "topic"), names(model))
     checkmate::assert_numeric(ntopics, len=1, lower=1)
-    checkmate::assert_numreic(nparticles, len=1, lower=1)
+    checkmate::assert_numeric(nparticles, len=1, lower=1)
     checkmate::assert_numeric(beta, len=1, lower=0)
     checkmate::assert_numeric(alpha, len=ntopics, lower=0)
     checkmate::assert_logical(resampling, len=1)
